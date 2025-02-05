@@ -10,6 +10,7 @@ interface ButtonProps {
     disabled?: boolean;
     color?: string;
     iconClassName?: string;
+    children?: React.ReactNode;
 }
 
 const Button: React.FC<ButtonProps> = ({

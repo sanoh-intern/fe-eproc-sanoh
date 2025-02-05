@@ -1,10 +1,13 @@
-import { Link } from 'react-router-dom';
 import fotoSanoh from '../assets/images/cover/maskot2.png';
 import { Timeline } from 'flowbite-react';
 import { FaCheckCircle, FaClipboardList, FaFileAlt } from 'react-icons/fa';
 import { FaFileCircleCheck } from 'react-icons/fa6';
+import { LoginModal } from './Authentication/LoginModal';
+import { useState } from 'react';
 
 const LandingPage = () => {
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
+    
     return (
         <div className="min-h-screen bg-white">
             {/* Hero Section */}
@@ -21,12 +24,12 @@ const LandingPage = () => {
                                 E-Procurement System PT. Sanoh Indonesia is an application system used as a performance support facility and manages the procurement process at PT. Sanoh Indonesia.
                             </p>
                             <div className="mt-8">
-                                <Link
-                                    to="/auth/login"
+                                <button
                                     className="bg-primary text-white hover:bg-secondary px-6 py-3 rounded-lg text-base font-medium inline-block"
+                                    onClick={() => setIsLoginModalOpen(true)}
                                 >
                                     Get Started
-                                </Link>
+                                </button>
                             </div>
                         </div>
                         <div className="flex justify-center">
@@ -116,6 +119,7 @@ const LandingPage = () => {
                     </Timeline>
                 </div>
             </div>
+            <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
         </div>
     );
 };

@@ -8,14 +8,14 @@ import { ToastContainer } from 'react-toastify';
 import { FaArrowLeft } from 'react-icons/fa';
 
 const Login: React.FC = () => {
-  const [username, setUsername] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const { login, isLoading } = useAuth();
   const navigate = useNavigate();
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const success = await login(username, password);
+    const success = await login(email, password);
     if (success) {
       navigate('/dashboard');
     }
@@ -50,17 +50,17 @@ const Login: React.FC = () => {
               />
               <form className="flex flex-col mt-6 w-full" onSubmit={onSubmit} autoComplete="off">
                 <div className="flex flex-col">
-                  <label htmlFor="username" className="text-base text-slate-800 mb-2">
-                    Username
+                  <label htmlFor="email" className="text-base text-black-800 mb-2">
+                    Email
                   </label>
                   <input
                     type="text"
-                    id="username"
+                    id="email"
                     autoFocus
-                    placeholder="Enter Username"
+                    placeholder=""
                     className="px-4 py-3.5 w-full bg-white rounded-lg border border-solid border-secondary border-opacity-40 min-h-[48px] shadow-[0px_4px_8px_rgba(70,95,241,0.1)] text-base text-black"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </div>
