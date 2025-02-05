@@ -4,9 +4,12 @@ interface PasswordInputProps {
   password: string;
   setPassword: (password: string) => void;
   isRequired?: boolean;
+  title?: string;
+  classname?: string;
+  autofocus?: boolean;
 }
 
-const PasswordInput: FC<PasswordInputProps> = ({ password, setPassword, isRequired }) => {
+const PasswordInput: FC<PasswordInputProps> = ({ password, setPassword, isRequired, title, classname, autofocus }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePassword = () => setShowPassword(!showPassword);
@@ -14,9 +17,9 @@ const PasswordInput: FC<PasswordInputProps> = ({ password, setPassword, isRequir
   return (
     <>
       <label htmlFor="password" className="mb-2 text-base text-black">
-        Password
+        {title || 'Password'}
       </label>
-      <div className="flex justify-between">
+      <div className={`flex justify-between ${classname}`}>
         <div className="flex gap-5 justify-between items-center min-h-[48px] w-full relative">
           <input
             type={showPassword ? 'text' : 'password'}
@@ -26,6 +29,7 @@ const PasswordInput: FC<PasswordInputProps> = ({ password, setPassword, isRequir
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required={isRequired}
+            autoFocus={autofocus}
           />
           <button
             type="button"

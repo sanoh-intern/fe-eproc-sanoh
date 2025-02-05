@@ -11,6 +11,7 @@ import DashboardLayout from "./layout/DashboardLayout/DashboardLayout";
 import ContactUs from "./pages/ContactUs";
 import Login from "./pages/Authentication/Login";
 import Register from "./pages/Authentication/Register";
+import ForgotPassword from "./pages/Authentication/ForgotPassword";
 
 const App: React.FC = () => {
   return (
@@ -41,7 +42,7 @@ const App: React.FC = () => {
             element={
               <>
                 <PageTitle title="Reset Password | PT SANOH INDONESIA" />
-                <Login/>
+                <ForgotPassword/>
               </>
             } 
           />

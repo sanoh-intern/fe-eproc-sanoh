@@ -132,12 +132,12 @@ const Register: React.FC = () => {
                                     disabled={isLoading}
                                 >
                                     {isLoading ? (
-                                    <>
-                                        <FaSpinner className="inline w-4 h-4 me-3 animate-spin" />
-                                        Registering...
-                                    </>
-                                    ) : (
-                                    "Register"
+                                        <>
+                                            <FaSpinner className="inline w-4 h-4 me-3 animate-spin" />
+                                            Registering...
+                                        </>
+                                        ) : (
+                                        "Register"
                                     )}
                                 </button>
                             </form>
