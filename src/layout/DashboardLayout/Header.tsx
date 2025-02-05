@@ -93,7 +93,7 @@ const Header = (props: {
                                 Home
                             </NavLink>
                             <NavLink
-                                to="/kontak"
+                                to="/contact-us"
                                 onClick={() => props.setSidebarOpen(false)}
                                 className={navLinkClasses}
                             >
@@ -101,14 +101,14 @@ const Header = (props: {
                             </NavLink>
                             <div className="flex flex-col items-center space-y-4 mt-8">
                                 <NavLink
-                                    to="/login"
+                                    to="/auth/login"
                                     onClick={() => props.setSidebarOpen(false)}
                                     className="w-40 text-center rounded-full px-6 py-2 text-sm font-medium border-2 border-primary text-primary transition-colors hover:bg-primary hover:text-white"
                                 >
                                     Login
                                 </NavLink>
                                 <NavLink
-                                    to="/register"
+                                    to="/auth/register"
                                     onClick={() => props.setSidebarOpen(false)}
                                     className="w-40 text-center rounded-full px-6 py-2 text-sm font-medium border-2 border-primary text-primary transition-colors hover:bg-primary hover:text-white"
                                 >

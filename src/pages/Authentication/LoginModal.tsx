@@ -1,6 +1,6 @@
 import type React from "react"
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import Logo from "../../assets/images/logo-sanoh.png"
 import { useAuth } from "../../authentication/AuthContext"
 import { FaTimes } from "react-icons/fa"
@@ -61,9 +61,9 @@ export function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                                 <PasswordInput password={password} setPassword={setPassword} isRequired />
                             </div>
                             <div className="flex justify-between items-center">
-                                <a href="#" className="text-sm text-black hover:underline ">
+                                <Link to="auth/reset/password" className="text-sm text-black hover:underline ">
                                     Forgot password?
-                                </a>
+                                </Link>
                             </div>
                             <Button
                                 title={isLoading ? "Signing in..." : "Sign In"}

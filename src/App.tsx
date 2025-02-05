@@ -10,6 +10,7 @@ import LandingPage from "./pages/LandingPage";
 import DashboardLayout from "./layout/DashboardLayout/DashboardLayout";
 import ContactUs from "./pages/ContactUs";
 import Login from "./pages/Authentication/Login";
+import Register from "./pages/Authentication/Register";
 
 const App: React.FC = () => {
   return (
@@ -22,7 +23,7 @@ const App: React.FC = () => {
             element={
               <>
                 <PageTitle title="Register | PT SANOH INDONESIA" />
-                <Login/>
+                <Register/>
               </>
             } 
           />
@@ -31,6 +32,15 @@ const App: React.FC = () => {
             element={
               <>
                 <PageTitle title="login | PT SANOH INDONESIA" />
+                <Login/>
+              </>
+            } 
+          />
+          <Route
+            path="/auth/reset/password"
+            element={
+              <>
+                <PageTitle title="Reset Password | PT SANOH INDONESIA" />
                 <Login/>
               </>
             } 

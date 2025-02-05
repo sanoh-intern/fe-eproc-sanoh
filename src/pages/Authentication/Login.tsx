@@ -57,7 +57,7 @@ const Login: React.FC = () => {
                     type="text"
                     id="email"
                     autoFocus
-                    placeholder=""
+                    placeholder="email@company.com"
                     className="px-4 py-3.5 w-full bg-white rounded-lg border border-solid border-secondary border-opacity-40 min-h-[48px] shadow-[0px_4px_8px_rgba(70,95,241,0.1)] text-base text-black"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -70,8 +70,8 @@ const Login: React.FC = () => {
                 </div>
 
                 <div className="mt-3 text-right">
-                  <Link to="/forgot-password" className="text-sm text-black hover:underline">
-                  Forgot Password ?
+                  <Link to="/auth/reset/password" className="text-sm text-black hover:underline">
+                    Forgot Password ?
                   </Link>
                 </div>
 
@@ -110,7 +110,7 @@ const Login: React.FC = () => {
               <div className="mt-6 text-left text-sm">
                 <p>
                   Don't have an account?{' '}
-                  <Link to="/register" className="text-primary hover:underline">
+                  <Link to="/auth/register" className="text-primary hover:underline">
                   Register here
                   </Link>
                 </p>
@@ -120,8 +120,8 @@ const Login: React.FC = () => {
                   </Link>
                 </p>
               </div>
-              <p className="self-center mt-9 text-xs font-medium text-center text-slate-800 w-[259px] max-md:mt-10 max-sm:self-center">
-                <span className="text-zinc-400">By Signing in, I accept the company&apos;s</span>
+              <p className="self-center mt-9 text-xs font-medium text-center text-black w-[259px] max-md:mt-10 max-sm:self-center">
+                <span className="text-primary">By Signing in, I accept the company&apos;s</span>
                 <br />
                   <button
                   onClick={() => {
@@ -137,17 +137,17 @@ const Login: React.FC = () => {
 
                     modal.innerHTML = `
                     <div class="bg-white p-8 rounded-lg relative max-w-2xl">
-                      <button class="absolute top-2 right-2 text-gray-600 hover:text-gray-800" onclick="this.parentElement.parentElement.remove()">
-                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
+                      <button class="absolute top-2 right-2 text-black hover:text-primary" onclick="this.parentElement.parentElement.remove()">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
                       </button>
-                      <h2 class="text-xl font-bold mb-4">Terms of Use & Privacy Policy</h2>
-                      <div class="text-gray-700">
-                      <h3 class="font-semibold mb-2">Terms of Use</h3>
-                      <p class="mb-4">By using our service, you agree to follow all applicable laws and regulations. You are responsible for maintaining the confidentiality of your account.</p>
-                      <h3 class="font-semibold mb-2">Privacy Policy</h3>
-                      <p>We collect and process your personal information in accordance with our privacy policy. Your data is protected and will only be used for service-related purposes.</p>
+                      <h2 class="text-xl text-black font-bold mb-4">Terms of Use & Privacy Policy</h2>
+                      <div class="text-black">
+                        <h3 class="font-semibold mb-2">Terms of Use</h3>
+                        <p class="mb-4">By using our service, you agree to follow all applicable laws and regulations. You are responsible for maintaining the confidentiality of your account.</p>
+                        <h3 class="font-semibold mb-2">Privacy Policy</h3>
+                        <p>We collect and process your personal information in accordance with our privacy policy. Your data is protected and will only be used for service-related purposes.</p>
                       </div>
                     </div>
                     `;
