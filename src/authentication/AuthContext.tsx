@@ -1,7 +1,7 @@
 import { createContext, useState, useContext, useEffect, ReactNode } from 'react';
-import { API_Logout } from '../../api/api';
+import { API_Logout } from '../api/api';
 import { toast, ToastContainer } from 'react-toastify';
-import { API_Login } from '../../api/api';
+import { API_Login } from '../api/api';
 import axios from 'axios';
 import { getRolePath } from './Role';
 

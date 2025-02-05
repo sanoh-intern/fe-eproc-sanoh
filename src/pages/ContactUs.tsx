@@ -71,8 +71,8 @@ const ContactUs = () => {
             <div className="min-h-screen bg-white">
                 <div className="bg-[#f8fafc] py-16">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                        <h1 className="text-4xl font-bold tracking-tight text-black sm:text-5xl text-center">Contact Us</h1>
-                        <p className="mt-4 text-lg text-gray-600 text-center max-w-2xl mx-auto">
+                        <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl text-center">Contact Us</h1>
+                        <p className="mt-4 text-lg text-primary text-center max-w-2xl mx-auto">
                             Get in touch with PT. Sanoh Indonesia. We're here to help with any questions about our e-Procurement system.
                         </p>
                     </div>
@@ -84,7 +84,7 @@ const ContactUs = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
                             {/* Contact Form */}
                             <div>
-                                <h2 className="text-2xl font-bold text-[#1e2f65] mb-6">Send us a message</h2>
+                                <h2 className="text-2xl font-bold text-primary mb-6">Send us a message</h2>
                                 <form onSubmit={handleSubmit} className="space-y-4">
                                     <div>
                                         <input
@@ -93,7 +93,7 @@ const ContactUs = () => {
                                             value={formData.name}
                                             placeholder="Your Name"
                                             onChange={handleChange}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e2f65] focus:border-transparent"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                                         />
                                     </div>
                                     <div>
@@ -103,7 +103,7 @@ const ContactUs = () => {
                                             value={formData.email}
                                             placeholder="Your Email"
                                             onChange={handleChange}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e2f65] focus:border-transparent"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                                         />
                                     </div>
                                     <div>
@@ -113,7 +113,7 @@ const ContactUs = () => {
                                             value={formData.subject}
                                             placeholder="Subject"
                                             onChange={handleChange}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e2f65] focus:border-transparent"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                                         />
                                     </div>
                                     <div>
@@ -122,7 +122,7 @@ const ContactUs = () => {
                                             value={formData.message}
                                             placeholder="Your Message"
                                             onChange={handleChange}
-                                            className="w-full h-32 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e2f65] focus:border-transparent resize-none"
+                                            className="w-full h-32 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
                                         ></textarea>
                                     </div>
                                     <Button type="submit" title="Send Message" className="w-full" disabled={isLoading} />
@@ -131,27 +131,27 @@ const ContactUs = () => {
 
                             {/* Contact Information */}
                             <div>
-                            <h2 className="text-2xl font-bold text-[#1e2f65] mb-6">Contact Information</h2>
+                            <h2 className="text-2xl font-bold text-primary mb-6">Contact Information</h2>
                             <div className="space-y-4">
                                 <div className="flex items-start">
-                                <FaEnvelope className="text-[#1e2f65] mt-1 mr-3" />
+                                <FaEnvelope className="text-primary mt-1 mr-3" />
                                 <div>
                                     <h3 className="font-semibold">Email</h3>
-                                    <p className="text-gray-600">info@sanoh-indonesia.com</p>
+                                    <p className="text-primary">info@sanoh-indonesia.com</p>
                                 </div>
                                 </div>
                                 <div className="flex items-start">
-                                <FaPhone className="text-[#1e2f65] mt-1 mr-3" />
+                                <FaPhone className="text-primary mt-1 mr-3" />
                                 <div>
                                     <h3 className="font-semibold">Phone</h3>
-                                    <p className="text-gray-600">+62 21 1234 5678</p>
+                                    <p className="text-primary">+62 21 1234 5678</p>
                                 </div>
                                 </div>
                                 <div className="flex items-start">
-                                <FaMapMarkerAlt className="text-[#1e2f65] mt-1 mr-3" />
+                                <FaMapMarkerAlt className="text-primary mt-1 mr-3" />
                                 <div>
                                     <h3 className="font-semibold">Address</h3>
-                                    <p className="text-gray-600">
+                                    <p className="text-primary">
                                     PT. Sanoh Indonesia
                                     <br />
                                     Jl. Example Street No. 123
@@ -164,7 +164,7 @@ const ContactUs = () => {
 
                             {/* Map */}
                             <div className="mt-8">
-                                <h2 className="text-2xl font-bold text-[#1e2f65] mb-4">Our Location</h2>
+                                <h2 className="text-2xl font-bold text-primary mb-4">Our Location</h2>
                                 <div className="aspect-w-16 aspect-h-9">
                                 <iframe
                                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4125.505927551468!2d107.12614627519572!3d-6.3366696620001655!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6984b26b39a0bd%3A0xc6e7c8ba4066ac6b!2sPT.%20Sanoh%20Indonesia!5e1!3m2!1sid!2sid!4v1738719480720!5m2!1sid!2sid"

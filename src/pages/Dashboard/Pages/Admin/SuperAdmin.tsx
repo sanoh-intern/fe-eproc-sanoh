@@ -5,7 +5,7 @@ import CardDataStats from '../../../../components/CardDataStats';
 import { FaUserCheck, FaUserClock, FaUsers, FaUserTimes } from 'react-icons/fa';
 import UserOnline from '../../../../components/UserOnline';
 import BarChart from '../../../../components/Charts/BarChart';
-import { getRoleName } from '../../../Authentication/Role';
+import { getRoleName } from '../../../../authentication/Role';
 
 interface LoginData {
   username: string;

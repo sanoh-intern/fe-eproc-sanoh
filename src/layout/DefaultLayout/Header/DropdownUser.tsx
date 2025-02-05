@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import UserLogo from '../../../assets/images/user/user_logo_default.png';
-import { useAuth } from '../../../pages/Authentication/AuthContext';
+import { useAuth } from '../../../authentication/AuthContext';
 import ClickOutside from '../../../components/ClickOutside';
 
 

@@ -13,7 +13,7 @@ const PasswordInput: FC<PasswordInputProps> = ({ password, setPassword, isRequir
 
   return (
     <>
-      <label htmlFor="password" className="mb-2 text-base text-slate-800">
+      <label htmlFor="password" className="mb-2 text-base text-black">
         Password
       </label>
       <div className="flex justify-between">
@@ -22,7 +22,7 @@ const PasswordInput: FC<PasswordInputProps> = ({ password, setPassword, isRequir
             type={showPassword ? 'text' : 'password'}
             id="password"
             placeholder="Enter Password"
-            className="px-4 py-3.5 w-full bg-white rounded-lg border border-solid border-indigo-600 border-opacity-40 min-h-[48px] text-base text-black shadow-[0px_4px_8px_rgba(70,95,241,0.1)]"
+            className="px-4 py-3.5 w-full bg-white rounded-lg border border-solid border-primary border-opacity-40 min-h-[48px] text-base text-black shadow-[0px_4px_8px_rgba(70,95,241,0.1)]"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required={isRequired}
@@ -30,7 +30,7 @@ const PasswordInput: FC<PasswordInputProps> = ({ password, setPassword, isRequir
           <button
             type="button"
             onClick={togglePassword}
-            className="absolute inset-y-0 right-0 flex items-center z-20 px-3 cursor-pointer text-gray-400 rounded-e-md focus:outline-none focus:text-blue-600"
+            className="absolute inset-y-0 right-0 flex items-center z-20 px-3 cursor-pointer text-secondary rounded-e-md focus:outline-none focus:text-primary"
           >
             <svg
               id="eye-icon"

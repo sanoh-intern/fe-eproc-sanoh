@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/Forms/Button';
-import { useAuth } from './Authentication/AuthContext';
+import { useAuth } from '../authentication/AuthContext';
 
 const NotFound = () => {
   const navigate = useNavigate();

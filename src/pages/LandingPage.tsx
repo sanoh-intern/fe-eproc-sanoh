@@ -12,18 +12,18 @@ const LandingPage = () => {
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-16 items-center">
                         <div className="max-w-xl">
-                            <h1 className="text-4xl font-bold tracking-tight text-black sm:text-5xl">
+                            <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl">
                                 e-Proc
                                 <br />
                                 PT. Sanoh Indonesia
                             </h1>
-                            <p className="mt-4 text-lg text-gray-600">
+                            <p className="mt-4 text-lg text-primary">
                                 E-Procurement System PT. Sanoh Indonesia is an application system used as a performance support facility and manages the procurement process at PT. Sanoh Indonesia.
                             </p>
                             <div className="mt-8">
                                 <Link
                                     to="/auth/login"
-                                    className="bg-gray-800 text-white hover:bg-primary px-6 py-3 rounded-lg text-base font-medium inline-block"
+                                    className="bg-primary text-white hover:bg-secondary px-6 py-3 rounded-lg text-base font-medium inline-block"
                                 >
                                     Get Started
                                 </Link>
@@ -45,7 +45,7 @@ const LandingPage = () => {
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center">
                         <h2 className="text-3xl font-bold text-primary">Announce System</h2>
-                        <p className="mt-2 text-gray-600">
+                        <p className="mt-2 text-primary">
                             Latest announcements system status from PT. Sanoh Indonesia.
                         </p>
                     </div>
@@ -55,7 +55,7 @@ const LandingPage = () => {
                                 <span className="text-xl font-semibold text-primary">
                                     Pengumuman Tender Terbaru
                                 </span>
-                                <p className="mt-2 text-gray-600">
+                                <p className="mt-2 text-primary">
                                     Detail pengumuman tender terbaru termasuk jadwal dan persyaratan.
                                 </p>
                             </li>
@@ -69,8 +69,8 @@ const LandingPage = () => {
             <div className="py-16 sm:py-24">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-8">
-                        <h2 className="text-3xl font-bold text-[#1e2f65]">Service Flow</h2>
-                        <p className="mt-4 text-gray-600">Flow sistem e-Procurement</p>
+                        <h2 className="text-3xl font-bold text-primary">Service Flow</h2>
+                        <p className="mt-4 text-primary">Flow sistem e-Procurement</p>
                     </div>
                     <Timeline horizontal className="md:w-full">
                         <Timeline.Item className='md:w-1/4'>

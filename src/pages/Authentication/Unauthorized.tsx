@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import Button from "../../../components/Forms/Button";
-import { useAuth } from "../AuthContext";
+import Button from "../../components/Forms/Button";
+import { useAuth } from "../../authentication/AuthContext";
 
 const Unauthorized = () => {
   const navigate = useNavigate();
