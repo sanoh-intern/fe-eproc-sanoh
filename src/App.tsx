@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import SignIn from "./pages/Authentication/Pages/SignIn";
 import LandingPage from "./pages/LandingPage";
 import DashboardLayout from "./layout/DashboardLayout/DashboardLayout";
+import ContactUs from "./pages/ContactUs";
 
 const App: React.FC = () => {
   return (
@@ -21,6 +22,9 @@ const App: React.FC = () => {
 
           <Route element={<DashboardLayout/>}>
             <Route path="/" element={<LandingPage />} />
+          </Route>
+          <Route element={<DashboardLayout/>}>
+            <Route path="/contact-us" element={<ContactUs />} />
           </Route>
 
           {/* Protected Routes with DefaultLayout */}

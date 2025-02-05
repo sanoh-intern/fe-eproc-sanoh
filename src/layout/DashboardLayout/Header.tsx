@@ -55,15 +55,15 @@ const Header = (props: {
                         <Link to="/" className={`${navLinkClasses} flex-shrink-0`}>
                             <img src={LogoIcon} alt="Logo" className="h-8 w-auto" />
                         </Link>
-                        <NavLink to="/kontak" className={navLinkClasses}>
+                        <NavLink to="/contact-us" className={navLinkClasses}>
                             Contact Us
                         </NavLink>
                     </div>
                     <div className="flex items-center space-x-4">
-                        <NavLink to="/login" className="rounded-full px-6 py-2 text-sm font-medium border-2 border-primary text-primary transition-colors hover:bg-primary hover:text-white">
+                        <NavLink to="/auth/login" className="rounded-full px-6 py-2 text-sm font-medium border-2 border-primary text-primary transition-colors hover:bg-primary hover:text-white">
                             Login
                         </NavLink>
-                        <NavLink to="/register" className={registerLinkClasses}>
+                        <NavLink to="/auth/register" className={registerLinkClasses}>
                             Register
                         </NavLink>
                     </div>

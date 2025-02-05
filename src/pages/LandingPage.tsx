@@ -1,6 +1,8 @@
-import { ClipboardList, FileCheck, FileText, CheckCircle } from 'lucide-react'
 import { Link } from 'react-router-dom';
 import fotoSanoh from '../assets/images/cover/maskot2.png';
+import { Timeline } from 'flowbite-react';
+import { FaCheckCircle, FaClipboardList, FaFileAlt } from 'react-icons/fa';
+import { FaFileCircleCheck } from 'react-icons/fa6';
 
 const LandingPage = () => {
     return (
@@ -20,7 +22,7 @@ const LandingPage = () => {
                             </p>
                             <div className="mt-8">
                                 <Link
-                                    to="/register"
+                                    to="/auth/login"
                                     className="bg-gray-800 text-white hover:bg-primary px-6 py-3 rounded-lg text-base font-medium inline-block"
                                 >
                                     Get Started
@@ -42,29 +44,22 @@ const LandingPage = () => {
             <div className="bg-gray-50 py-12">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center">
-                        <h2 className="text-3xl font-bold text-[#1e2f65]">Announce System</h2>
+                        <h2 className="text-3xl font-bold text-primary">Announce System</h2>
                         <p className="mt-2 text-gray-600">
-                            Informasi pengumuman terbaru mengenai tender dan penawaran project.
+                            Latest announcements system status from PT. Sanoh Indonesia.
                         </p>
                     </div>
                     <div className="mt-8">
                         <ul className="space-y-4">
-                            <li className="bg-white p-4 rounded-md shadow">
-                                <Link to="/pengumuman" className="text-xl font-semibold text-[#1e2f65] hover:underline">
+                            <li className="bg-white p-4 rounded-md shadow hover:shadow-md transition duration-300">
+                                <span className="text-xl font-semibold text-primary">
                                     Pengumuman Tender Terbaru
-                                </Link>
+                                </span>
                                 <p className="mt-2 text-gray-600">
                                     Detail pengumuman tender terbaru termasuk jadwal dan persyaratan.
                                 </p>
                             </li>
-                            <li className="bg-white p-4 rounded-md shadow">
-                                <Link to="/pengumuman" className="text-xl font-semibold text-[#1e2f65] hover:underline">
-                                    Informasi Vendor Terverifikasi
-                                </Link>
-                                <p className="mt-2 text-gray-600">
-                                    Update tentang vendor-vendor terverifikasi yang ikut tender.
-                                </p>
-                            </li>
+                            
                         </ul>
                     </div>
                 </div>
@@ -73,118 +68,54 @@ const LandingPage = () => {
             {/* Service Flow */}
             <div className="py-16 sm:py-24">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center">
-                        <h2 className="text-3xl font-bold text-[#1e2f65]">Alur Pelayanan</h2>
-                        <p className="mt-4 text-gray-600">Alur proses pelayanan yang akan dilalui</p>
+                    <div className="text-center mb-8">
+                        <h2 className="text-3xl font-bold text-[#1e2f65]">Service Flow</h2>
+                        <p className="mt-4 text-gray-600">Flow sistem e-Procurement</p>
                     </div>
-
-                    <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-                        <div className="text-center">
-                            <div className="mx-auto h-12 w-12 text-[#1e2f65]">
-                                <ClipboardList className="h-12 w-12" />
-                            </div>
-                            <h3 className="mt-4 text-lg font-semibold text-[#1e2f65]">Registrasi</h3>
-                            <p className="mt-2 text-sm text-gray-600">
-                                Permohonan (Perusahaan) melakukan registrasi melalui aplikasi.
-                            </p>
-                        </div>
-
-                        <div className="text-center">
-                            <div className="mx-auto h-12 w-12 text-[#1e2f65]">
-                                <FileText className="h-12 w-12" />
-                            </div>
-                            <h3 className="mt-4 text-lg font-semibold text-[#1e2f65]">Melengkapi Dokumen</h3>
-                            <p className="mt-2 text-sm text-gray-600">
-                                Permohonan/Perusahaan melakukan pengisian kelengkapan data.
-                            </p>
-                        </div>
-
-                        <div className="text-center">
-                            <div className="mx-auto h-12 w-12 text-[#1e2f65]">
-                                <FileCheck className="h-12 w-12" />
-                            </div>
-                            <h3 className="mt-4 text-lg font-semibold text-[#1e2f65]">Verifikasi Dokumen</h3>
-                            <p className="mt-2 text-sm text-gray-600">
-                                Proses verifikasi dokumen pemohon/perusahaan yang sudah di isi.
-                            </p>
-                        </div>
-
-                        <div className="text-center">
-                            <div className="mx-auto h-12 w-12 text-[#1e2f65]">
-                                <CheckCircle className="h-12 w-12" />
-                            </div>
-                            <h3 className="mt-4 text-lg font-semibold text-[#1e2f65]">Selesai</h3>
-                            <p className="mt-2 text-sm text-gray-600">
-                                Sertifikat dapat dilihat dan di unduh melalui aplikasi.
-                            </p>
-                        </div>
-                    </div>
+                    <Timeline horizontal className="md:w-full">
+                        <Timeline.Item className='md:w-1/4'>
+                            <Timeline.Point icon={FaClipboardList} />
+                            <Timeline.Content>
+                                <Timeline.Time>Step 1</Timeline.Time>
+                                <Timeline.Title>Register</Timeline.Title>
+                                <Timeline.Body>
+                                    The applicant (company) registers through the application.
+                                </Timeline.Body>
+                            </Timeline.Content>
+                        </Timeline.Item>
+                        <Timeline.Item className='md:w-1/4'>
+                            <Timeline.Point icon={FaFileAlt} />
+                            <Timeline.Content>
+                                <Timeline.Time>Step 2</Timeline.Time>
+                                <Timeline.Title>Complete Documents</Timeline.Title>
+                                <Timeline.Body>
+                                    The applicant/company completes the required data.
+                                </Timeline.Body>
+                            </Timeline.Content>
+                        </Timeline.Item>
+                        <Timeline.Item className='md:w-1/4'>
+                            <Timeline.Point icon={FaFileCircleCheck} />
+                            <Timeline.Content>
+                                <Timeline.Time>Step 3</Timeline.Time>
+                                <Timeline.Title>Document Verification</Timeline.Title>
+                                <Timeline.Body>
+                                    The verification process of the documents filled by the applicant/company.
+                                </Timeline.Body>
+                            </Timeline.Content>
+                        </Timeline.Item>
+                        <Timeline.Item className='md:w-1/4'>
+                            <Timeline.Point icon={FaCheckCircle} />
+                            <Timeline.Content>
+                                <Timeline.Time>Step 4</Timeline.Time>
+                                <Timeline.Title>Completion</Timeline.Title>
+                                <Timeline.Body>
+                                    The certificate can be viewed and downloaded through the application.
+                                </Timeline.Body>
+                            </Timeline.Content>
+                        </Timeline.Item>
+                    </Timeline>
                 </div>
             </div>
-
-            {/* Footer */}
-            {/* <footer className="bg-[#1e2f65] text-white">
-                <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-                        <div>
-                            <h3 className="text-lg font-semibold">Tentang e-Procurement PT. Pos Indonesia</h3>
-                            <p className="mt-4 text-sm text-gray-300">
-                                E-Procurement PT. Pos Indonesia (Persero) merupakan sistem aplikasi yang digunakan untuk sarana pendukung kinerja dan mengatur pengelolaan proses pengadaan pada PT. Pos Indonesia (Persero).
-                            </p>
-                        </div>
-                        <div>
-                            <h3 className="text-lg font-semibold">Produk</h3>
-                            <ul className="mt-4 space-y-2">
-                                <li>
-                                    <Link to="#" className="text-sm text-gray-300 hover:text-white">
-                                        Pos Instan Plus
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link to="#" className="text-sm text-gray-300 hover:text-white">
-                                        Pos Instan
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link to="#" className="text-sm text-gray-300 hover:text-white">
-                                        Pos Express
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link to="#" className="text-sm text-gray-300 hover:text-white">
-                                        Pos Kilat Khusus
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link to="#" className="text-sm text-gray-300 hover:text-white">
-                                        EMS
-                                    </Link>
-                                </li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h3 className="text-lg font-semibold">Tautan Lainnya</h3>
-                            <ul className="mt-4 space-y-2">
-                                <li>
-                                    <Link to="#" className="text-sm text-gray-300 hover:text-white">
-                                        Pos Ekspor
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link to="#" className="text-sm text-gray-300 hover:text-white">
-                                        e-Packet
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link to="#" className="text-sm text-gray-300 hover:text-white">
-                                        Pospay
-                                    </Link>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </footer> */}
         </div>
     );
 };

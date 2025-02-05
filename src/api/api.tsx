@@ -13,6 +13,8 @@ export const API_Login = () => API + '/login';
 // logout API endpoint
 export const API_Logout = () => API + getRolePath() + `/logout`;
 
+export const API_Email = () => API + `/email`;
+
 // Global User API
 export const API_Dashboard = () => API + getRolePath() + `/dashboard`;
 export const API_PO_DN_Year_Data = () => API + getRolePath() + `/yearData`;
