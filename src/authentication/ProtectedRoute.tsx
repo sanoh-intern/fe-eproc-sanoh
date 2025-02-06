@@ -8,13 +8,18 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles }) => {
-    const { isAuthenticated, userRole, isLoading } = useAuth();
+    const { isAuthenticated, userRole, isLoading, logout } = useAuth();
 
     if (isLoading) {
         return <div>Loading...</div>;
     }
+    
+    const token = localStorage.getItem("access_token");
+    const lastActivity = localStorage.getItem("lastActivity");
 
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !token || !lastActivity) {
+        localStorage.clear();
+        logout();
         return <Navigate to="/auth/login" replace />;
     }
 

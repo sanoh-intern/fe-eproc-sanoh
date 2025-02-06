@@ -15,8 +15,8 @@ import ForgotPassword from "./pages/Authentication/ForgotPassword";
 
 const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <HashRouter>
+    <HashRouter>
+      <AuthProvider>
         <Routes>
           {/* Public Route */}
           <Route
@@ -116,8 +116,8 @@ const App: React.FC = () => {
           />
 
         </Routes>
-      </HashRouter>
-    </AuthProvider>
+      </AuthProvider>
+    </HashRouter>
   );
 };
 

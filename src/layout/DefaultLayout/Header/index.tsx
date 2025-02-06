@@ -25,7 +25,7 @@ const Header = (props: {
       cancelButtonText: 'Cancel'
     }).then((result) => {
       if (result.isConfirmed) {
-      logout();
+        logout();
       }
     });
   };
