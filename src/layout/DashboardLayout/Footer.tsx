@@ -27,7 +27,7 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="#https://sms.sanohindonesia.co.id/" className="text-sm text-white underline hover:text-secondary" target="_blank">
+                <Link to="https://sms.sanohindonesia.co.id/" className="text-sm text-white underline hover:text-secondary" target="_blank">
                   Supplier Management System
                 </Link>
               </li>

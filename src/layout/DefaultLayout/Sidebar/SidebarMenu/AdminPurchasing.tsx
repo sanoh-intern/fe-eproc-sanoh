@@ -1,8 +1,8 @@
 import Dashboard from "./component/Dashboard";
-import PurchaseOrder from "./component/PurchaseOrder";
-import HistoryPurchaseOrder from "./component/HistoryPurchaseOrder";
-import PerformanceReport from "./component/PerformanceReport";
-import ForecastReport from "./component/ForecastReport";
+import PurchaseOrder from "./component/Old/PurchaseOrder";
+import HistoryPurchaseOrder from "./component/Old/HistoryPurchaseOrder";
+import PerformanceReport from "./component/Old/PerformanceReport";
+import ForecastReport from "./component/Old/ForecastReport";
 
 export const AdminPurchasing = () => {
 

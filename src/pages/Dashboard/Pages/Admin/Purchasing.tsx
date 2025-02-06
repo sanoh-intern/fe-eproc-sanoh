@@ -4,7 +4,7 @@ import { FaSyncAlt, FaSpinner } from 'react-icons/fa';
 import { API_Sync_Admin } from '../../../../api/api';
 import Button from '../../../../components/Forms/Button';
 
-const DashboardAdminPurchasingWarehouse: React.FC = () => {
+const DashboardPurchasing: React.FC = () => {
     const [selectedMonth, setSelectedMonth] = useState<string>('');
     const [isSyncing, setIsSyncing] = useState<boolean>(false);
   
@@ -104,4 +104,4 @@ const DashboardAdminPurchasingWarehouse: React.FC = () => {
     );
   };
 
-export default DashboardAdminPurchasingWarehouse;
+export default DashboardPurchasing;

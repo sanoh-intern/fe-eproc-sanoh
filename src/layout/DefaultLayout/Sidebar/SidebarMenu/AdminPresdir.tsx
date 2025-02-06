@@ -1,17 +1,19 @@
 import Dashboard from "./component/Dashboard";
-import DeliveryNote from "./component/DeliveryNote";
-import StockItems from "./component/StockItems";
-import TransactionSubcont from "./component/TransactionSubcont";
-import HistoryDeliveryNote from "./component/HistoryDeliveryNote";
-import TransactionsReport from "./component/TransactionsReport";
+import DeliveryNote from "./component/Old/DeliveryNote";
+import ManageItems from "./component/Old/ManageItems";
+import AddItems from "./component/Old/AddItems";
+import StockItems from "./component/Old/StockItems";
+import TransactionsReport from "./component/Old/TransactionsReport";
+import HistoryDeliveryNote from "./component/Old/HistoryDeliveryNote";
+import TransactionReviewSubcont from "./component/Old/TransactionsReviewSubcont";
 
-export const SupplierSubcont = () => {
+export const AdminPresdir = () => {
 
     return (
         <div>
             <div>
                 <h3 className="mb-4 ml-4 text-sm font-semibold text-black-2  dark:text-bodydark2">
-                SUPPLIER SUBCONT MENU 
+                    PRESDIR MENU 
                 </h3>
                 <ul className="mb-6 flex flex-col gap-1.5">
                     {/* <!-- Menu Item Dashboard --> */}            
@@ -24,7 +26,7 @@ export const SupplierSubcont = () => {
                 </ul>
             </div>
 
-            {/* <!-- Subcontractor Group --> */}
+                {/* <!-- Subcontractor Group --> */}
             <div>
                 <h3 className="mb-4 ml-4 text-sm font-semibold text-black-2 dark:text-bodydark2">
                 SUBCONTRACTOR
@@ -35,13 +37,21 @@ export const SupplierSubcont = () => {
                     <StockItems />
                     {/* <!-- Menu Item Stock Items --> */}
 
-                    {/* <!-- Menu Item Transaction --> */}
-                    <TransactionSubcont />
-                    {/* <!-- Menu Item Transaction --> */}
+                    {/* <!-- Menu Item Transaction Review --> */}
+                    <TransactionReviewSubcont />
+                    {/* <!-- Menu Item Transaction Review --> */}
                     
                     {/* <!-- Menu Item Report Transactions --> */}
                     <TransactionsReport />
-                    {/* <!-- Menu Item Report Transaction --> */}
+                    {/* <!-- Menu Item Report Transactions --> */}
+                    
+                    {/* <!-- Menu Item Manage Items --> */}
+                    <ManageItems />
+                    {/* <!-- Menu Item Manage Items --> */}
+
+                    {/* <!-- Menu Item Add Items --> */}
+                    <AddItems />
+                    {/* <!-- Menu Item Add Items --> */}
 
                 </ul>
             </div>
@@ -61,5 +71,5 @@ export const SupplierSubcont = () => {
                 </ul>
             </div>
         </div>
-    );
-};
+    )
+}

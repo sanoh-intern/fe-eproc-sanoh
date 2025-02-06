@@ -3,13 +3,9 @@ import { NavLink} from 'react-router-dom';
 import Logo from '../../../assets/images/logo-sanoh.png';
 import { SuperAdmin } from './SidebarMenu/SuperAdmin';
 import { AdminPurchasing } from './SidebarMenu/AdminPurchasing';
-import { AdminWarehouse } from './SidebarMenu/AdminWarehouse';
-import { AdminSubcont } from './SidebarMenu/AdminSubcont';
-import { SupplierSubcontMarketing } from './SidebarMenu/SupplierSubcontMarketing';
-import { SupplierMarketing } from './SidebarMenu/SupplierMarketing';
-import { SupplierSubcont } from './SidebarMenu/SupplierSubcont';
-import { SupplierWarehouse } from './SidebarMenu/SupplierWarehouse';
-import { SuperUser } from './SidebarMenu/SuperUser';
+import { AdminPresdir } from './SidebarMenu/AdminPresdir';
+import { AdminReview } from './SidebarMenu/AdminReview';
+import { Supplier } from './SidebarMenu/Supplier';
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -106,33 +102,25 @@ const Sidebar : React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen, role })
       <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
         {/* <!-- Sidebar Menu --> */}
         <nav className="mt-2 py-4 px-4 lg:mt-2 lg:px-6">
+          
           {/* <!-- Menu Group Berdasarkan Peran --> */}
-
           {role === 'super-admin' ? (
             <SuperAdmin />
-          ) : role === 'super-user' ? (
-            <SuperUser />
-          ) : role === 'admin-purchasing' ? (
+          ) : role === 'admin-presdir' ? (
+            <AdminPresdir />
+          ) : role === 'admin-review' ? (
+            <AdminReview />
+          ) : role === 'admin-purchsaing' ? (
             <AdminPurchasing />
-          ) : role === 'admin-warehouse' ? (
-            <AdminWarehouse />
-          ) : role === 'admin-subcont' ? (
-            <AdminSubcont />
-          ) : role === 'supplier-marketing' ? (
-            <SupplierMarketing />
-          ) : role === 'supplier-subcont-marketing' ? (
-            <SupplierSubcontMarketing />
-          ) : role === 'supplier-subcont' ? (
-            <SupplierSubcont />
-          ) : role === 'supplier-warehouse' ? (
-            <SupplierWarehouse />
+          ) : role === 'supplier' ? (
+            <Supplier />
           ) : (
             <div className="text-center text-gray-500 mt-4">
-              No menu available for this role
+              No menu available for your role
             </div>
           )}
-
           {/* <!-- Menu Group Berdasarkan Peran --> */}
+
         </nav>
         {/* <!-- Sidebar Menu --> */}
       </div>

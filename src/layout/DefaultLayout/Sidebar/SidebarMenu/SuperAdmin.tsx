@@ -1,6 +1,6 @@
 import Dashboard from "./component/Dashboard";
-import ListUser from "./component/ListUser";
-import AddUser from "./component/AddUser";
+import ListUser from "./component/Old/ListUser";
+import AddUser from "./component/Old/AddUser";
 
 export const SuperAdmin = () => {
 

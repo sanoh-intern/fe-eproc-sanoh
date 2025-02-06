@@ -14,7 +14,7 @@ type Event = {
     type: string;
 };
 
-const DashboardSupplierMarketing: React.FC = () => {
+const DashboardSupplier: React.FC = () => {
     const navigate = useNavigate();
 
     const [dashboardData, setDashboardData] = useState({
@@ -260,4 +260,4 @@ const DashboardSupplierMarketing: React.FC = () => {
     );
 };
 
-export default DashboardSupplierMarketing;
+export default DashboardSupplier;

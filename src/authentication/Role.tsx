@@ -1,13 +1,9 @@
 export const roles = [
     { value: '1', label: 'Super Admin' },
-    { value: '9', label: 'Super User' }, // Super User Value 9 Be Careful
-    { value: '2', label: 'Admin Purchasing' },
-    { value: '3', label: 'Admin Warehouse' },
-    { value: '4', label: 'Admin Subcont' },
-    { value: '5', label: 'Supplier Marketing' },
-    { value: '6', label: 'Supplier Subcont Marketing' },
-    { value: '7', label: 'Supplier Warehouse' },
-    { value: '8', label: 'Supplier Subcont' }, // After this role please add new role from Value 10
+    { value: '2', label: 'Admin Presdir' },
+    { value: '3', label: 'Admin Purchasing' },
+    { value: '4', label: 'Admin Review' },
+    { value: '5', label: 'Supplier' },
 ];
 
 export const getRoleName = (role: string): string => {

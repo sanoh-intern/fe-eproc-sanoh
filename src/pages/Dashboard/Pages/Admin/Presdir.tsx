@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Calendar from "../../../../components/Calendar";
 import { API_Event } from "../../../../api/api";
 
-const DashboardSuperUser = () => {
+const DashboardPresdir = () => {
     const [events, setEvents] = useState<any[]>([]);
 
     useEffect(() => {
@@ -56,4 +56,4 @@ const DashboardSuperUser = () => {
 
 }
 
-export default DashboardSuperUser;
+export default DashboardPresdir;

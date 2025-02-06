@@ -2,10 +2,34 @@ import { Link } from 'react-router-dom';
 import DropdownUser from './DropdownUser';
 import LogoIcon from '../../../assets/images/logo-sanoh.png';
 
+import { FaSignOutAlt } from 'react-icons/fa';
+import Swal from 'sweetalert2';
+import { useAuth } from '../../../authentication/AuthContext';
+
 const Header = (props: {
   sidebarOpen: string | boolean | undefined;
   setSidebarOpen: (arg0: boolean) => void;
 }) => {
+
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you really want to log out?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#1e3a8a',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, log out!',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+      logout();
+      }
+    });
+  };
+  
   return (
     <header className="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
       <div className="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
@@ -58,11 +82,23 @@ const Header = (props: {
           </Link>
         </div>
 
-        <div className="flex items-center ml-auto gap-3 2xsm:gap-7">
+        <div className="flex items-center ml-auto gap-2 2xsm:gap-4">
 
           {/* <!-- User Area --> */}
           <DropdownUser />
           {/* <!-- User Area --> */}
+
+          <div className="relative group">
+            <button 
+              className="flex items-center duration-300 ease-in-out hover:text-red-600 text-primary lg:text-base rounded-lg px-3 py-2"
+              onClick={handleLogout}
+            >
+            <FaSignOutAlt className="text-xl" />
+            </button>
+            <div className="absolute hidden group-hover:block left-1/2 -translate-x-1/2 -bottom-8 px-2 py-1 bg-red-600 text-white text-sm rounded whitespace-nowrap">
+              Logout
+            </div>
+          </div>
         </div>
       </div>
     </header>

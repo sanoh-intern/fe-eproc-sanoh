@@ -71,15 +71,15 @@ const App: React.FC = () => {
 
           {/* Protected Routes with DefaultLayout */}
           <Route element={<DefaultLayout/>}>
-            {/* <Route
-              path="/"
+            <Route
+              path="/dashboard"
               element={
-                <ProtectedRoute allowedRoles={['1','2','3','4','5','6','7','8','9']}>
+                <>
                   <PageTitle title="Dashboard | PT SANOH INDONESIA" />
                   <Dashboard />
-                </ProtectedRoute>
+                </>
               }
-            /> */}
+            />
 
             {/* <Route
               path="/dashboard"
