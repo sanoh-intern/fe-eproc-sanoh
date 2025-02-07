@@ -29,7 +29,7 @@ const DefaultLayout: React.FC = () => {
       <div className="relative flex-1 flex flex-col overflow-y-auto overflow-x-hidden">
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         
-        <main className="flex-1 p-4 md:p-6 lg:p-8 xl:p-10 2xl:p-12">
+        <main className="flex-1 bg-gray-200 p-4 md:p-6 lg:p-8 xl:p-10 2xl:p-12">
           {/* Render halaman sesuai route */}
           <Outlet />
         </main>

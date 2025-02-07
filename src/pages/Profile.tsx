@@ -1,6 +1,6 @@
 import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
-import CoverOne from '../images/cover/cover-01.png';
-import userSix from '../images/user/user-06.png';
+import CoverOne from '../assets/images/cover/maskot2.png';
+import userSix from '../assets/images/user/user_logo_default.png';
 import { Link } from 'react-router-dom';
 
 const Profile = () => {

@@ -12,6 +12,7 @@ import ContactUs from "./pages/ContactUs";
 import Login from "./pages/Authentication/Login";
 import Register from "./pages/Authentication/Register";
 import ForgotPassword from "./pages/Authentication/ForgotPassword";
+import Profile from "./pages/Profile";
 
 const App: React.FC = () => {
   return (
@@ -71,7 +72,7 @@ const App: React.FC = () => {
 
           {/* Protected Routes with DefaultLayout */}
           <Route element={<DefaultLayout/>}>
-            <Route
+            {/* <Route
               path="/dashboard"
               element={
                 <>
@@ -79,17 +80,26 @@ const App: React.FC = () => {
                   <Dashboard />
                 </>
               }
-            />
+            /> */}
 
-            {/* <Route
+            <Route
               path="/dashboard"
               element={
-                <ProtectedRoute allowedRoles={['1','2','3','4','5','6','7','8','9']}>
+                <ProtectedRoute allowedRoles={['1','2','3','4','5']}>
                   <PageTitle title="Dashboard | PT SANOH INDONESIA" />
                   <Dashboard />
                 </ProtectedRoute>
               }
-            /> */}
+            />
+            <Route
+              path="/profile-settings"
+              element={
+                <ProtectedRoute allowedRoles={['1','2','3','4','5']}>
+                  <PageTitle title="Dashboard | PT SANOH INDONESIA" />
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
             
           </Route>
 

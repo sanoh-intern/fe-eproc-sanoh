@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import DropdownUser from './DropdownUser';
 import LogoIcon from '../../../assets/images/logo-sanoh.png';
-
 import { FaSignOutAlt } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import { useAuth } from '../../../authentication/AuthContext';

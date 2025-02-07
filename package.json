@@ -1,7 +1,7 @@
 {
-  "name": "sms-pt-sanoh-indonesia",
+  "name": "e-proc-pt-sanoh-indonesia",
   "private": true,
-  "version": "2.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,7 +10,7 @@
   },
   "author": {
     "name": "PT Sanoh Indonesia",
-    "email": "sanoh@sanohindonesia.co.id",
+    "email": "info@sanohindonesia.co.id",
     "url": "https://sanohindonesia.co.id/"
   },
   "dependencies": {
