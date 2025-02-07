@@ -75,7 +75,7 @@ const DropdownUser = () => {
           className={`absolute left-1/2 transform -translate-x-1/2 mt-4 flex w-62.5 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark`}
         > 
           <Link
-            to="/profile-settings"
+            to="/setting-profile"
             className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-black lg:text-base text-primary"
           >
             <FaUserCog className="fill-current" size={18} />

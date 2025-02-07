@@ -1,7 +1,13 @@
+import { FaSpinner } from "react-icons/fa";
+import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
+
 const Loader = () => {
   return (
-    <div className="flex h-screen items-center justify-center bg-white">
-      <div className="h-16 w-16 animate-spin rounded-full border-4 border-solid border-primary border-t-transparent"></div>
+    <div className="flex flex-col h-[calc(100vh-300px)]">
+      <Breadcrumb pageName="Loading..." />
+      <div className="flex-1 flex items-center justify-center">
+        <FaSpinner className="animate-spin text-4xl text-primary" />
+      </div>
     </div>
   );
 };

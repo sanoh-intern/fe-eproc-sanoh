@@ -247,7 +247,7 @@ const SupplierDashboard: React.FC = () => {
             {/* Documents Section */}
             <Card>
                 <h2 className="text-lg font-semibold mb-4 flex items-center">
-                    <FaFileAlt className="mr-2 text-gray-400" />
+                    <FaFileAlt className="mr-2 text-primary" />
                     Documents & Procedures
                 </h2>
                 <div className="space-y-4">

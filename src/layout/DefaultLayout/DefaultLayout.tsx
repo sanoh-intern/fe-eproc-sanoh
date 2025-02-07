@@ -17,7 +17,11 @@ const DefaultLayout: React.FC = () => {
   }, []);
 
   if (isLoading) {
-    return <div>Loading...</div>; // Tampilkan loader sementara
+    return (
+      <div className="flex items-center justify-center h-screen overflow-hidden bg-gray-200">
+        <div>Loading...</div>
+      </div>
+    );
   }
 
   return (

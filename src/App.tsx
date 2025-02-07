@@ -13,6 +13,7 @@ import Login from "./pages/Authentication/Login";
 import Register from "./pages/Authentication/Register";
 import ForgotPassword from "./pages/Authentication/ForgotPassword";
 import Profile from "./pages/Profile";
+import SettingProfile from "./pages/SettingProfile";
 
 const App: React.FC = () => {
   return (
@@ -92,11 +93,11 @@ const App: React.FC = () => {
               }
             />
             <Route
-              path="/profile-settings"
+              path="/setting-profile"
               element={
                 <ProtectedRoute allowedRoles={['1','2','3','4','5']}>
                   <PageTitle title="Dashboard | PT SANOH INDONESIA" />
-                  <Profile />
+                  <SettingProfile />
                 </ProtectedRoute>
               }
             />
