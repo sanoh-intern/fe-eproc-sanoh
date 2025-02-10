@@ -14,6 +14,7 @@ import Register from "./pages/Authentication/Register";
 import ForgotPassword from "./pages/Authentication/ForgotPassword";
 import Profile from "./pages/Profile";
 import SettingProfile from "./pages/SettingProfile";
+import CompanyDetail from "./pages/CompanyDetail/CompanyDetail";
 
 const App: React.FC = () => {
   return (
@@ -98,6 +99,15 @@ const App: React.FC = () => {
                 <ProtectedRoute allowedRoles={['1','2','3','4','5']}>
                   <PageTitle title="Dashboard | PT SANOH INDONESIA" />
                   <SettingProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/company-details"
+              element={
+                <ProtectedRoute allowedRoles={['1','2','3','4','5']}>
+                  <PageTitle title="Company Details | PT SANOH INDONESIA" />
+                  <CompanyDetail />
                 </ProtectedRoute>
               }
             />

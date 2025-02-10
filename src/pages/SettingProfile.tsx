@@ -35,7 +35,7 @@ const api = {
     await new Promise((resolve) => setTimeout(resolve, 2000))
     return URL.createObjectURL(file)
   },
-  sendVerificationCode: async (email: string): Promise<void> => {
+  sendVerificationCode: async (): Promise<void> => {
     await new Promise((resolve) => setTimeout(resolve, 1500))
     // Simulating success (in real scenario, this would send an email)
   },
@@ -44,6 +44,7 @@ const api = {
     return code === "123456" // Simulating a correct code
   },
   changePassword: async (newPassword: string): Promise<void> => {
+    console.log("Changing password to:", newPassword)
     await new Promise((resolve) => setTimeout(resolve, 2000))
     // Simulating success (in real scenario, this would update the password)
   },
@@ -92,7 +93,7 @@ const SettingProfile: React.FC = () => {
     e.preventDefault()
     setIsLoading(true)
     try {
-      await api.sendVerificationCode(profileData?.email || "")
+      await api.sendVerificationCode()
       toast.success("Verification code sent to your email.")
       setPasswordStep(2)
     } catch (error) {
