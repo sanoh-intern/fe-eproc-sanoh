@@ -16,6 +16,8 @@ import {
   FaDownload,
 } from "react-icons/fa"
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb"
+import Swal from "sweetalert2"
+import Loader from "../../common/Loader"
 
 const api = {
   fetchCompanyData: async () => {
@@ -83,15 +85,16 @@ const api = {
 }
 
 const CompanyDetail: React.FC = () => {
-  const [companyData, setCompanyData] = useState<any>(null)
-  const [activeTab, setActiveTab] = useState(0)
+  const [companyData, setCompanyData] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState(0);
+  const [unsavedChanges, setUnsavedChanges] = useState(false);
   const [tabCompleteness, setTabCompleteness] = useState({
     generalData: false,
     contacts: false,
     nib: false,
     businessLicenses: false,
     integrityPact: false,
-  })
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -152,6 +155,8 @@ const CompanyDetail: React.FC = () => {
     return data.file && data.description
   }
 
+  const markUnsaved = () => setUnsavedChanges(true);
+
   const handleSubmit = async (tabData: any, tabName: string) => {
     try {
       const response = await api.updateCompanyData({ [tabName]: tabData })
@@ -187,8 +192,33 @@ const CompanyDetail: React.FC = () => {
     }
   }
 
+  const handleTabChange = (newIndex: number) => {
+    if (unsavedChanges) {
+      Swal.fire({
+        title: "Unsaved Changes",
+        text: "You have unsaved changes. Are you sure you want to switch tabs?",
+        icon: "warning", 
+        showCancelButton: true,
+        confirmButtonText: "Move Without Saving",
+        cancelButtonText: "Cancel & Save",
+        cancelButtonColor: "#ff0000",
+        confirmButtonColor: "#2F4F4F", 
+      }).then((result) => {
+        if (result.isConfirmed) {
+          setUnsavedChanges(false);
+          setActiveTab(newIndex);
+        } 
+      });
+      return false;
+    }
+    setActiveTab(newIndex);
+    return true;
+  };
+
   if (!companyData) {
-    return <div>Loading...</div>
+    return (
+      <Loader />
+    )
   }
 
   return (
@@ -197,10 +227,15 @@ const CompanyDetail: React.FC = () => {
       <ToastContainer position="top-right" />
       <div className="bg-white shadow-lg rounded-lg overflow-hidden">
         <div className="p-6 sm:p-8">
-          <Tabs selectedIndex={activeTab} onSelect={(index) => setActiveTab(index)}>
+          {unsavedChanges && (
+            <div className="bg-yellow-100 text-yellow-800 p-2 mb-3">
+              Don't forget to save your changes!
+            </div>
+          )}
+          <Tabs selectedIndex={activeTab} onSelect={handleTabChange}>
             <TabList className="flex border-b mb-4">
               <Tab
-                className={`px-4 py-2 cursor-pointer flex items-center ${activeTab === 0 ? "text-blue-600 border-b-2 border-blue-600" : ""}`}
+                className={`px-4 py-2 cursor-pointer flex items-center ${activeTab === 0 ? "text-primary border-b-2 border-black font-medium" : "text-primarylight "}`}
               >
                 <FaBuilding className="mr-2" />
                 General Data
@@ -211,7 +246,7 @@ const CompanyDetail: React.FC = () => {
                 )}
               </Tab>
               <Tab
-                className={`px-4 py-2 cursor-pointer flex items-center ${activeTab === 1 ? "text-blue-600 border-b-2 border-blue-600" : ""}`}
+                className={`px-4 py-2 cursor-pointer flex items-center ${activeTab === 1 ? "text-primary border-b-2 border-black font-medium" : "text-primarylight"}`}
               >
                 <FaAddressCard className="mr-2" />
                 Contact Data
@@ -222,7 +257,7 @@ const CompanyDetail: React.FC = () => {
                 )}
               </Tab>
               <Tab
-                className={`px-4 py-2 cursor-pointer flex items-center ${activeTab === 2 ? "text-blue-600 border-b-2 border-blue-600" : ""}`}
+                className={`px-4 py-2 cursor-pointer flex items-center ${activeTab === 2 ? "text-primary border-b-2 border-black font-medium" : "text-primarylight"}`}
               >
                 <FaFileAlt className="mr-2" />
                 NIB
@@ -233,7 +268,7 @@ const CompanyDetail: React.FC = () => {
                 )}
               </Tab>
               <Tab
-                className={`px-4 py-2 cursor-pointer flex items-center ${activeTab === 3 ? "text-blue-600 border-b-2 border-blue-600" : ""}`}
+                className={`px-4 py-2 cursor-pointer flex items-center ${activeTab === 3 ? "text-primary border-b-2 border-black font-medium" : "text-primarylight"}`}
               >
                 <FaBusinessTime className="mr-2" />
                 Business License
@@ -244,7 +279,7 @@ const CompanyDetail: React.FC = () => {
                 )}
               </Tab>
               <Tab
-                className={`px-4 py-2 cursor-pointer flex items-center ${activeTab === 4 ? "text-blue-600 border-b-2 border-blue-600" : ""}`}
+                className={`px-4 py-2 cursor-pointer flex items-center ${activeTab === 4 ? "text-primary border-b-2 border-black font-medium" : "text-primarylight"}`}
               >
                 <FaShieldAlt className="mr-2" />
                 Integrity Pact
@@ -256,29 +291,40 @@ const CompanyDetail: React.FC = () => {
               </Tab>
             </TabList>
 
-            <div className="border-t border-gray-200 pt-4">
+            <div>
               <TabPanel>
                 <GeneralDataForm
                   data={companyData.generalData}
                   onSubmit={(data) => handleSubmit(data, "generalData")}
+                  markUnsaved={markUnsaved}
                 />
               </TabPanel>
               <TabPanel>
-                <ContactDataForm data={companyData.contacts} onSubmit={(data) => handleSubmit(data, "contacts")} />
+                <ContactDataForm 
+                  data={companyData.contacts} 
+                  onSubmit={(data) => handleSubmit(data, "contacts")} 
+                  markUnsaved={markUnsaved}
+                />
               </TabPanel>
               <TabPanel>
-                <NIBForm data={companyData.nib} onSubmit={(data) => handleSubmit(data, "nib")} />
+                <NIBForm 
+                  data={companyData.nib} 
+                  onSubmit={(data) => handleSubmit(data, "nib")} 
+                  markUnsaved={markUnsaved}
+                />
               </TabPanel>
               <TabPanel>
                 <BusinessLicenseForm
                   data={companyData.businessLicenses}
                   onSubmit={(data) => handleSubmit(data, "businessLicenses")}
+                  markUnsaved={markUnsaved}
                 />
               </TabPanel>
               <TabPanel>
                 <IntegrityPactForm
                   data={companyData.integrityPact}
                   onSubmit={(data) => handleSubmit(data, "integrityPact")}
+                  markUnsaved={markUnsaved}
                 />
               </TabPanel>
             </div>
@@ -289,20 +335,27 @@ const CompanyDetail: React.FC = () => {
   )
 }
 
-const GeneralDataForm: React.FC<{ data: any; onSubmit: (data: any) => void }> = ({ data, onSubmit }) => {
-  const [formData, setFormData] = useState(data)
+const GeneralDataForm: React.FC<{
+  data: any;
+  onSubmit: (data: any) => void;
+  markUnsaved: () => void;
+}> = ({ data, onSubmit, markUnsaved }) => {
+  const [formData, setFormData] = useState(data);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-  }
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    markUnsaved();
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onSubmit(formData)
-  }
+    e.preventDefault();
+    onSubmit(formData);
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 text-black ">
       <div>
         <label className="block mb-1">Company Name*</label>
         <input
@@ -311,7 +364,7 @@ const GeneralDataForm: React.FC<{ data: any; onSubmit: (data: any) => void }> = 
           value={formData.companyName}
           onChange={handleChange}
           required
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border rounded border-primary"
         />
       </div>
       <div>
@@ -320,7 +373,7 @@ const GeneralDataForm: React.FC<{ data: any; onSubmit: (data: any) => void }> = 
           name="description"
           value={formData.description}
           onChange={handleChange}
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border rounded border-primary"
         />
       </div>
       {/* Add other fields similarly */}
@@ -329,16 +382,22 @@ const GeneralDataForm: React.FC<{ data: any; onSubmit: (data: any) => void }> = 
   )
 }
 
-const ContactDataForm: React.FC<{ data: any[]; onSubmit: (data: any) => void }> = ({ data, onSubmit }) => {
+const ContactDataForm: React.FC<{ 
+  data: any[]; 
+  onSubmit: (data: any) => void 
+  markUnsaved: () => void;
+}> = ({ data, onSubmit, markUnsaved }) => {
   const [contacts, setContacts] = useState(data)
 
   const handleAddContact = () => {
     setContacts([...contacts, { position: "", department: "", name: "", phone: "", email: "" }])
+    markUnsaved();
   }
 
   const handleContactChange = (index: number, field: string, value: string) => {
     const updatedContacts = contacts.map((contact, i) => (i === index ? { ...contact, [field]: value } : contact))
     setContacts(updatedContacts)
+    markUnsaved();
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -347,9 +406,9 @@ const ContactDataForm: React.FC<{ data: any[]; onSubmit: (data: any) => void }> 
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 text-black">
       {contacts.map((contact, index) => (
-        <div key={index} className="border p-4 rounded">
+        <div key={index} className="border p-4 rounded border-black">
           <h3 className="font-bold mb-2">Contact {index + 1}</h3>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -358,7 +417,7 @@ const ContactDataForm: React.FC<{ data: any[]; onSubmit: (data: any) => void }> 
                 value={contact.position}
                 onChange={(e) => handleContactChange(index, "position", e.target.value)}
                 required
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded border-primary"
               >
                 <option value="">Select Position</option>
                 <option value="Director">Director</option>
@@ -376,7 +435,7 @@ const ContactDataForm: React.FC<{ data: any[]; onSubmit: (data: any) => void }> 
                 value={contact.department}
                 onChange={(e) => handleContactChange(index, "department", e.target.value)}
                 required
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded border-primary"
               >
                 <option value="">Select Department</option>
                 <option value="Manufacturing">Manufacturing</option>
@@ -394,7 +453,7 @@ const ContactDataForm: React.FC<{ data: any[]; onSubmit: (data: any) => void }> 
                 value={contact.name}
                 onChange={(e) => handleContactChange(index, "name", e.target.value)}
                 required
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded border-primary"
               />
             </div>
             <div>
@@ -403,7 +462,7 @@ const ContactDataForm: React.FC<{ data: any[]; onSubmit: (data: any) => void }> 
                 type="tel"
                 value={contact.phone}
                 onChange={(e) => handleContactChange(index, "phone", e.target.value)}
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded border-primary"
               />
             </div>
             <div>
@@ -413,7 +472,7 @@ const ContactDataForm: React.FC<{ data: any[]; onSubmit: (data: any) => void }> 
                 value={contact.email}
                 onChange={(e) => handleContactChange(index, "email", e.target.value)}
                 required
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded border-primary"
               />
             </div>
           </div>
@@ -425,11 +484,16 @@ const ContactDataForm: React.FC<{ data: any[]; onSubmit: (data: any) => void }> 
   )
 }
 
-const NIBForm: React.FC<{ data: any; onSubmit: (data: any) => void }> = ({ data, onSubmit }) => {
+const NIBForm: React.FC<{ 
+  data: any; 
+  onSubmit: (data: any) => void 
+  markUnsaved: () => void;
+}> = ({ data, onSubmit, markUnsaved }) => {
   const [formData, setFormData] = useState(data)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
+    markUnsaved();
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -438,7 +502,7 @@ const NIBForm: React.FC<{ data: any; onSubmit: (data: any) => void }> = ({ data,
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 text-black">
       <div>
         <label className="block mb-1">Issuing Agency*</label>
         <input
@@ -447,7 +511,7 @@ const NIBForm: React.FC<{ data: any; onSubmit: (data: any) => void }> = ({ data,
           value={formData.issuingAgency}
           onChange={handleChange}
           required
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border rounded border-primary"
         />
       </div>
       <div>
@@ -458,7 +522,7 @@ const NIBForm: React.FC<{ data: any; onSubmit: (data: any) => void }> = ({ data,
           value={formData.number}
           onChange={handleChange}
           required
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border rounded border-primary"
         />
       </div>
       <div>
@@ -469,7 +533,7 @@ const NIBForm: React.FC<{ data: any; onSubmit: (data: any) => void }> = ({ data,
           value={formData.issueDate}
           onChange={handleChange}
           required
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border rounded border-primary"
         />
       </div>
       <div>
@@ -479,7 +543,7 @@ const NIBForm: React.FC<{ data: any; onSubmit: (data: any) => void }> = ({ data,
           value={formData.investmentStatus}
           onChange={handleChange}
           required
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border rounded border-primary"
         >
           <option value="Done">Done</option>
           <option value="In Progress">In Progress</option>
@@ -493,7 +557,7 @@ const NIBForm: React.FC<{ data: any; onSubmit: (data: any) => void }> = ({ data,
           value={formData.kbli}
           onChange={handleChange}
           required
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border rounded border-primary"
         />
       </div>
       <div>
@@ -505,7 +569,11 @@ const NIBForm: React.FC<{ data: any; onSubmit: (data: any) => void }> = ({ data,
   )
 }
 
-const BusinessLicenseForm: React.FC<{ data: any[]; onSubmit: (data: any) => void }> = ({ data, onSubmit }) => {
+const BusinessLicenseForm: React.FC<{ 
+  data: any[]; 
+  onSubmit: (data: any) => void 
+  markUnsaved: () => void;
+}> = ({ data, onSubmit, markUnsaved }) => {
   const [licenses, setLicenses] = useState(data)
 
   const handleAddLicense = () => {
@@ -522,11 +590,13 @@ const BusinessLicenseForm: React.FC<{ data: any[]; onSubmit: (data: any) => void
         file: null,
       },
     ])
+    markUnsaved();
   }
 
   const handleLicenseChange = (index: number, field: string, value: string | File | null) => {
     const updatedLicenses = licenses.map((license, i) => (i === index ? { ...license, [field]: value } : license))
     setLicenses(updatedLicenses)
+    markUnsaved()
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -535,9 +605,9 @@ const BusinessLicenseForm: React.FC<{ data: any[]; onSubmit: (data: any) => void
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 text-black">
       {licenses.map((license, index) => (
-        <div key={index} className="border p-4 rounded">
+        <div key={index} className="border p-4 rounded border-black">
           <h3 className="font-bold mb-2">Business License {index + 1}</h3>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -547,7 +617,7 @@ const BusinessLicenseForm: React.FC<{ data: any[]; onSubmit: (data: any) => void
                 value={license.type}
                 onChange={(e) => handleLicenseChange(index, "type", e.target.value)}
                 required
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded border-primary"
               />
             </div>
             <div>
@@ -557,7 +627,7 @@ const BusinessLicenseForm: React.FC<{ data: any[]; onSubmit: (data: any) => void
                 value={license.issuingAgency}
                 onChange={(e) => handleLicenseChange(index, "issuingAgency", e.target.value)}
                 required
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded border-primary"
               />
             </div>
             <div>
@@ -567,7 +637,7 @@ const BusinessLicenseForm: React.FC<{ data: any[]; onSubmit: (data: any) => void
                 value={license.number}
                 onChange={(e) => handleLicenseChange(index, "number", e.target.value)}
                 required
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded border-primary"
               />
             </div>
             <div>
@@ -577,7 +647,7 @@ const BusinessLicenseForm: React.FC<{ data: any[]; onSubmit: (data: any) => void
                 value={license.issueDate}
                 onChange={(e) => handleLicenseChange(index, "issueDate", e.target.value)}
                 required
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded border-primary"
               />
             </div>
             <div>
@@ -587,7 +657,7 @@ const BusinessLicenseForm: React.FC<{ data: any[]; onSubmit: (data: any) => void
                 value={license.expiryDate}
                 onChange={(e) => handleLicenseChange(index, "expiryDate", e.target.value)}
                 required
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded border-primary"
               />
             </div>
             <div>
@@ -597,7 +667,7 @@ const BusinessLicenseForm: React.FC<{ data: any[]; onSubmit: (data: any) => void
                 value={license.qualification}
                 onChange={(e) => handleLicenseChange(index, "qualification", e.target.value)}
                 required
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded border-primary"
               />
             </div>
             <div>
@@ -607,7 +677,7 @@ const BusinessLicenseForm: React.FC<{ data: any[]; onSubmit: (data: any) => void
                 value={license.subClassification}
                 onChange={(e) => handleLicenseChange(index, "subClassification", e.target.value)}
                 required
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded border-primary"
               />
             </div>
             <div>
@@ -616,7 +686,7 @@ const BusinessLicenseForm: React.FC<{ data: any[]; onSubmit: (data: any) => void
                 type="file"
                 onChange={(e) => handleLicenseChange(index, "file", e.target.files ? e.target.files[0] : '')}
                 required
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded border-primary"
               />
             </div>
           </div>
@@ -628,11 +698,16 @@ const BusinessLicenseForm: React.FC<{ data: any[]; onSubmit: (data: any) => void
   )
 }
 
-const IntegrityPactForm: React.FC<{ data: any; onSubmit: (data: any) => void }> = ({ data, onSubmit }) => {
+const IntegrityPactForm: React.FC<{ 
+  data: any; 
+  onSubmit: (data: any) => void 
+  markUnsaved: () => void;
+}> = ({ data, onSubmit, markUnsaved }) => {
   const [formData, setFormData] = useState(data)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
+    markUnsaved()
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -641,7 +716,7 @@ const IntegrityPactForm: React.FC<{ data: any; onSubmit: (data: any) => void }> 
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 text-black">
       <div>
         <Button
           title="Download Template"
@@ -654,7 +729,7 @@ const IntegrityPactForm: React.FC<{ data: any; onSubmit: (data: any) => void }> 
       </div>
       <div>
         <label className="block mb-1">Upload Integrity Pact*</label>
-        <input type="file" name="file" onChange={handleChange} required className="w-full p-2 border rounded" />
+        <input type="file" name="file" onChange={handleChange} required className="w-full p-2 border rounded border-primary" />
       </div>
       <div>
         <label className="block mb-1">Description*</label>
@@ -663,7 +738,7 @@ const IntegrityPactForm: React.FC<{ data: any; onSubmit: (data: any) => void }> 
           value={formData.description}
           onChange={handleChange}
           required
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border rounded border-primary"
         />
       </div>
       <Button title="Save" type="submit" />

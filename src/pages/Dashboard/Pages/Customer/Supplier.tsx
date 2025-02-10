@@ -15,6 +15,7 @@ import {
     FaBullhorn,
 } from "react-icons/fa"
 import Button2 from "../../../../components/Forms/Button2"
+import Loader from "../../../../common/Loader"
 
 // Card Component
 interface CardProps {
@@ -166,6 +167,11 @@ const SupplierDashboard: React.FC = () => {
             </div>
         )
     }
+
+    if (!companyData) 
+        return (
+            <Loader />
+        )
 
     return (
         

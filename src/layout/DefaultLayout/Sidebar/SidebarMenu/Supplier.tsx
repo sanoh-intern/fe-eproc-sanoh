@@ -2,7 +2,7 @@ import CompanyDetails from "./component/CompanyDetails"
 import Dashboard from "./component/Dashboard"
 import OffersAvailable from "./component/OffersAvailable"
 import OffersFollowed from "./component/OffersFollowed"
-import VerificationStatus from "./component/VerificationStatus"
+import VerificationStatus from "./component/Verification"
 
 
 export const Supplier = () => {

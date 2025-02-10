@@ -5,7 +5,7 @@ export default function VerificationStatus () {
     return (
         <li>
             <NavLink
-                to="/verification-status"
+                to="/verification"
                 end
                 className={({ isActive }) =>
                     `group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium duration-300 ease-in-out ${
@@ -16,7 +16,7 @@ export default function VerificationStatus () {
                     }
                 >
                 <FaCheckCircle className="fill-current" size={18} />
-                Verification Status
+                Verification
             </NavLink>
         </li>
     )
