@@ -7,7 +7,7 @@ const NotFound = () => {
   const logout = useAuth
 
   const handleRedirect = () => {
-    navigate('/'); // Mengarahkan ke halaman dashboard
+    navigate('/dashboard'); // Mengarahkan ke halaman dashboard
   };
 
   const handleLogout = () => {

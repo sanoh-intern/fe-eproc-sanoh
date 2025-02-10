@@ -17,6 +17,7 @@ import SettingProfile from "./pages/SettingProfile";
 import CompanyDetail from "./pages/CompanyDetail/CompanyDetail";
 import Verification from "./pages/Verification/SupplierVerification";
 import SupplierOffersAvailable from "./pages/Offers/SupplierOffersAvailable";
+import OffersDetails from "./pages/Offers/OffersDetails";
 
 const App: React.FC = () => {
   return (
@@ -123,11 +124,20 @@ const App: React.FC = () => {
               }
             />
             <Route
-              path="/offers-available"
+              path="/offers/available"
               element={
                 <ProtectedRoute allowedRoles={['1','2','3','4','5']}>
                   <PageTitle title="Offers Available | PT SANOH INDONESIA" />
                   <SupplierOffersAvailable />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/offers/details/:id"
+              element={
+                <ProtectedRoute allowedRoles={['1','2','3','4','5']}>
+                  <PageTitle title="Offers Detail | PT SANOH INDONESIA" />
+                  <OffersDetails />
                 </ProtectedRoute>
               }
             />

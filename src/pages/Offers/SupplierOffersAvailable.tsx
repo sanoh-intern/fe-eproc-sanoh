@@ -124,7 +124,7 @@ const SupplierOffersAvailable: React.FC = () => {
             <ToastContainer position="top-right" />
             <Breadcrumb pageName="Available Offers" />
             <div className="bg-white">
-                <div className="p-2 md:p-4 lg:p-6 space-y-6">
+                <div className="p-4 md:p-4 lg:p-6 space-y-6">
                 {/* Tabs */}
                 <TabGroup selectedIndex={selectedTab} onChange={setSelectedTab}>
                     <TabList className="flex space-x-1 rounded-xl bg-primarylight/70 p-1">
@@ -226,7 +226,7 @@ const SupplierOffersAvailable: React.FC = () => {
                                                 .map((offer, index) => (
                                                     <tr key={index} className="hover:bg-gray-50">
                                                         <td className="px-3 py-3 text-center whitespace-nowrap underline font-medium">
-                                                            <Link to={`/offers/detail/${offer.id}`} className="text-blue-600 hover:underline">
+                                                            <Link to={`/offers/details/${offer.id}`} className="text-blue-600 hover:underline">
                                                             {offer.projectName}
                                                             </Link>
                                                         </td>
