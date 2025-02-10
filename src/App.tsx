@@ -16,6 +16,7 @@ import Profile from "./pages/Profile";
 import SettingProfile from "./pages/SettingProfile";
 import CompanyDetail from "./pages/CompanyDetail/CompanyDetail";
 import Verification from "./pages/Verification/SupplierVerification";
+import SupplierOffersAvailable from "./pages/Offers/SupplierOffersAvailable";
 
 const App: React.FC = () => {
   return (
@@ -118,6 +119,15 @@ const App: React.FC = () => {
                 <ProtectedRoute allowedRoles={['1','2','3','4','5']}>
                   <PageTitle title="Verification | PT SANOH INDONESIA" />
                   <Verification />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/offers-available"
+              element={
+                <ProtectedRoute allowedRoles={['1','2','3','4','5']}>
+                  <PageTitle title="Offers Available | PT SANOH INDONESIA" />
+                  <SupplierOffersAvailable />
                 </ProtectedRoute>
               }
             />
