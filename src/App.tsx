@@ -18,6 +18,8 @@ import CompanyDetail from "./pages/CompanyDetail/CompanyDetail";
 import Verification from "./pages/Verification/SupplierVerification";
 import SupplierOffersAvailable from "./pages/Offers/SupplierOffersAvailable";
 import OffersDetails from "./pages/Offers/OffersDetails";
+import SupplierOffersFollowed from "./pages/Offers/SupplierOffersFollowed";
+import SupplierNegotiation from "./pages/Offers/SupplierNegotiation";
 
 const App: React.FC = () => {
   return (
@@ -138,6 +140,24 @@ const App: React.FC = () => {
                 <ProtectedRoute allowedRoles={['1','2','3','4','5']}>
                   <PageTitle title="Offers Detail | PT SANOH INDONESIA" />
                   <OffersDetails />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/offers/followed"
+              element={
+                <ProtectedRoute allowedRoles={['1','2','3','4','5']}>
+                  <PageTitle title="Offers Followed | PT SANOH INDONESIA" />
+                  <SupplierOffersFollowed />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/offers/followed/negotiation/details/:id"
+              element={
+                <ProtectedRoute allowedRoles={['1','2','3','4','5']}>
+                  <PageTitle title="Offers Negotiation | PT SANOH INDONESIA" />
+                  <SupplierNegotiation />
                 </ProtectedRoute>
               }
             />
