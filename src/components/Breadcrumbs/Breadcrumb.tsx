@@ -22,7 +22,7 @@ const Breadcrumb = ({ pageName, isSubMenu = false, parentMenu }: BreadcrumbProps
             {isSubMenu && (
               <button
                 onClick={() => navigate(-1)}
-                className="flex items-center justify-center p-2 text-black hover:text-blue-700 transition-colors"
+                className="flex items-center justify-center p-2 text-black hover:text-secondary transition-colors"
                 title="Go back"
               >
                 <FaArrowLeft className="text-xl" />

@@ -1,12 +1,12 @@
-import Dashboard from "./component/Dashboard";
-import PurchaseOrder from "./component/Old/PurchaseOrder";
-import HistoryPurchaseOrder from "./component/Old/HistoryPurchaseOrder";
-import PerformanceReport from "./component/Old/PerformanceReport";
-import ForecastReport from "./component/Old/ForecastReport";
+import AllOffers from "./component/AllOffers"
+import CompanyDetails from "./component/CompanyDetails"
+import CreateOffers from "./component/CreateOffers"
+import Dashboard from "./component/Dashboard"
+import OffersRegistered from "./component/OffersRegistered"
+import VerificationStatus from "./component/Verification"
+
 
 export const AdminPurchasing = () => {
-
-
     return (
         <div>
             <div>
@@ -17,43 +17,48 @@ export const AdminPurchasing = () => {
                     {/* <!-- Menu Item Dashboard --> */}            
                     <Dashboard />
                     {/* <!-- Menu Item Dashboard --> */}
-
-                    {/* <!-- Menu Item Purchase Order --> */}
-                    <PurchaseOrder />
-                    {/* <!-- Menu Item Purchase Order --> */}
-
-                </ul>
-                </div>
-
-                {/* <!-- History Group --> */}
-                <div>
-                <h3 className="mb-4 ml-4 text-sm font-semibold text-black-2 dark:text-bodydark2">
-                    HISTORY
-                </h3>
-
-                <ul className="mb-6 flex flex-col gap-1.5">
-                    {/* <!-- Menu Item History Purchase Order --> */}
-                    <HistoryPurchaseOrder />
-                    {/* <!-- Menu Item History Purchase Order --> */}
-                </ul>
-                </div>
-
-                {/* <!-- OTHER Group --> */}
-                <div>
-                <h3 className="mb-4 ml-4 text-sm font-semibold text-black-2 dark:text-bodydark2">
-                    OTHER
-                </h3>
-
-                <ul className="mb-6 flex flex-col gap-1.5">
-                    {/* <!-- Menu Item Performance Report --> */}
-                    <PerformanceReport />
-                    {/* <!-- Menu Item Performance Report --> */}
-
-                    {/* <!-- Menu Item Forecast Report --> */}
-                    <ForecastReport />
-                    {/* <!-- Menu Item Forecast Report --> */}
                 </ul>
             </div>
-    </div>
+
+            {/* <!-- Offers Group --> */}
+            <div>
+                <h3 className="mb-4 ml-4 text-sm font-semibold text-black-2 dark:text-bodydark2">
+                OFFERS
+                </h3>
+
+                <ul className="mb-6 flex flex-col gap-1.5">
+                    
+                    {/* <!-- Menu Item Offers Available --> */}
+                    <AllOffers />
+                    {/* <!-- Menu Item Offers Available --> */}
+                    
+                    {/* <!-- Menu Item Offers Followed --> */}
+                    <CreateOffers />
+                    {/* <!-- Menu Item Offers Followed --> */}
+                    
+                    {/* <!-- Menu Item Offers Registered --> */}
+                    <OffersRegistered />
+                    {/* <!-- Menu Item Offers Registered --> */}
+
+                </ul>
+            </div>
+
+            {/* <!-- Company Details --> */}
+            <div>
+                <h3 className="mb-4 ml-4 text-sm font-semibold text-black-2 dark:text-bodydark2">
+                COMPANY
+                </h3>
+
+                <ul className="mb-6 flex flex-col gap-1.5">
+                    {/* <!-- Menu Item Company Details --> */}
+                    <CompanyDetails />
+                    {/* <!-- Menu Item Company Details --> */}
+
+                    {/* <!-- Menu Item Verification Status --> */}
+                    <VerificationStatus />
+                    {/* <!-- Menu Item Verification Status --> */}
+                </ul>
+            </div>
+        </div>
     )
-};
+}

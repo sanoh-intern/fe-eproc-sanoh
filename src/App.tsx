@@ -12,14 +12,19 @@ import ContactUs from "./pages/ContactUs";
 import Login from "./pages/Authentication/Login";
 import Register from "./pages/Authentication/Register";
 import ForgotPassword from "./pages/Authentication/ForgotPassword";
-import Profile from "./pages/Profile";
 import SettingProfile from "./pages/SettingProfile";
 import CompanyDetail from "./pages/CompanyDetail/CompanyDetail";
 import Verification from "./pages/Verification/SupplierVerification";
-import SupplierOffersAvailable from "./pages/Offers/SupplierOffersAvailable";
 import OffersDetails from "./pages/Offers/OffersDetails";
-import SupplierOffersFollowed from "./pages/Offers/SupplierOffersFollowed";
-import SupplierNegotiation from "./pages/Offers/SupplierNegotiation";
+import SupplierNegotiation from "./pages/Offers/OffersFollowed/SupplierNegotiation";
+import SupplierOffersFollowed from "./pages/Offers/OffersFollowed/SupplierOffersFollowed";
+import SupplierOffersAvailable from "./pages/Offers/OffersAvailable/SupplierOffersAvailable";
+import AdminCreateOffers from "./pages/Offers/Admin/AdminCreateOffers";
+import AdminEditOffers from "./pages/Offers/Admin/AdminEditOffers";
+import AdminOffers from "./pages/Offers/Admin/AdminOffers";
+import AdminRegisteredDetail from "./pages/Offers/Admin/AdminRegisteredDetail";
+import AdminRegistered from "./pages/Offers/Admin/AdminRegistered";
+import AdminNegotiation from "./pages/Offers/Admin/AdminNegotiation";
 
 const App: React.FC = () => {
   return (
@@ -110,7 +115,7 @@ const App: React.FC = () => {
             <Route
               path="/company-details"
               element={
-                <ProtectedRoute allowedRoles={['1','2','3','4','5']}>
+                <ProtectedRoute allowedRoles={['2','3','4','5']}>
                   <PageTitle title="Company Details | PT SANOH INDONESIA" />
                   <CompanyDetail />
                 </ProtectedRoute>
@@ -119,7 +124,7 @@ const App: React.FC = () => {
             <Route
               path="/verification"
               element={
-                <ProtectedRoute allowedRoles={['1','2','3','4','5']}>
+                <ProtectedRoute allowedRoles={['2','3']}>
                   <PageTitle title="Verification | PT SANOH INDONESIA" />
                   <Verification />
                 </ProtectedRoute>
@@ -128,7 +133,7 @@ const App: React.FC = () => {
             <Route
               path="/offers/available"
               element={
-                <ProtectedRoute allowedRoles={['1','2','3','4','5']}>
+                <ProtectedRoute allowedRoles={['5']}>
                   <PageTitle title="Offers Available | PT SANOH INDONESIA" />
                   <SupplierOffersAvailable />
                 </ProtectedRoute>
@@ -137,7 +142,7 @@ const App: React.FC = () => {
             <Route
               path="/offers/details/:id"
               element={
-                <ProtectedRoute allowedRoles={['1','2','3','4','5']}>
+                <ProtectedRoute allowedRoles={['2','3','4','5']}>
                   <PageTitle title="Offers Detail | PT SANOH INDONESIA" />
                   <OffersDetails />
                 </ProtectedRoute>
@@ -146,7 +151,7 @@ const App: React.FC = () => {
             <Route
               path="/offers/followed"
               element={
-                <ProtectedRoute allowedRoles={['1','2','3','4','5']}>
+                <ProtectedRoute allowedRoles={['5']}>
                   <PageTitle title="Offers Followed | PT SANOH INDONESIA" />
                   <SupplierOffersFollowed />
                 </ProtectedRoute>
@@ -155,12 +160,67 @@ const App: React.FC = () => {
             <Route
               path="/offers/followed/negotiation/details/:id"
               element={
-                <ProtectedRoute allowedRoles={['1','2','3','4','5']}>
+                <ProtectedRoute allowedRoles={['2','3','4','5']}>
                   <PageTitle title="Offers Negotiation | PT SANOH INDONESIA" />
                   <SupplierNegotiation />
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/offers/all"
+              element={
+                <ProtectedRoute allowedRoles={['2','3','4']}>
+                  <PageTitle title="Offers | PT SANOH INDONESIA" />
+                  <AdminOffers />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/offers/create"
+              element={
+                <ProtectedRoute allowedRoles={['3']}>
+                  <PageTitle title="Offers Create | PT SANOH INDONESIA" />
+                  <AdminCreateOffers />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/offers/edit/:id"
+              element={
+                <ProtectedRoute allowedRoles={['3']}>
+                  <PageTitle title="Offers Edit | PT SANOH INDONESIA" />
+                  <AdminEditOffers />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/offers/registered"
+              element={
+                <ProtectedRoute allowedRoles={['2','3','4']}>
+                  <PageTitle title="Offers Registered | PT SANOH INDONESIA" />
+                  <AdminRegistered />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/offers/registered/:id"
+              element={
+                <ProtectedRoute allowedRoles={['2','3','4']}>
+                  <PageTitle title="Offers Registered Detail | PT SANOH INDONESIA" />
+                  <AdminRegisteredDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/offers/negotiation/details/:id"
+              element={
+                <ProtectedRoute allowedRoles={['2','3','4']}>
+                  <PageTitle title="Offers Negotiation | PT SANOH INDONESIA" />
+                  <AdminNegotiation />
+                </ProtectedRoute>
+              }
+            />
+
             
           </Route>
 

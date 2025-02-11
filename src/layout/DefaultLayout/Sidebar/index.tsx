@@ -110,7 +110,7 @@ const Sidebar : React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen, role })
             <AdminPresdir />
           ) : role === 'admin-review' ? (
             <AdminReview />
-          ) : role === 'admin-purchsaing' ? (
+          ) : role === 'admin-purchasing' ? (
             <AdminPurchasing />
           ) : role === 'supplier' ? (
             <Supplier />

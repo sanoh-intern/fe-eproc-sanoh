@@ -5,9 +5,9 @@ import { useState, useEffect } from "react"
 import { FaSortUp, FaSortDown } from "react-icons/fa"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
-import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb"
-import SearchBar from "../../components/Table/SearchBar"
-import Pagination from "../../components/Table/Pagination"
+import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb"
+import SearchBar from "../../../components/Table/SearchBar"
+import Pagination from "../../../components/Table/Pagination"
 import { Link } from "react-router-dom"
 import Select from 'react-select';
 

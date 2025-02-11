@@ -5,11 +5,11 @@ import { useState, useEffect } from "react"
 import { FiCalendar, FiClock, FiDownload } from "react-icons/fi"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
-import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb"
-import Button from "../../components/Forms/Button"
-import Pagination from "../../components/Table/Pagination"
+import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb"
+import Button from "../../../components/Forms/Button"
+import Pagination from "../../../components/Table/Pagination"
 import Swal from "sweetalert2"
-import Loader from "../../common/Loader"
+import Loader from "../../../common/Loader"
 
 interface OfferDetails {
     id: string
@@ -47,7 +47,7 @@ const fetchOfferDetails = async (id: string): Promise<OfferDetails> => {
         attachmentUrl: "/path/to/project-details.pdf",
         registrationDate: "2023-06-20",
         winningCompany: "TechInnovate Solutions",
-        isClosed: true,
+        isClosed: false,
     }
 }
 
@@ -82,26 +82,6 @@ const fetchNegotiationHistory = async (offerId: string): Promise<NegotiationEntr
             revisionNo: 3,
             status: "Revision",
             comment: "SSS approved the proposal",
-            final: false,
-        },
-        {
-            id: "nego-4",
-            submitDate: "2024-02-05",
-            attachmentUrl: "/path/to/attachment-4.pdf",
-            totalAmount: 750000,
-            revisionNo: 4,
-            status: "On Review",
-            comment: "SSS accepted the proposal",
-            final: false,
-        },
-        {
-            id: "nego-5",
-            submitDate: "2024-02-10",
-            attachmentUrl: "/path/to/attachment-5.pdf",
-            totalAmount: 800000,
-            revisionNo: 5,
-            status: "Accepted",
-            comment: "Final proposal",
             final: true,
         },
     ]

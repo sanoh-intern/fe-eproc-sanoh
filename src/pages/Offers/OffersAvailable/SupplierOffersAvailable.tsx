@@ -6,13 +6,13 @@ import { DialogPanel, DialogTitle, TransitionChild, Tab, TabGroup, TabList, TabP
 import { FaSortUp, FaSortDown } from "react-icons/fa"
 import { Dialog, Transition } from "@headlessui/react"
 import { Fragment } from "react"
-import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb"
+import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb"
 import { Link } from "react-router-dom"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
-import SearchBar from "../../components/Table/SearchBar"
-import Button from "../../components/Forms/Button"
-import Pagination from "../../components/Table/Pagination"
+import SearchBar from "../../../components/Table/SearchBar"
+import Button from "../../../components/Forms/Button"
+import Pagination from "../../../components/Table/Pagination"
 
 interface Offer {
     id: string
