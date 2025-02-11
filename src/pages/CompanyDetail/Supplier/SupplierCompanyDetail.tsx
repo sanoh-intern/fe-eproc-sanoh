@@ -4,7 +4,7 @@ import { toast, ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs"
 import "react-tabs/style/react-tabs.css"
-import Button from "../../components/Forms/Button"
+import Button from "../../../components/Forms/Button"
 import {
   FaBuilding,
   FaAddressCard,
@@ -15,9 +15,9 @@ import {
   FaExclamationCircle,
   FaDownload,
 } from "react-icons/fa"
-import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb"
+import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb"
 import Swal from "sweetalert2"
-import Loader from "../../common/Loader"
+import Loader from "../../../common/Loader"
 
 const api = {
   fetchCompanyData: async () => {
@@ -84,7 +84,7 @@ const api = {
   },
 }
 
-const CompanyDetail: React.FC = () => {
+const SupplierCompanyDetail: React.FC = () => {
   const [companyData, setCompanyData] = useState<any>(null);
   const [activeTab, setActiveTab] = useState(0);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
@@ -746,5 +746,5 @@ const IntegrityPactForm: React.FC<{
   )
 }
 
-export default CompanyDetail
+export default SupplierCompanyDetail
 

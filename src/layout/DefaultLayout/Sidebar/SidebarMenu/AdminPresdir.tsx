@@ -1,73 +1,57 @@
-import Dashboard from "./component/Dashboard";
-import DeliveryNote from "./component/Old/DeliveryNote";
-import ManageItems from "./component/Old/ManageItems";
-import AddItems from "./component/Old/AddItems";
-import StockItems from "./component/Old/StockItems";
-import TransactionsReport from "./component/Old/TransactionsReport";
-import HistoryDeliveryNote from "./component/Old/HistoryDeliveryNote";
-import TransactionReviewSubcont from "./component/Old/TransactionsReviewSubcont";
+import ManageOffers from "./component/ManageOffers"
+import CompanyDetails from "./component/CompanyDetails"
+import Dashboard from "./component/Dashboard"
+import OffersRegistered from "./component/OffersRegistered"
+import VerificationStatus from "./component/Verification"
+
 
 export const AdminPresdir = () => {
-
     return (
         <div>
             <div>
                 <h3 className="mb-4 ml-4 text-sm font-semibold text-black-2  dark:text-bodydark2">
-                    PRESDIR MENU 
+                ADMIN PURCHASING MENU 
                 </h3>
                 <ul className="mb-6 flex flex-col gap-1.5">
                     {/* <!-- Menu Item Dashboard --> */}            
                     <Dashboard />
                     {/* <!-- Menu Item Dashboard --> */}
-
-                    {/* <!-- Menu Item Delivery Note --> */}
-                    <DeliveryNote />
-                    {/* <!-- Menu Item Delivery Note --> */}
                 </ul>
             </div>
 
-                {/* <!-- Subcontractor Group --> */}
+            {/* <!-- Offers Group --> */}
             <div>
                 <h3 className="mb-4 ml-4 text-sm font-semibold text-black-2 dark:text-bodydark2">
-                SUBCONTRACTOR
+                OFFERS
                 </h3>
 
                 <ul className="mb-6 flex flex-col gap-1.5">
-                    {/* <!-- Menu Item Stock Items --> */}
-                    <StockItems />
-                    {/* <!-- Menu Item Stock Items --> */}
-
-                    {/* <!-- Menu Item Transaction Review --> */}
-                    <TransactionReviewSubcont />
-                    {/* <!-- Menu Item Transaction Review --> */}
                     
-                    {/* <!-- Menu Item Report Transactions --> */}
-                    <TransactionsReport />
-                    {/* <!-- Menu Item Report Transactions --> */}
+                    {/* <!-- Menu Item Manage Offers --> */}
+                    <ManageOffers />
+                    {/* <!-- Menu Item Manage Offers --> */}
                     
-                    {/* <!-- Menu Item Manage Items --> */}
-                    <ManageItems />
-                    {/* <!-- Menu Item Manage Items --> */}
-
-                    {/* <!-- Menu Item Add Items --> */}
-                    <AddItems />
-                    {/* <!-- Menu Item Add Items --> */}
+                    {/* <!-- Menu Item Offers Registered --> */}
+                    <OffersRegistered />
+                    {/* <!-- Menu Item Offers Registered --> */}
 
                 </ul>
             </div>
 
-            {/* <!-- History Group --> */}
+            {/* <!-- Company Details --> */}
             <div>
                 <h3 className="mb-4 ml-4 text-sm font-semibold text-black-2 dark:text-bodydark2">
-                HISTORY
+                COMPANY
                 </h3>
 
                 <ul className="mb-6 flex flex-col gap-1.5">
+                    {/* <!-- Menu Item Company Details --> */}
+                    <CompanyDetails />
+                    {/* <!-- Menu Item Company Details --> */}
 
-                    {/* <!-- Menu Item History Delivery Note --> */}
-                    <HistoryDeliveryNote />
-                    {/* <!-- Menu Item History Delivery Note --> */}
-
+                    {/* <!-- Menu Item Verification Status --> */}
+                    <VerificationStatus />
+                    {/* <!-- Menu Item Verification Status --> */}
                 </ul>
             </div>
         </div>

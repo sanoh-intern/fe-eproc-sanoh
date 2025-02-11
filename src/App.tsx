@@ -13,18 +13,18 @@ import Login from "./pages/Authentication/Login";
 import Register from "./pages/Authentication/Register";
 import ForgotPassword from "./pages/Authentication/ForgotPassword";
 import SettingProfile from "./pages/SettingProfile";
-import CompanyDetail from "./pages/CompanyDetail/CompanyDetail";
-import Verification from "./pages/Verification/SupplierVerification";
+import CompanyDetail from "./pages/CompanyDetail/Supplier/SupplierCompanyDetail";
 import OffersDetails from "./pages/Offers/OffersDetails";
 import SupplierNegotiation from "./pages/Offers/OffersFollowed/SupplierNegotiation";
 import SupplierOffersFollowed from "./pages/Offers/OffersFollowed/SupplierOffersFollowed";
 import SupplierOffersAvailable from "./pages/Offers/OffersAvailable/SupplierOffersAvailable";
-import AdminCreateOffers from "./pages/Offers/Admin/AdminCreateOffers";
-import AdminEditOffers from "./pages/Offers/Admin/AdminEditOffers";
-import AdminOffers from "./pages/Offers/Admin/AdminOffers";
-import AdminRegisteredDetail from "./pages/Offers/Admin/AdminRegisteredDetail";
-import AdminRegistered from "./pages/Offers/Admin/AdminRegistered";
-import AdminNegotiation from "./pages/Offers/Admin/AdminNegotiation";
+import AdminCreateOffers from "./pages/Offers/Admin/ManageOffers/AdminCreateOffers";
+import AdminEditOffers from "./pages/Offers/Admin/ManageOffers/AdminEditOffers";
+import AdminRegisteredDetail from "./pages/Offers/Admin/Negotiation/AdminRegisteredDetail";
+import AdminRegistered from "./pages/Offers/Admin/Negotiation/AdminRegistered";
+import AdminNegotiation from "./pages/Offers/Admin/Negotiation/AdminNegotiation";
+import IndexVerification from "./pages/Verification/IndexVerification";
+import AdminManageOffers from "./pages/Offers/Admin/ManageOffers/AdminManageOffers";
 
 const App: React.FC = () => {
   return (
@@ -124,9 +124,9 @@ const App: React.FC = () => {
             <Route
               path="/verification"
               element={
-                <ProtectedRoute allowedRoles={['2','3']}>
+                <ProtectedRoute allowedRoles={['2','3','4','5']}>
                   <PageTitle title="Verification | PT SANOH INDONESIA" />
-                  <Verification />
+                  <IndexVerification />
                 </ProtectedRoute>
               }
             />
@@ -167,11 +167,11 @@ const App: React.FC = () => {
               }
             />
             <Route
-              path="/offers/all"
+              path="/offers/manage"
               element={
                 <ProtectedRoute allowedRoles={['2','3','4']}>
-                  <PageTitle title="Offers | PT SANOH INDONESIA" />
-                  <AdminOffers />
+                  <PageTitle title="Manage Offers | PT SANOH INDONESIA" />
+                  <AdminManageOffers />
                 </ProtectedRoute>
               }
             />

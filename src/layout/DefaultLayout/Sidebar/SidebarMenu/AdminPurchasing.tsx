@@ -1,6 +1,5 @@
-import AllOffers from "./component/AllOffers"
+import ManageOffers from "./component/ManageOffers"
 import CompanyDetails from "./component/CompanyDetails"
-import CreateOffers from "./component/CreateOffers"
 import Dashboard from "./component/Dashboard"
 import OffersRegistered from "./component/OffersRegistered"
 import VerificationStatus from "./component/Verification"
@@ -28,13 +27,9 @@ export const AdminPurchasing = () => {
 
                 <ul className="mb-6 flex flex-col gap-1.5">
                     
-                    {/* <!-- Menu Item Offers Available --> */}
-                    <AllOffers />
-                    {/* <!-- Menu Item Offers Available --> */}
-                    
-                    {/* <!-- Menu Item Offers Followed --> */}
-                    <CreateOffers />
-                    {/* <!-- Menu Item Offers Followed --> */}
+                    {/* <!-- Menu Item Manage Offers --> */}
+                    <ManageOffers />
+                    {/* <!-- Menu Item Manage Offers --> */}
                     
                     {/* <!-- Menu Item Offers Registered --> */}
                     <OffersRegistered />

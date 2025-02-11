@@ -5,9 +5,9 @@ import { useState, useEffect } from "react"
 import { FaCheckCircle, FaExclamationTriangle, FaClock, FaEdit } from "react-icons/fa"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
-import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb"
-import Button from "../../components/Forms/Button"
-import Loader from "../../common/Loader"
+import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb"
+import Button from "../../../components/Forms/Button"
+import Loader from "../../../common/Loader"
 
 type VerificationStatus = "null" | "verified" | "verified-edited" | "edited-completed" | "edited-not-completed" | "pending-verification"
 
@@ -18,7 +18,7 @@ const initialVerificationHistory = [
     { date: "2023-01-22", status: "Pending", message: "Verification in progress." },
 ]
 
-const Verification: React.FC = () => {
+const SupplierVerification: React.FC = () => {
     const [verificationStatus, setVerificationStatus] = useState<VerificationStatus>("null")
     const [verificationHistory, setVerificationHistory] = useState(initialVerificationHistory)
 
@@ -181,5 +181,5 @@ const Verification: React.FC = () => {
     )
 }
 
-export default Verification
+export default SupplierVerification
 

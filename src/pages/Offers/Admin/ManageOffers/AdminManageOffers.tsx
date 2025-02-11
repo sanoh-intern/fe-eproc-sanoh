@@ -1,15 +1,15 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { FaSortUp, FaSortDown } from "react-icons/fa"
+import { FaSortUp, FaSortDown, FaPlus } from "react-icons/fa"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
-import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb"
-import SearchBar from "../../../components/Table/SearchBar"
-import Pagination from "../../../components/Table/Pagination"
+import Breadcrumb from "../../../../components/Breadcrumbs/Breadcrumb"
+import SearchBar from "../../../../components/Table/SearchBar"
+import Pagination from "../../../../components/Table/Pagination"
 import { Link, useNavigate } from "react-router-dom"
 import Select from "react-select"
-import Button from "../../../components/Forms/Button"
+import Button from "../../../../components/Forms/Button"
 import { FiEdit, FiXCircle, FiTrash2 } from "react-icons/fi"
 
 interface AdminOffer {
@@ -24,7 +24,7 @@ interface AdminOffer {
 }
 
 // Simulated API function for admin offers
-const fetchAdminOffers = async (): Promise<AdminOffer[]> => {
+const fetchAdminManageOffers = async (): Promise<AdminOffer[]> => {
     await new Promise((resolve) => setTimeout(resolve, 1000))
     return Array.from({ length: 10 }, (_, i) => ({
         id: `offer-${i + 1}`,
@@ -47,7 +47,7 @@ const fetchAdminOffers = async (): Promise<AdminOffer[]> => {
     }))
 }
 
-const AdminOffers: React.FC = () => {
+const AdminManageOffers: React.FC = () => {
     const [offers, setOffers] = useState<AdminOffer[]>([])
     const [filteredOffers, setFilteredOffers] = useState<AdminOffer[]>([])
     const [loading, setLoading] = useState(true)
@@ -64,7 +64,7 @@ const AdminOffers: React.FC = () => {
     useEffect(() => {
         const loadOffers = async () => {
             try {
-                const data = await fetchAdminOffers()
+                const data = await fetchAdminManageOffers()
                 setOffers(data)
                 setFilteredOffers(data)
             } catch (error) {
@@ -147,10 +147,16 @@ const AdminOffers: React.FC = () => {
 
     return (
         <>
-            <Breadcrumb pageName="Admin Offers" />
+            <Breadcrumb pageName="Manage Offers" />
             <ToastContainer position="top-right" />
             <div className="bg-white">
                 <div className="p-2 md:p-4 lg:p-6 space-y-6">
+                    <Button
+                        onClick={() => navigate("/offers/create")}
+                        title="Create Offers"
+                        icon={FaPlus}
+                        className="px-4 py-2 flex items-center gap-2"
+                    />
                     {offers.length === 0 && !loading ? (
                         <div className="text-center">
                             <p className="mb-4">No offers available.</p>
@@ -334,4 +340,4 @@ const AdminOffers: React.FC = () => {
     )
 }
 
-export default AdminOffers
+export default AdminManageOffers
