@@ -137,38 +137,40 @@ const AdminCreateOffers: React.FC = () => {
 
         // Simple validation
         if (!projectName || !registrationDueDate || !overview) {
-        Swal.fire("Error", "Please fill all required fields", "error")
-        return
+            Swal.fire("Error", "Please fill all required fields", "error")
+            return
         }
         if (!offerType) {
-        Swal.fire("Error", "Please select an offer type", "error")
-        return
+            Swal.fire("Error", "Please select an offer type", "error")
+            return
         }
         if (offerType.value === "Invited" && emails.length === 0) {
-        Swal.fire("Error", "For invited offers, please add at least one email", "error")
-        return
+            Swal.fire("Error", "For invited offers, please add at least one email", "error")
+            return
         }
 
         // Confirm submission
         const result = await Swal.fire({
-        title: "Create Offer",
-        text: "Are you sure you want to create this offer?",
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonText: "Yes, create it",
+            title: "Create Offer",
+            text: "Are you sure you want to create this offer?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Yes, create it",
+            confirmButtonColor: "#2F4F4F",
+            cancelButtonColor: "#dc2626",
         })
 
         if (!result.isConfirmed) return
 
         // Build payload (file upload would normally be handled differently)
         const payload = {
-        projectName,
-        registrationDueDate,
-        overview,
-        offerType: offerType.value,
-        // If attachment is provided, you might want to send it as FormData
-        attachment: attachment ? attachment.name : null,
-        emails,
+            projectName,
+            registrationDueDate,
+            overview,
+            offerType: offerType.value,
+            // If attachment is provided, you might want to send it as FormData
+            attachment: attachment ? attachment.name : null,
+            emails,
         }
 
         // Simulate API call

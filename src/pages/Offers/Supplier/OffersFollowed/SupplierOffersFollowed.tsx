@@ -2,14 +2,16 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { FaSortUp, FaSortDown } from "react-icons/fa"
+import { FaSortUp, FaSortDown, FaEye } from "react-icons/fa"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
-import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb"
-import SearchBar from "../../../components/Table/SearchBar"
-import Pagination from "../../../components/Table/Pagination"
-import { Link } from "react-router-dom"
+import Breadcrumb from "../../../../components/Breadcrumbs/Breadcrumb"
+import SearchBar from "../../../../components/Table/SearchBar"
+import Pagination from "../../../../components/Table/Pagination"
+import { Link, useNavigate } from "react-router-dom"
 import Select from 'react-select';
+import Button from "../../../../components/Forms/Button"
+import { FaBandage } from "react-icons/fa6"
 
 interface Offer {
   id: string
@@ -19,8 +21,10 @@ interface Offer {
   registrationDate: string
   revisionNo: number
   updatedDate: string
-  status: "Need revision" | "On Review" | "Accepted" | "Declined"
-  winningCompany: string | null
+  status: "Not submitted" | "Need revision" | "On Review" | "Accepted" | "Declined"
+  comment?: string
+  offerStatus: "Open" | "Supplier Selected" 
+  winningCompany?: string | null
 }
 
 // Simulated API function
@@ -34,8 +38,10 @@ const fetchFollowedOffers = async (): Promise<Offer[]> => {
     registrationDate: new Date(Date.now() - Math.floor(Math.random() * 5000000000)).toISOString().split("T")[0],
     revisionNo: Math.floor(Math.random() * 5),
     updatedDate: new Date(Date.now() - Math.floor(Math.random() * 1000000000)).toISOString().split("T")[0],
-    status: ["Need revision", "On Review", "Accepted", "Declined"][Math.floor(Math.random() * 4)] as Offer["status"],
+    status: ["Not submitted", "Need revision", "On Review", "Accepted", "Declined"][Math.floor(Math.random() * 4)] as Offer["status"],
     winningCompany: Math.random() > 0.8 ? `Company ${Math.floor(Math.random() * 100)}` : null,
+    comment: "Lorem ipsum dolor sit amet",
+    offerStatus: Math.random() > 0.5 ? "Open" : "Supplier Selected",
   }))
 }
 
@@ -48,6 +54,7 @@ const SupplierOffersFollowed: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" })
+  const navigate = useNavigate()
 
   const loadOffers = async () => {
     try {
@@ -116,6 +123,10 @@ const SupplierOffersFollowed: React.FC = () => {
     localStorage.setItem('offers_followed_current_page', page.toString());
   }
 
+  const handleNegotiate = (offer: Offer) => {
+    navigate(`/offers/followed/negotiation/details/${offer.id}`)
+  };
+
   return (
     <>
       <Breadcrumb pageName="Offers Followed" />
@@ -144,6 +155,7 @@ const SupplierOffersFollowed: React.FC = () => {
                   <Select
                     options={[
                       { value: 'all', label: 'All Statuses' },
+                      { value: 'Not submitted', label: 'Not Submitted' },
                       { value: 'Need revision', label: 'Need Revision' },
                       { value: 'On Review', label: 'On Review' },
                       { value: 'Accepted', label: 'Accepted' },
@@ -173,27 +185,10 @@ const SupplierOffersFollowed: React.FC = () => {
                           </span>
                         </th>
                         <th
-                          className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer"
-                          onClick={() => handleSort("createdDate")}
-                        >
-                          <span className="flex items-center justify-center">
-                          {sortConfig.key === "createdDate" ? (
-                            sortConfig.direction === "asc" ? (
-                            <FaSortUp className="mr-1" />
-                            ) : (
-                            <FaSortDown className="mr-1" />
-                            )
-                          ) : (
-                            <FaSortDown className="opacity-50 mr-1" />
-                          )}
-                          Created Date
-                          </span>
-                        </th>
-                        <th
                           className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer" 
                         >
                           <span className="flex items-center justify-center">            
-                          Type
+                          Offer Type
                           </span>
                         </th>
                         <th
@@ -248,7 +243,28 @@ const SupplierOffersFollowed: React.FC = () => {
                           className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer"
                         >
                           <span className="flex items-center justify-center">
+                          Comment
+                          </span>
+                        </th>
+                        <th
+                          className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer"
+                        >
+                          <span className="flex items-center justify-center">
+                          Offer Status
+                          </span>
+                        </th>
+                        <th
+                          className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer"
+                        >
+                          <span className="flex items-center justify-center">
                           Winning Company
+                          </span>
+                        </th>
+                        <th
+                          className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer"
+                        >
+                          <span className="flex items-center justify-center">
+                          Action
                           </span>
                         </th>
                         </tr>
@@ -257,7 +273,7 @@ const SupplierOffersFollowed: React.FC = () => {
                       {isLoading ? (
                         Array.from({ length: rowsPerPage }).map((_, index) => (
                           <tr key={index} className="animate-pulse">
-                            {Array.from({ length: 8 }).map((_, cellIndex) => (
+                            {Array.from({ length: 11 }).map((_, cellIndex) => (
                               <td key={cellIndex} className="px-3 py-3 text-center whitespace-nowrap">
                                 <div className="h-4 bg-gray-200 rounded"></div>
                               </td>
@@ -268,11 +284,10 @@ const SupplierOffersFollowed: React.FC = () => {
                         paginatedOffers.map((offer) => (
                           <tr key={offer.id} className="hover:bg-gray-50">
                             <td className="px-3 py-3 text-center whitespace-nowrap">
-                              <Link to={`/offers/followed/negotiation/details/${offer.id}`} className="text-blue-600 font-medium hover:underline">
+                              <Link to={`../offers/details/${offer.id}`} className="text-blue-600 font-medium underline">
                                 {offer.projectName}
                               </Link>
                             </td>
-                            <td className="px-3 py-3 text-center whitespace-nowrap">{offer.createdDate}</td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">{offer.offerType}</td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">{offer.registrationDate}</td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">{offer.revisionNo}</td>
@@ -287,13 +302,26 @@ const SupplierOffersFollowed: React.FC = () => {
                                       ? "bg-red-100 text-red-800"
                                       : offer.status === "On Review"
                                         ? "bg-yellow-100 text-yellow-800"
-                                        : "bg-blue-100 text-blue-800"
+                                        : offer.status === "Need revision" 
+                                        ? "bg-blue-100 text-blue-800"
+                                        : "bg-gray-100 text-gray-800"
                                 }`}
                               >
                                 {offer.status}
                               </span>
                             </td>
+                            <td className="px-3 py-3 text-center whitespace-nowrap">{offer.comment || "-"}</td>
+                            <td className="px-3 py-3 text-center whitespace-nowrap">
+                                {offer.offerStatus}
+                            </td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">{offer.winningCompany || "-"}</td>
+                            <td className="px-3 py-3 text-center whitespace-nowrap">
+                              <Button
+                                onClick={() => handleNegotiate(offer)}
+                                title="Detail"
+                                icon={FaEye}
+                              />
+                            </td>
                           </tr>
                         ))
                       ) : (

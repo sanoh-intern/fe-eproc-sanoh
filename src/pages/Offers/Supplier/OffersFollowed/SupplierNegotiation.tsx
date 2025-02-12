@@ -5,11 +5,11 @@ import { useState, useEffect } from "react"
 import { FiCalendar, FiClock, FiDownload } from "react-icons/fi"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
-import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb"
-import Button from "../../../components/Forms/Button"
-import Pagination from "../../../components/Table/Pagination"
+import Breadcrumb from "../../../../components/Breadcrumbs/Breadcrumb"
+import Button from "../../../../components/Forms/Button"
+import Pagination from "../../../../components/Table/Pagination"
 import Swal from "sweetalert2"
-import Loader from "../../../common/Loader"
+import Loader from "../../../../common/Loader"
 
 interface OfferDetails {
     id: string

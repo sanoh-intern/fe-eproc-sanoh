@@ -15,9 +15,6 @@ import ForgotPassword from "./pages/Authentication/ForgotPassword";
 import SettingProfile from "./pages/SettingProfile";
 import CompanyDetail from "./pages/CompanyDetail/Supplier/SupplierCompanyDetail";
 import OffersDetails from "./pages/Offers/OffersDetails";
-import SupplierNegotiation from "./pages/Offers/OffersFollowed/SupplierNegotiation";
-import SupplierOffersFollowed from "./pages/Offers/OffersFollowed/SupplierOffersFollowed";
-import SupplierOffersAvailable from "./pages/Offers/OffersAvailable/SupplierOffersAvailable";
 import AdminCreateOffers from "./pages/Offers/Admin/ManageOffers/AdminCreateOffers";
 import AdminEditOffers from "./pages/Offers/Admin/ManageOffers/AdminEditOffers";
 import AdminRegisteredDetail from "./pages/Offers/Admin/Negotiation/AdminRegisteredDetail";
@@ -25,6 +22,9 @@ import AdminRegistered from "./pages/Offers/Admin/Negotiation/AdminRegistered";
 import AdminNegotiation from "./pages/Offers/Admin/Negotiation/AdminNegotiation";
 import IndexVerification from "./pages/Verification/IndexVerification";
 import AdminManageOffers from "./pages/Offers/Admin/ManageOffers/AdminManageOffers";
+import SupplierOffersAvailable from "./pages/Offers/Supplier/OffersAvailable/SupplierOffersAvailable";
+import SupplierOffersFollowed from "./pages/Offers/Supplier/OffersFollowed/SupplierOffersFollowed";
+import SupplierNegotiation from "./pages/Offers/Supplier/OffersFollowed/SupplierNegotiation";
 
 const App: React.FC = () => {
   return (

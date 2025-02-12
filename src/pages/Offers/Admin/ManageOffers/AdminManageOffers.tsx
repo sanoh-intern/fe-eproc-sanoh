@@ -11,6 +11,7 @@ import { Link, useNavigate } from "react-router-dom"
 import Select from "react-select"
 import Button from "../../../../components/Forms/Button"
 import { FiEdit, FiXCircle, FiTrash2 } from "react-icons/fi"
+import Swal from "sweetalert2"
 
 interface AdminOffer {
     id: string
@@ -132,17 +133,44 @@ const AdminManageOffers: React.FC = () => {
     }
 
     const handleClose = (offerId: string) => {
-        setOffers((prev) =>
-            prev.map((offer) =>
-                offer.id === offerId ? { ...offer, status: "Closed" } : offer
-            )
-        )
-        toast.success("Offer closed successfully")
+        Swal.fire({
+            title: "Close Offer",
+            text: "Are you sure you want to close this offer?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Yes, close it",
+            cancelButtonText: "No, keep it open",
+            confirmButtonColor: "#2F4F4F",
+            cancelButtonColor: "#dc2626",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                setOffers((prev) =>
+                    prev.map((offer) =>
+                        offer.id === offerId ? { ...offer, status: "Closed" } : offer
+                    )
+                )
+                toast.success("Offer closed successfully")
+            }
+        })
     }
+    
 
     const handleRemove = (offerId: string) => {
-        setOffers((prev) => prev.filter((offer) => offer.id !== offerId))
-        toast.success("Offer removed successfully")
+        Swal.fire({
+            title: "Remove Offer",
+            text: "Are you sure you want to remove this offer?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Yes, remove it",
+            cancelButtonText: "No, keep it",
+            confirmButtonColor: "#2F4F4F",
+            cancelButtonColor: "#dc2626",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                setOffers((prev) => prev.filter((offer) => offer.id !== offerId))
+                toast.success("Offer removed successfully")
+            }
+        })
     }
 
     return (
@@ -230,7 +258,7 @@ const AdminManageOffers: React.FC = () => {
                                                 </span>
                                                 </th>
                                                 <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
-                                                    Status
+                                                    Registration Status
                                                 </th>
                                                 <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
                                                     Total Suppliers
@@ -307,6 +335,7 @@ const AdminManageOffers: React.FC = () => {
                                                             onClick={() => handleRemove(offer.id)}
                                                             title="Remove"
                                                             icon={FiTrash2}
+                                                            color="bg-red-600"
                                                             className="px-2 py-1"
                                                         />
                                                     </div>

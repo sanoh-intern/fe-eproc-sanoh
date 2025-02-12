@@ -6,13 +6,13 @@ import { DialogPanel, DialogTitle, TransitionChild, Tab, TabGroup, TabList, TabP
 import { FaSortUp, FaSortDown } from "react-icons/fa"
 import { Dialog, Transition } from "@headlessui/react"
 import { Fragment } from "react"
-import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb"
+import Breadcrumb from "../../../../components/Breadcrumbs/Breadcrumb"
 import { Link } from "react-router-dom"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
-import SearchBar from "../../../components/Table/SearchBar"
-import Button from "../../../components/Forms/Button"
-import Pagination from "../../../components/Table/Pagination"
+import SearchBar from "../../../../components/Table/SearchBar"
+import Button from "../../../../components/Forms/Button"
+import Pagination from "../../../../components/Table/Pagination"
 
 interface Offer {
     id: string
@@ -21,6 +21,7 @@ interface Offer {
     offerType: "Invited" | "Public"
     registrationDueDate: string
     status: "Open" | "Closed"
+    isRegistered?: boolean
 }
 
 // Simulated API functions
@@ -33,6 +34,7 @@ const fetchInvitedOffers = async (): Promise<Offer[]> => {
         offerType: "Invited",
         registrationDueDate: new Date(Date.now() + Math.floor(Math.random() * 10000000000)).toISOString().split("T")[0],
         status: Math.random() > 0.3 ? "Open" : "Closed",
+        isRegistered: true,
     }))
 }
 
@@ -45,6 +47,7 @@ const fetchPublicOffers = async (): Promise<Offer[]> => {
         offerType: "Public",
         registrationDueDate: new Date(Date.now() + Math.floor(Math.random() * 10000000000)).toISOString().split("T")[0],
         status: Math.random() > 0.3 ? "Open" : "Closed",
+        isRegistered: false,
     }))
 }
 
@@ -237,22 +240,23 @@ const SupplierOffersAvailable: React.FC = () => {
                                                         </td>
                                                         <td className="px-3 py-3 text-center whitespace-nowrap">
                                                             <span
-                                                            className={`px-2 py-1 rounded ${
+                                                            className={`px-2 py-1 rounded-full text-xs font-semibold ${
                                                                 offer.status === "Open"
-                                                                ? "bg-green-200 text-green-800"
-                                                                : "bg-red-200 text-red-800"
+                                                                ? "bg-green-200 text-green-900"
+                                                                : "bg-red-200 text-red-900"
                                                             }`}
                                                             >
                                                             {offer.status}
                                                             </span>
                                                         </td>
                                                         <td className="px-3 py-3 text-center whitespace-nowrap">
-                                                            <Button
-                                                            title="Register"
-                                                            onClick={() => handleRegister(offer)}
-                                                            disabled={offer.status === "Closed"}
-                                                            
-                                                            />
+                                                            <div className="flex justify-center items-center">
+                                                                <Button
+                                                                    title={offer.isRegistered ? "Registered" : "Register"}
+                                                                    onClick={() => handleRegister(offer)}
+                                                                    disabled={offer.status === "Closed" || offer.isRegistered}
+                                                                />
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 ))
