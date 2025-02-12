@@ -11,15 +11,14 @@ import Pagination from "../../../../components/Table/Pagination"
 import { Link, useNavigate } from "react-router-dom"
 import Select from 'react-select';
 import Button from "../../../../components/Forms/Button"
-import { FaBandage } from "react-icons/fa6"
 
 interface Offer {
   id: string
   projectName: string
-  createdDate: string
   offerType: "Public" | "Invited"
   registrationDate: string
-  revisionNo: number
+  totalAmount: string
+  revisionNo: string
   updatedDate: string
   status: "Not submitted" | "Need revision" | "On Review" | "Accepted" | "Declined"
   comment?: string
@@ -33,10 +32,10 @@ const fetchFollowedOffers = async (): Promise<Offer[]> => {
   return Array.from({ length: 50 }, (_, i) => ({
     id: `${i + 1}`,
     projectName: `Project ${i + 1}`,
-    createdDate: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString().split("T")[0],
     offerType: Math.random() > 0.5 ? "Public" : "Invited",
     registrationDate: new Date(Date.now() - Math.floor(Math.random() * 5000000000)).toISOString().split("T")[0],
-    revisionNo: Math.floor(Math.random() * 5),
+    totalAmount: `${Math.floor(Math.random() * 1000000)}`,
+    revisionNo: `${Math.floor(Math.random() * 5)}`,
     updatedDate: new Date(Date.now() - Math.floor(Math.random() * 1000000000)).toISOString().split("T")[0],
     status: ["Not submitted", "Need revision", "On Review", "Accepted", "Declined"][Math.floor(Math.random() * 4)] as Offer["status"],
     winningCompany: Math.random() > 0.8 ? `Company ${Math.floor(Math.random() * 100)}` : null,
@@ -93,7 +92,7 @@ const SupplierOffersFollowed: React.FC = () => {
         let aValue: any = a[sortConfig.key as keyof Offer]
         let bValue: any = b[sortConfig.key as keyof Offer]
 
-        if (sortConfig.key === "createdDate" || sortConfig.key === "registrationDate" || sortConfig.key === "updatedDate") {
+        if (sortConfig.key === "registrationDate" || sortConfig.key === "updatedDate") {
           aValue = new Date(aValue).toISOString()
           bValue = new Date(bValue).toISOString()
         }
@@ -212,6 +211,13 @@ const SupplierOffersFollowed: React.FC = () => {
                           className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer"
                         >
                           <span className="flex items-center justify-center">
+                          Total Amount
+                          </span>
+                        </th>
+                        <th
+                          className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer"
+                        >
+                          <span className="flex items-center justify-center">
                           Revision No
                           </span>
                         </th>
@@ -290,6 +296,10 @@ const SupplierOffersFollowed: React.FC = () => {
                             </td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">{offer.offerType}</td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">{offer.registrationDate}</td>
+                            <td className="px-3 py-3 text-center whitespace-nowrap">
+                              <span className="float-left">IDR</span> 
+                              <span className="ml-2">{offer.totalAmount}</span>
+                            </td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">{offer.revisionNo}</td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">{offer.updatedDate}</td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">
