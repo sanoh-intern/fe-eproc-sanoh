@@ -3,12 +3,12 @@
 import React, { useState, useEffect } from "react"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
-import { useNavigate, Link } from "react-router-dom"
 import Breadcrumb from "../../../../components/Breadcrumbs/Breadcrumb"
 import Select from "react-select"
 import Pagination from "../../../../components/Table/Pagination"
 import { FaSortUp, FaSortDown } from "react-icons/fa"
 import SearchBar from "../../../../components/Table/SearchBar"
+import { Link } from "react-router-dom"
 
 interface RegisteredOffer {
     id: string
@@ -51,8 +51,6 @@ const AdminRegistered: React.FC = () => {
         key: "",
         direction: "asc",
     })
-
-    const navigate = useNavigate()
 
     useEffect(() => {
         const loadData = async () => {
