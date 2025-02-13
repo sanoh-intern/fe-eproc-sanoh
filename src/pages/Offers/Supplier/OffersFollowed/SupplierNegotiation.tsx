@@ -84,7 +84,7 @@ const fetchNegotiationHistory = async (offerId: string): Promise<NegotiationEntr
             revisionNo: 3,
             status: "Revision",
             comment: "SSS approved the proposal",
-            final: true,
+            final: false,
         },
     ]
 }

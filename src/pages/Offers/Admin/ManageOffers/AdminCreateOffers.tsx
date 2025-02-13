@@ -104,7 +104,7 @@ const AdminCreateOffers: React.FC = () => {
 
         return (
         <div className="w-full">
-            <div className="flex flex-wrap gap-2 p-2 mb-2 rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black">
+            <div className="flex flex-wrap gap-2 p-2 mb-2 rounded border-[1.5px] border-secondary bg-transparent py-3 px-5 text-black">
                 {emails.map((email, index) => (
                     <span key={index} className="bg-blue-100 px-2 py-1 rounded-md flex items-center gap-2">
                     {email}
@@ -202,7 +202,7 @@ const AdminCreateOffers: React.FC = () => {
                                 onChange={(e) => setProjectName(e.target.value)}
                                 placeholder="Enter project name"
                                 required
-                                className="w-full rounded border border-stroke py-3 px-5 text-black focus:border-primary"
+                                className="w-full rounded border border-secondary py-3 px-5 text-black focus:border-primary"
                             />
                         </div>
                         {/* Registration Due Date */}
@@ -213,7 +213,7 @@ const AdminCreateOffers: React.FC = () => {
                                 value={registrationDueDate}
                                 onChange={(e) => setRegistrationDueDate(e.target.value)}
                                 required
-                                className="w-full rounded border border-stroke py-3 px-5 text-black focus:border-primary"
+                                className="w-full rounded border border-secondary py-3 px-5 text-black focus:border-primary"
                             />
                         </div>
                         {/* Project Overview */}
@@ -224,7 +224,7 @@ const AdminCreateOffers: React.FC = () => {
                                 onChange={(e) => setOverview(e.target.value)}
                                 placeholder="Enter project details/overview"
                                 required
-                                className="w-full rounded border border-stroke py-3 px-5 text-black focus:border-primary"
+                                className="w-full rounded border border-secondary py-3 px-5 text-black focus:border-primary"
                                 rows={5}
                             />
                         </div>
@@ -234,7 +234,7 @@ const AdminCreateOffers: React.FC = () => {
                             <input
                                 type="file"
                                 onChange={handleFileChange}
-                                className="w-full rounded border border-stroke py-3 px-5 text-black focus:border-primary"
+                                className="w-full rounded border border-secondary py-3 px-5 text-black focus:border-primary"
                             />
                         </div>
                         {/* Offer Type */}
@@ -246,6 +246,7 @@ const AdminCreateOffers: React.FC = () => {
                                 onChange={(option) => setOfferType(option)}
                                 placeholder="Select offer type"
                                 isClearable
+                                className="w-full rounded border border-secondary py-3 px-5 text-black focus:border-primary"
                             />
                         </div>
                         {/* Invite Email */}

@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { FiDownload, FiCalendar, FiClock } from "react-icons/fi"
+import { FiDownload, FiCalendar, FiClock, FiTarget, FiUserCheck, FiFlag, FiAward } from "react-icons/fi"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb"
@@ -75,25 +75,29 @@ const OffersDetails: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-800 mb-4">{offerDetails.projectName}</h1>
           <div className="flex flex-wrap mb-4">
             <div className="w-full md:w-1/2 flex items-center mb-2">
-              <FiCalendar className="text-gray-500 mr-2" />
+              <FiCalendar className="text-secondary mr-2" />
               <span className="text-gray-600">Created: {offerDetails.createdDate}</span>
             </div>
             <div className="w-full md:w-1/2 flex items-center mb-2">
-              <FiClock className="text-gray-500 mr-2" />
+              <FiClock className="text-secondary mr-2" />
               <span className="text-gray-600">Close Registration: {offerDetails.closeRegistrationDate}</span>
             </div>
             <div className="w-full md:w-1/2 flex items-center mb-2">
+              <FiTarget className="text-secondary mr-2" />
               <span className="text-gray-600">Offer Type: {offerDetails.offerType}</span>
             </div>
             <div className="w-full md:w-1/2 flex items-center mb-2">
+              <FiUserCheck className="text-secondary mr-2" />
               <span className="text-gray-600">Registration Status: {offerDetails.registrationStatus}</span>
             </div>
             <div className="w-full md:w-1/2 flex items-center mb-2">
+              <FiFlag className="text-secondary mr-2" />
               <span className="text-gray-600">Offer Status: {offerDetails.offerStatus}</span>
             </div>
             {offerDetails.offerStatus === "Supplier Selected" && offerDetails.winningSupplier && (
               <div className="w-full md:w-1/2 flex items-center mb-2">
-                <span className="text-gray-600">Winning Supplier: {offerDetails.winningSupplier}</span>
+              <FiAward className="text-secondary mr-2" />
+              <span className="text-gray-600">Winning Supplier: {offerDetails.winningSupplier}</span>
               </div>
             )}
           </div>

@@ -18,8 +18,8 @@ const Header = (props: {
       text: 'Do you really want to log out?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#1e3a8a',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: "#2F4F4F",
+      cancelButtonColor: "#dc2626",
       confirmButtonText: 'Yes, log out!',
       cancelButtonText: 'Cancel'
     }).then((result) => {

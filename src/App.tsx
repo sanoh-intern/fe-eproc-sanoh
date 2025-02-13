@@ -203,7 +203,7 @@ const App: React.FC = () => {
               }
             />
             <Route
-              path="/offers/registered/:id"
+              path="/offers/registered/details/:id"
               element={
                 <ProtectedRoute allowedRoles={['2','3','4']}>
                   <PageTitle title="Offers Registered Detail | PT SANOH INDONESIA" />
