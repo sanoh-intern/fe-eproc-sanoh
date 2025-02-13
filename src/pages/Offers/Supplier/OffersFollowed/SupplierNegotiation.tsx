@@ -20,13 +20,15 @@ interface OfferDetails {
     attachmentUrl: string
     registrationDate: string
     winningCompany: string | null
-    isClosed: boolean
+    offerType?: string
+    registrationStatus?: string
+    offerStatus?: string
+    winningSupplier?: string
 }
 
 interface NegotiationEntry {
     id: string
     submitDate: string
-    attachmentUrl: string | null
     totalAmount: number
     revisionNo: number
     status: "Revision" | "On Review" | "Accepted" | "Declined"
@@ -46,8 +48,11 @@ const fetchOfferDetails = async (id: string): Promise<OfferDetails> => {
         "This project aims to develop a comprehensive smart city infrastructure, including IoT sensors, data analytics platforms, and integrated city management systems.",
         attachmentUrl: "/path/to/project-details.pdf",
         registrationDate: "2023-06-20",
+        offerType: "Public",
+        registrationStatus: "Close",
         winningCompany: "TechInnovate Solutions",
-        isClosed: false,
+        offerStatus: "Supplier Selected",
+        winningSupplier: "PT Coba",
     }
 }
 
@@ -57,7 +62,6 @@ const fetchNegotiationHistory = async (offerId: string): Promise<NegotiationEntr
         {
             id: "nego-1",
             submitDate: "2024-01-20",
-            attachmentUrl: "/path/to/attachment-1.pdf",
             totalAmount: 600000,
             revisionNo: 1,
             status: "On Review",
@@ -67,7 +71,6 @@ const fetchNegotiationHistory = async (offerId: string): Promise<NegotiationEntr
         {
             id: "nego-2",
             submitDate: "2024-01-25",
-            attachmentUrl: "/path/to/attachment-2.pdf",
             totalAmount: 650000,
             revisionNo: 2,
             status: "Revision",
@@ -77,7 +80,6 @@ const fetchNegotiationHistory = async (offerId: string): Promise<NegotiationEntr
         {
             id: "nego-3",
             submitDate: "2024-01-30",
-            attachmentUrl: null,
             totalAmount: 700000,
             revisionNo: 3,
             status: "Revision",
@@ -96,6 +98,7 @@ const SupplierNegotiation: React.FC = () => {
     const [isFinal, setIsFinal] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
     const [rowsPerPage, setRowsPerPage] = useState(10)
+    
 
     useEffect(() => {
         const loadData = async () => {
@@ -117,11 +120,11 @@ const SupplierNegotiation: React.FC = () => {
         loadData()
     }, [])
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files) {
-            setFile(event.target.files[0])
-        }
-    }
+    // const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     if (event.target.files) {
+    //         setFile(event.target.files[0])
+    //     }
+    // }
 
     const handleSubmit = async () => {
         if (!totalAmount && !file) {
@@ -171,21 +174,32 @@ const SupplierNegotiation: React.FC = () => {
             <div className="container">
                 <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-8">
                     <div className="p-4 md:p-4 lg:p-6 space-y-6">
-                        <h1 className="text-3xl font-bold text-primary mb-4">{offerDetails.projectName}</h1>
+                        <h1 className="text-3xl font-bold text-gray-800 mb-4">{offerDetails.projectName}</h1>
                         <div className="flex flex-wrap mb-4">
-                            <div className="w-full md:w-1/3 flex items-center mb-2">
+                            <div className="w-full md:w-1/2 flex items-center mb-2">
                                 <FiCalendar className="text-gray-500 mr-2" />
                                 <span className="text-gray-600">Created: {offerDetails.createdDate}</span>
                             </div>
-                            <div className="w-full md:w-1/3 flex items-center mb-2">
-                                <FiClock className="text-gray-500 mr-2" />
+                            <div className="w-full md:w-1/2 flex items-center mb-2">
+                            <FiClock className="text-gray-500 mr-2" />
                                 <span className="text-gray-600">Close Registration: {offerDetails.closeRegistrationDate}</span>
                             </div>
-                            <div className="w-full md:w-1/3 flex items-center mb-2">
-                                <FiCalendar className="text-gray-500 mr-2" />
-                                <span className="text-gray-600">Registration Date: {offerDetails.registrationDate}</span>
+                            <div className="w-full md:w-1/2 flex items-center mb-2">
+                                <span className="text-gray-600">Offer Type: {offerDetails.offerType}</span>
                             </div>
+                            <div className="w-full md:w-1/2 flex items-center mb-2">
+                                <span className="text-gray-600">Registration Status: {offerDetails.registrationStatus}</span>
+                            </div>
+                            <div className="w-full md:w-1/2 flex items-center mb-2">
+                                <span className="text-gray-600">Offer Status: {offerDetails.offerStatus}</span>
+                            </div>
+                            {offerDetails.offerStatus === "Supplier Selected" && offerDetails.winningSupplier && (
+                                <div className="w-full md:w-1/2 flex items-center mb-2">
+                                    <span className="text-gray-600">Winning Supplier: {offerDetails.winningSupplier}</span>
+                                </div>
+                            )}
                         </div>
+                        
                         <div className="mb-6">
                             <h2 className="text-xl font-semibold text-gray-700 mb-2">Project Overview</h2>
                             <p className="text-gray-600">{offerDetails.overview}</p>
@@ -193,27 +207,28 @@ const SupplierNegotiation: React.FC = () => {
                         <div className="mb-6">
                             <h2 className="text-xl font-semibold text-gray-700 mb-2">Project Details</h2>
                             <Button
-                                onClick={() => window.open(offerDetails.attachmentUrl, "_blank")}
-                                title="Download PDF"
-                                icon={FiDownload}
+                            onClick={() => window.open(offerDetails.attachmentUrl, "_blank")}
+                            className=" "
+                            title="Download PDF"
+                            icon={FiDownload}
                             />
                         </div>
                     </div>
                 </div>
 
-                {offerDetails.isClosed && offerDetails.winningCompany && (
+                {offerDetails.offerStatus === "Supplier Selected" && offerDetails.winningSupplier && (
                     <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-8" role="alert">
                         <p className="font-bold">Tender Closed</p>
-                        <p>The winning company for this tender is: {offerDetails.winningCompany}</p>
+                        <p>The winning supplier for this tender is: {offerDetails.winningSupplier}</p>
                     </div>
                 )}
 
-                {!offerDetails.isClosed && (
+                {(offerDetails.offerStatus !== "Supplier Selected" || !offerDetails.winningSupplier) && !negotiationHistory.some(entry => entry.final) && (
                     <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-8">
                         <div className="p-4 md:p-4 lg:p-6 space-y-6">
                             <h2 className="text-2xl font-bold text-primary mb-4">Submit Proposal</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
+                                {/* <div>
                                     <label className="block text-sm font-medium text-primary">Upload File (Optional)</label>
                                     <input
                                         type="file"
@@ -224,7 +239,7 @@ const SupplierNegotiation: React.FC = () => {
                                         file:bg-primary/10 file:text-primary
                                         hover:file:bg-blue-100 border border-secondary rounded-md focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50"
                                     />
-                                </div>
+                                </div> */}
                                 <div>
                                     <label className="block text-sm font-medium text-primary">Total Amount</label>
                                     <input
@@ -257,7 +272,7 @@ const SupplierNegotiation: React.FC = () => {
                             <Button
                                 onClick={handleSubmit}
                                 title="Submit Proposal"
-                                disabled={negotiationHistory.length >= 5}
+                                disabled={offerDetails.offerStatus === "Supplier Selected" && (!!offerDetails.winningSupplier || negotiationHistory.length >= 5 || negotiationHistory.some(entry => entry.final))}
                             />
                             {negotiationHistory.length >= 5 && (
                                 <p className="text-red-500 text-sm">Maximum number of submissions reached.</p>
@@ -276,9 +291,9 @@ const SupplierNegotiation: React.FC = () => {
                                         <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
                                             Submit Date
                                         </th>
-                                        <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
+                                        {/* <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
                                             Attachment
-                                        </th>
+                                        </th> */}
                                         <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
                                             Total Amount
                                         </th>
@@ -297,7 +312,7 @@ const SupplierNegotiation: React.FC = () => {
                                     {paginatedHistory.map((entry) => (
                                         <tr key={entry.id} className="hover:bg-gray-50">
                                             <td className="px-3 py-3 text-center whitespace-nowrap">{entry.submitDate}</td>
-                                            <td className="px-3 py-3 text-center whitespace-nowrap">
+                                            {/* <td className="px-3 py-3 text-center whitespace-nowrap">
                                                 {entry.attachmentUrl ? (
                                                     <a
                                                         href={entry.attachmentUrl}
@@ -310,12 +325,16 @@ const SupplierNegotiation: React.FC = () => {
                                                 ) : (
                                                     "N/A"
                                                 )}
+                                            </td> */}
+                                            <td className="px-3 py-3 text-center whitespace-nowrap">
+                                                <td className="px-3 py-3 text-center whitespace-nowrap flex items-center justify-center">
+                                                    <span className="mr-2 border rounded-sm border-gray-300 px-1">IDR</span>
+                                                    <span>{Number(entry.totalAmount).toLocaleString('id-ID')}</span>
+                                                </td>
                                             </td>
                                             <td className="px-3 py-3 text-center whitespace-nowrap">
-                                                {entry.totalAmount.toLocaleString()}
-                                                <div className="inline-block ml-4">IDR</div>
+                                                {entry.revisionNo} {entry.final && <span className="ml-2 text-xs font-medium bg-primary px-3 py-1 rounded-full text-white">Final</span>}
                                             </td>
-                                            <td className="px-3 py-3 text-center whitespace-nowrap">{entry.revisionNo}</td>
                                             <td className="px-3 py-3 text-center whitespace-nowrap">
                                                 <span
                                                     className={`px-2 py-1 rounded ${entry.status === "Accepted"

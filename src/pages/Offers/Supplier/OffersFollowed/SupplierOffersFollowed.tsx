@@ -270,7 +270,7 @@ const SupplierOffersFollowed: React.FC = () => {
                           className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer"
                         >
                           <span className="flex items-center justify-center">
-                          Action
+                            Action
                           </span>
                         </th>
                         </tr>
@@ -296,9 +296,9 @@ const SupplierOffersFollowed: React.FC = () => {
                             </td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">{offer.offerType}</td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">{offer.registrationDate}</td>
-                            <td className="px-3 py-3 text-center whitespace-nowrap">
-                              <span className="float-left">IDR</span> 
-                              <span className="ml-2">{offer.totalAmount}</span>
+                            <td className="px-3 py-3 text-center whitespace-nowrap flex items-center justify-center">
+                                <span className="mr-2 border rounded-sm border-gray-300 px-1">IDR</span>
+                                <span>{Number(offer.totalAmount).toLocaleString('id-ID')}</span>
                             </td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">{offer.revisionNo}</td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">{offer.updatedDate}</td>
