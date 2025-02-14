@@ -14,8 +14,8 @@ const Header = (props: {
     return (
         <>
             <header className="sticky top-0 z-999 bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none shadow-[0_2px_2px_rgba(55,55,55,0.5)]">
-                <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-4 md:px-6 2xl:px-11">
-                {/* Mobile Header */}
+                <div className="mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8 py-4 max-w-screen-2xl">
+                    {/* Mobile Header */}
                     <div className="flex items-center gap-2 sm:gap-4 lg:hidden">
                         {/* Hamburger Toggle BTN */}
                         <button
@@ -49,25 +49,25 @@ const Header = (props: {
                         </Link>
                     </div>
 
-                {/* Desktop Navigation */}
-                <div className="hidden lg:flex w-full items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                        <Link to="/" className={`${navLinkClasses} flex-shrink-0`}>
-                            <img src={LogoIcon} alt="Logo" className="h-8 w-auto" />
-                        </Link>
-                        <NavLink to="/contact-us" className={navLinkClasses}>
-                            Contact Us
-                        </NavLink>
+                    {/* Desktop Navigation */}
+                    <div className="hidden lg:flex w-full items-center justify-between">
+                        <div className="flex items-center space-x-4">
+                            <Link to="/" className={`${navLinkClasses} flex-shrink-0`}>
+                                <img src={LogoIcon} alt="Logo" className="h-8 w-auto"/>
+                            </Link>
+                            <NavLink to="/contact-us" className={navLinkClasses}>
+                                Contact Us
+                            </NavLink>
+                        </div>
+                        <div className="flex items-center space-x-4">
+                            <NavLink to="/auth/login" className="rounded-full px-6 py-2 text-sm font-medium border-2 border-primary text-primary transition-colors hover:bg-primary hover:text-white">
+                                Login
+                            </NavLink>
+                            <NavLink to="/auth/register" className={registerLinkClasses}>
+                                Register
+                            </NavLink>
+                        </div>
                     </div>
-                    <div className="flex items-center space-x-4">
-                        <NavLink to="/auth/login" className="rounded-full px-6 py-2 text-sm font-medium border-2 border-primary text-primary transition-colors hover:bg-primary hover:text-white">
-                            Login
-                        </NavLink>
-                        <NavLink to="/auth/register" className={registerLinkClasses}>
-                            Register
-                        </NavLink>
-                    </div>
-                </div>
                 </div>
             </header>
 

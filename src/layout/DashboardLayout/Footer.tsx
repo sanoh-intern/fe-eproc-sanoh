@@ -31,6 +31,11 @@ const Footer = () => {
                   Supplier Management System
                 </Link>
               </li>
+              <li>
+                <Link to="/contact-us" className="text-sm text-white underline hover:text-secondary" >
+                  Contact Us
+                </Link>
+              </li>
             </ul>
           </div>
           {/* Contact Info Section */}
