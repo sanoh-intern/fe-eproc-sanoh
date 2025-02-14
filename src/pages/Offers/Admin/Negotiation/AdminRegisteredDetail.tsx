@@ -294,12 +294,13 @@ const AdminRegisteredDetail: React.FC = () => {
                               <div className="flex justify-center space-x-2">
                                 <Button
                                   title="Accept"
+                                  color="bg-green-600"
                                   onClick={() => handleProposalAction(proposal.bpcode, "Accepted")}
                                 />
                                 <Button
                                   title="Decline"
                                   onClick={() => handleProposalAction(proposal.bpcode, "Declined")}
-                                  color="bg-red-600 hover:bg-red-700"
+                                  color="bg-red-600"
                                 />
                               </div>
                             )}
