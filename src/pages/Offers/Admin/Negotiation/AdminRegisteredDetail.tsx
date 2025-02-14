@@ -11,21 +11,8 @@ import Loader from "../../../../common/Loader"
 import Swal from "sweetalert2"
 import SearchBar from "../../../../components/Table/SearchBar"
 import OffersDetails from "../../../../components/OffersDetail"
+import Button from "../../../../components/Forms/Button"
 
-// ---------------------------------------------------
-// Offer detail interface (must match OffersDetails)
-export interface OfferDetailsData {
-  id: string
-  projectName: string
-  createdDate: string
-  closeRegistrationDate: string
-  overview: string
-  attachmentUrl: string
-  offerType: string
-  registrationStatus: string
-  offerStatus: string
-  winningSupplier?: string
-}
 
 // ---------------------------------------------------
 // Supplier proposal table interface
@@ -45,25 +32,6 @@ interface RegisteredSupplier {
   bpcode: string
   companyName: string
   registrationDate: string
-}
-
-// ---------------------------------------------------
-// Simulated API calls
-const fetchOfferDetail = async (id: string): Promise<OfferDetailsData> => {
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-  return {
-    id,
-    projectName: "Smart City Infrastructure Development",
-    createdDate: "2023-06-15",
-    closeRegistrationDate: "2023-07-15",
-    overview:
-      "This project aims to develop a comprehensive smart city infrastructure, including IoT sensors, data analytics, and integrated city management systems.",
-    attachmentUrl: "/path/to/project-details.pdf",
-    offerType: Math.random() > 0.5 ? "Public" : "Private",
-    registrationStatus: "Open",
-    offerStatus: Math.random() > 0.6 ? "Open" : "Supplier Selected",
-    winningSupplier: Math.random() > 0.8 ? "Global Tech Ltd" : undefined,
-  }
 }
 
 const fetchSupplierProposals = async (): Promise<SupplierProposal[]> => {
@@ -100,7 +68,6 @@ const fetchRegisteredSuppliers = async (): Promise<RegisteredSupplier[]> => {
 // ---------------------------------------------------
 // Page component
 const AdminRegisteredDetail: React.FC = () => {
-  const [offerDetail, setOfferDetail] = useState<OfferDetailsData | null>(null)
   const [proposals, setProposals] = useState<SupplierProposal[]>([])
   const [filteredProposals, setFilteredProposals] = useState<SupplierProposal[]>([])
   const [allSuppliers, setAllSuppliers] = useState<RegisteredSupplier[]>([])
@@ -110,16 +77,13 @@ const AdminRegisteredDetail: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [currentPage, setCurrentPage] = useState(1)
-  const [rowsPerPage, setRowsPerPage] = useState(5)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
 
   const navigate = useNavigate()
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        // In real usage, retrieve the offerId from route params or other means
-        const detail = await fetchOfferDetail("1")
-        setOfferDetail(detail)
         const propData = await fetchSupplierProposals()
         setProposals(propData)
         setFilteredProposals(propData)
@@ -160,11 +124,6 @@ const AdminRegisteredDetail: React.FC = () => {
 
   // Accept / Decline proposal
   const handleProposalAction = (bpcode: string, action: "Accepted" | "Declined") => {
-    if (offerDetail?.winningSupplier) {
-      // Already have a winner
-      toast.info("A winning supplier has already been chosen.")
-      return
-    }
     Swal.fire({
       title: `Confirm ${action}`,
       text: `Are you sure you want to mark this proposal as ${action}?`,
@@ -174,27 +133,46 @@ const AdminRegisteredDetail: React.FC = () => {
       cancelButtonText: "Cancel",
       confirmButtonColor: "#2F4F4F",
       cancelButtonColor: "#dc2626",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
         // In real usage, you'd send an API request here
         toast.success(`Proposal from ${bpcode} has been ${action}`)
         if (action === "Accepted") {
-          // Mark the offer as having a winning supplier
-          setOfferDetail((prev) =>
-            prev ? { ...prev, winningSupplier: `Supplier for ${bpcode}` } : prev
-          )
+          try {
+            // Replace this with your actual API endpoint
+            await fetch('/api/proposals/accept', {
+              method: 'POST',
+              headers: {
+          'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ bpcode }),
+            });
+            
+            // Refresh the proposals data
+            const updatedProposals = await fetchSupplierProposals();
+            setProposals(updatedProposals);
+            setFilteredProposals(updatedProposals);
+          } catch (error) {
+            toast.error('Failed to accept proposal');
+          }
         } else {
-          // Mark the proposal as "Declined" locally
-          setProposals((prev) =>
-            prev.map((p) =>
-              p.bpcode === bpcode ? { ...p, lastStatus: "Declined" } : p
-            )
-          )
-          setFilteredProposals((prev) =>
-            prev.map((p) =>
-              p.bpcode === bpcode ? { ...p, lastStatus: "Declined" } : p
-            )
-          )
+          try {
+            // Replace this with your actual API endpoint
+            await fetch('/api/proposals/decline', {
+              method: 'POST',
+              headers: {
+          'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ bpcode }),
+            });
+            
+            // Refresh the proposals data
+            const updatedProposals = await fetchSupplierProposals();
+            setProposals(updatedProposals);
+            setFilteredProposals(updatedProposals);
+          } catch (error) {
+            toast.error('Failed to decline proposal');
+          }
         }
       }
     })
@@ -206,16 +184,15 @@ const AdminRegisteredDetail: React.FC = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Registered Detail" />
+      <Breadcrumb pageName="Registered Detail" isSubMenu={true} parentMenu={{name: "Registered Offers", link: "/offers/registered"}}/>
       <ToastContainer position="top-right" />
-      <div className="bg-white p-2 md:p-4 lg:p-6 space-y-6">
-        {/* Offer detail section (reused from OffersDetails) */}
-        {offerDetail && <OffersDetails />}
+      <div className="bg-white p-2 md:p-4 lg:p-6 space-y-8 text-primary">
+        <OffersDetails />
 
         {/* Supplier Proposals Section */}
         <div className="mt-6">
           <h2 className="text-xl font-semibold mb-4">List of Supplier Proposals</h2>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 items-center mb-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 items-center mb-4 justify-between">
             <SearchBar placeholder="Search company name..." onSearchChange={setSearchQuery} />
             <Select
               options={[
@@ -268,6 +245,9 @@ const AdminRegisteredDetail: React.FC = () => {
                           Last Upload
                         </th>
                         <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
+                          Details
+                        </th>
+                        <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
                           Actions
                         </th>
                       </tr>
@@ -280,7 +260,8 @@ const AdminRegisteredDetail: React.FC = () => {
                             {proposal.companyName}
                           </td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
-                            ${proposal.totalAmount.toLocaleString()}
+                              <span className="mr-2 border rounded-sm border-gray-300 px-1">IDR</span>
+                              <span>{Number(proposal.totalAmount).toLocaleString('id-ID')}</span>
                           </td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
                             {proposal.revisionNo}
@@ -294,32 +275,33 @@ const AdminRegisteredDetail: React.FC = () => {
                           <td className="px-3 py-3 text-center whitespace-nowrap">
                             {proposal.lastUploadAt}
                           </td>
+                            <td className="px-3 py-3 text-center whitespace-nowrap">
+                              <div className="flex justify-center">
+                                <Button
+                                  title="View"
+                                  onClick={() => navigate(`/offers/negotiation/details/${proposal.bpcode}`)}
+                                  color="bg-gray-600"
+                                />
+                              </div>
+                            </td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
-                            <button
-                              onClick={() =>
-                                navigate(`/offers/admin/negotiation/${proposal.bpcode}`)
-                              }
-                              className="bg-blue-600 hover:bg-blue-800 text-white px-3 py-1 rounded mr-2"
-                            >
-                              View Detail
-                            </button>
-                            {!offerDetail?.winningSupplier && proposal.lastStatus !== "Accepted" && (
-                              <>
-                                <button
+                            
+                            {proposal.lastStatus === "Accepted" ? (
+                              <span className="text-white font-semibold bg-green-600 px-3 py-2 rounded-full">Accepted</span>
+                            ) : proposal.lastStatus === "Declined" ? (
+                              <span className="text-white font-semibold bg-red-600 px-3 py-2 rounded-full">Declined</span>
+                            ) : (
+                              <div className="flex justify-center space-x-2">
+                                <Button
+                                  title="Accept"
                                   onClick={() => handleProposalAction(proposal.bpcode, "Accepted")}
-                                  className="bg-green-600 hover:bg-green-800 text-white px-3 py-1 rounded mr-2"
-                                >
-                                  Accept
-                                </button>
-                                {proposal.lastStatus !== "Declined" && (
-                                  <button
-                                    onClick={() => handleProposalAction(proposal.bpcode, "Declined")}
-                                    className="bg-red-600 hover:bg-red-800 text-white px-3 py-1 rounded"
-                                  >
-                                    Decline
-                                  </button>
-                                )}
-                              </>
+                                />
+                                <Button
+                                  title="Decline"
+                                  onClick={() => handleProposalAction(proposal.bpcode, "Declined")}
+                                  color="bg-red-600 hover:bg-red-700"
+                                />
+                              </div>
                             )}
                           </td>
                         </tr>
