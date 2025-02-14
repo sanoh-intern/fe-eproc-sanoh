@@ -9,8 +9,8 @@ import Select from "react-select"
 import Pagination from "../../../../components/Table/Pagination"
 import Loader from "../../../../common/Loader"
 import Swal from "sweetalert2"
-import OffersDetails from "../../../Offers/OffersDetails" // Adjust path if needed
 import SearchBar from "../../../../components/Table/SearchBar"
+import OffersDetails from "../../../../components/OffersDetail"
 
 // ---------------------------------------------------
 // Offer detail interface (must match OffersDetails)

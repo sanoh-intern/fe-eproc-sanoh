@@ -14,7 +14,6 @@ import Register from "./pages/Authentication/Register";
 import ForgotPassword from "./pages/Authentication/ForgotPassword";
 import SettingProfile from "./pages/SettingProfile";
 import CompanyDetail from "./pages/CompanyDetail/Supplier/SupplierCompanyDetail";
-import OffersDetails from "./pages/Offers/OffersDetails";
 import AdminCreateOffers from "./pages/Offers/Admin/ManageOffers/AdminCreateOffers";
 import AdminEditOffers from "./pages/Offers/Admin/ManageOffers/AdminEditOffers";
 import AdminRegisteredDetail from "./pages/Offers/Admin/Negotiation/AdminRegisteredDetail";
@@ -25,6 +24,7 @@ import AdminManageOffers from "./pages/Offers/Admin/ManageOffers/AdminManageOffe
 import SupplierOffersAvailable from "./pages/Offers/Supplier/OffersAvailable/SupplierOffersAvailable";
 import SupplierOffersFollowed from "./pages/Offers/Supplier/OffersFollowed/SupplierOffersFollowed";
 import SupplierNegotiation from "./pages/Offers/Supplier/OffersFollowed/SupplierNegotiation";
+import OffersDetailsPage from "./pages/Offers/OffersDetailsPage";
 
 const App: React.FC = () => {
   return (
@@ -144,7 +144,7 @@ const App: React.FC = () => {
               element={
                 <ProtectedRoute allowedRoles={['2','3','4','5']}>
                   <PageTitle title="Offers Detail | PT SANOH INDONESIA" />
-                  <OffersDetails />
+                  <OffersDetailsPage />
                 </ProtectedRoute>
               }
             />
