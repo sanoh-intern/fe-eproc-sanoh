@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import SupplierCompanyDetail from "./Supplier/SupplierCompanyDetail";
-import AdminCompanyDetail from "./Admin/AdminCompanyDetail";
+import SupplierCompanyData from "./Supplier/SupplierCompanyData";
+import AdminCompanyData from "./Admin/AdminCompanyData";
 
-const IndexCompanyDetail: React.FC = () => {
+const IndexCompanyData: React.FC = () => {
     const [userRole, setUserRole] = useState<string>('');
     
     useEffect(() => {
@@ -11,12 +11,12 @@ const IndexCompanyDetail: React.FC = () => {
     }, []);
     
     if (userRole === 'admin-purchasing' || userRole === 'admin-presdir' || userRole === 'admin-review') {
-        return <AdminCompanyDetail />;
+        return <AdminCompanyData />;
     } else if (userRole === 'supplier') {
-        return <SupplierCompanyDetail />;
+        return <SupplierCompanyData />;
     } else {
         return <div>No dashboard available for your role.</div>;
     }
 };
 
-export default IndexCompanyDetail;
+export default IndexCompanyData;

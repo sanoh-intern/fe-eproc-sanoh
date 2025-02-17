@@ -10,6 +10,8 @@ import Loader from "../../../../common/Loader"
 import Swal from "sweetalert2"
 import OffersDetails from "../../../../components/OffersDetail"
 import fetchOfferDetails, { TypeOfferDetails } from "../../../../api/Offers/OfferDetails"
+import FetchCompanyData, { TypeCompanyData } from "../../../../api/Data/CompanyData"
+import CompanyDetails from "../../../../components/CompanyDetails"
 
 interface SupplierProposal {
     id: string
@@ -66,6 +68,9 @@ const AdminNegotiation: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const [rowsPerPage, setRowsPerPage] = useState(5)
     const [offerDetails, setOfferDetails] = useState<TypeOfferDetails | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [companyData, setCompanyData] = useState<TypeCompanyData | null>(null);
+
 
     useEffect(() => {
         const loadData = async () => {
@@ -146,8 +151,14 @@ const AdminNegotiation: React.FC = () => {
         currentPage * rowsPerPage
     )
 
-    const handeclick = () => {
-        console.log("clicked")
+    const handeclick = async () => {
+        setIsModalOpen(true)
+        try {
+            const data = await FetchCompanyData("1")
+            setCompanyData(data)
+        } catch (error) {
+            console.error(error)
+        }
     }
 
     return (
@@ -192,6 +203,21 @@ const AdminNegotiation: React.FC = () => {
                                             </div>
                                         </div>
                                     ))}
+                                    {isModalOpen && (
+                                        <div className="fixed inset-0 flex items-center justify-center z-999 overflow-y-auto">
+                                            <div className="absolute inset-0 bg-black opacity-50" onClick={() => setIsModalOpen(false)}></div>
+                                            <div className="bg-white p-4 rounded shadow relative z-10 max-w-7xl w-full mx-4 my-8">
+                                                <Button
+                                                    title="Close"
+                                                    onClick={() => setIsModalOpen(false)}
+                                                    color="bg-red-500 text-white absolute top-2 right-2"
+                                                />
+                                                <div className="overflow-y-auto max-h-[calc(100vh-100px)]">
+                                                    <CompanyDetails companyData={companyData} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                                 <table className="w-full text-sm text-left">
                                     <thead className="bg-gray-50">

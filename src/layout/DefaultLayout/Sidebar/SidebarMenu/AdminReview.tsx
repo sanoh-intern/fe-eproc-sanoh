@@ -1,5 +1,5 @@
 import ManageOffers from "./component/ManageOffers"
-import CompanyDetails from "./component/CompanyDetails"
+import CompanyDetails from "./component/CompanyData"
 import Dashboard from "./component/Dashboard"
 import OffersRegistered from "./component/OffersRegistered"
 import VerificationStatus from "./component/Verification"

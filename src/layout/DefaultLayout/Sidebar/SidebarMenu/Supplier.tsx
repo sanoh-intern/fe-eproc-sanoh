@@ -1,4 +1,4 @@
-import CompanyDetails from "./component/CompanyDetails"
+import CompanyDetails from "./component/CompanyData"
 import Dashboard from "./component/Dashboard"
 import OffersAvailable from "./component/OffersAvailable"
 import OffersFollowed from "./component/OffersFollowed"

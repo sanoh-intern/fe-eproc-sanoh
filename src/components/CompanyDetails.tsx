@@ -1,11 +1,15 @@
 import React from "react"
 import {
-  FaBuilding,
-  FaAddressCard,
-  FaFileAlt,
-  FaBusinessTime,
-  FaShieldAlt,
+    FaBuilding,
+    FaAddressCard,
+    FaFileAlt,
+    FaBusinessTime,
+    FaShieldAlt,
 } from "react-icons/fa"
+    
+interface CompanyDataProps {
+    companyData: CompanyData | null;
+}
 
 interface CompanyData {
   generalData: {
@@ -56,7 +60,65 @@ interface CompanyData {
   }
 }
 
-const CompanyDetails: React.FC<{ companyData: CompanyData }> = ({ companyData }) => {
+const CompanyDetails: React.FC<CompanyDataProps> = ({ companyData }) => {
+    if (!companyData) {
+        return (
+            <div className="w-full">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* General Data Card Skeleton */}
+                    <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+                        <div className="flex flex-col sm:flex-row items-start gap-8">
+                            <div className="w-48 h-48 rounded-xl overflow-hidden bg-gray-200 animate-pulse"></div>
+                            <div className="flex-1 space-y-4">
+                                <div className="h-8 bg-gray-200 rounded-md animate-pulse w-3/4"></div>
+                                <div className="space-y-2">
+                                    <div className="h-6 bg-gray-200 rounded-md animate-pulse"></div>
+                                    <div className="h-6 bg-gray-200 rounded-md animate-pulse"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Contact Information Card Skeleton */}
+                    <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+                        <div className="h-8 bg-gray-200 rounded-md animate-pulse w-1/2 mb-4"></div>
+                        <div className="space-y-2">
+                            <div className="h-6 bg-gray-200 rounded-md animate-pulse"></div>
+                            <div className="h-6 bg-gray-200 rounded-md animate-pulse"></div>
+                        </div>
+                    </div>
+
+                    {/* NIB Details Card Skeleton */}
+                    <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+                        <div className="h-8 bg-gray-200 rounded-md animate-pulse w-1/2 mb-4"></div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="h-6 bg-gray-200 rounded-md animate-pulse"></div>
+                            <div className="h-6 bg-gray-200 rounded-md animate-pulse"></div>
+                        </div>
+                    </div>
+
+                    {/* Business Licenses Card Skeleton */}
+                    <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+                        <div className="h-8 bg-gray-200 rounded-md animate-pulse w-1/2 mb-4"></div>
+                        <div className="space-y-2">
+                            <div className="h-6 bg-gray-200 rounded-md animate-pulse"></div>
+                            <div className="h-6 bg-gray-200 rounded-md animate-pulse"></div>
+                        </div>
+                    </div>
+
+                    {/* Integrity Pact Card Skeleton */}
+                    <div className="col-span-1 lg:col-span-2 bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+                        <div className="h-8 bg-gray-200 rounded-md animate-pulse w-1/2 mb-4"></div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="h-6 bg-gray-200 rounded-md animate-pulse"></div>
+                            <div className="h-6 bg-gray-200 rounded-md animate-pulse"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="w-full">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

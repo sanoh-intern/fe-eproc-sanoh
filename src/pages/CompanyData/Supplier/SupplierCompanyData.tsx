@@ -84,7 +84,7 @@ const api = {
   },
 }
 
-const SupplierCompanyDetail: React.FC = () => {
+const SupplierCompanyData: React.FC = () => {
   const [companyData, setCompanyData] = useState<any>(null);
   const [activeTab, setActiveTab] = useState(0);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
@@ -746,5 +746,5 @@ const IntegrityPactForm: React.FC<{
   )
 }
 
-export default SupplierCompanyDetail
+export default SupplierCompanyData
 
