@@ -2,10 +2,33 @@
 
 import "react-toastify/dist/ReactToastify.css"
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb"
-import { ToastContainer } from "react-toastify"
+import { toast, ToastContainer } from "react-toastify"
 import OffersDetails from "../../components/OffersDetail"
+import { useEffect, useState } from "react"
+import Loader from "../../common/Loader"
+import fetchOfferDetails, { TypeOfferDetails } from "../../api/Offers/OfferDetails"
 
 const OffersDetailsPage: React.FC = () => {
+  const [offerDetails, setOfferDetails] = useState<TypeOfferDetails | null>(null);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+          const [details] = await Promise.all([
+            fetchOfferDetails("1"),
+          ])
+          setOfferDetails(details)
+      } catch (error) {
+          console.error("Failed to fetch data:", error)
+        toast.error("Failed to load negotiation details")
+      } 
+    }
+
+    loadData()
+  }, [])
+
+  if (!offerDetails) return <Loader />
+
   return (
     <>
       <Breadcrumb 
@@ -16,7 +39,7 @@ const OffersDetailsPage: React.FC = () => {
       <ToastContainer position="top-right" />
       <div className="bg-white shadow-lg rounded-lg overflow-hidden">
         <div className="p-4 md:p-4 lg:p-6">
-          <OffersDetails />
+          <OffersDetails offerDetails={offerDetails} />
         </div>
       </div>
     </>

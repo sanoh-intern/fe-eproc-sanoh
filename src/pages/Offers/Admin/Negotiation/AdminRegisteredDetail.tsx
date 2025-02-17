@@ -12,10 +12,8 @@ import Swal from "sweetalert2"
 import SearchBar from "../../../../components/Table/SearchBar"
 import OffersDetails from "../../../../components/OffersDetail"
 import Button from "../../../../components/Forms/Button"
+import fetchOfferDetails, { TypeOfferDetails } from "../../../../api/Offers/OfferDetails"
 
-
-// ---------------------------------------------------
-// Supplier proposal table interface
 interface SupplierProposal {
   bpcode: string
   companyName: string
@@ -26,8 +24,6 @@ interface SupplierProposal {
   lastUploadAt: string
 }
 
-// ---------------------------------------------------
-// Registered suppliers table interface
 interface RegisteredSupplier {
   bpcode: string
   companyName: string
@@ -65,13 +61,12 @@ const fetchRegisteredSuppliers = async (): Promise<RegisteredSupplier[]> => {
   }))
 }
 
-// ---------------------------------------------------
-// Page component
 const AdminRegisteredDetail: React.FC = () => {
   const [proposals, setProposals] = useState<SupplierProposal[]>([])
   const [filteredProposals, setFilteredProposals] = useState<SupplierProposal[]>([])
   const [allSuppliers, setAllSuppliers] = useState<RegisteredSupplier[]>([])
   const [loading, setLoading] = useState(true)
+  const [offerDetails, setOfferDetails] = useState<TypeOfferDetails | null>(null);
 
   // Table states for proposals
   const [searchQuery, setSearchQuery] = useState("")
@@ -84,9 +79,13 @@ const AdminRegisteredDetail: React.FC = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
+        const [offerdata] = await Promise.all([fetchOfferDetails("1")])
+        setOfferDetails(offerdata)
+
         const propData = await fetchSupplierProposals()
         setProposals(propData)
         setFilteredProposals(propData)
+
         const registered = await fetchRegisteredSuppliers()
         setAllSuppliers(registered)
       } catch (error) {
@@ -187,7 +186,7 @@ const AdminRegisteredDetail: React.FC = () => {
       <Breadcrumb pageName="Registered Detail" isSubMenu={true} parentMenu={{name: "Registered Offers", link: "/offers/registered"}}/>
       <ToastContainer position="top-right" />
       <div className="bg-white p-2 md:p-4 lg:p-6 space-y-8 text-primary">
-        <OffersDetails />
+        <OffersDetails offerDetails={offerDetails} />
 
         {/* Supplier Proposals Section */}
         <div className="mt-6">

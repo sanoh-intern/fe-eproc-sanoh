@@ -10,12 +10,7 @@ import Pagination from "../../../../components/Table/Pagination"
 import Swal from "sweetalert2"
 import Loader from "../../../../common/Loader"
 import OffersDetails from "../../../../components/OffersDetail"
-
-interface OfferDetails {
-    id: string
-    offerStatus?: string
-    winningSupplier?: string
-}
+import fetchOfferDetails, { TypeOfferDetails } from "../../../../api/Offers/OfferDetails"
 
 interface NegotiationEntry {
     id: string
@@ -25,16 +20,6 @@ interface NegotiationEntry {
     status: "Revision" | "On Review" | "Accepted" | "Declined"
     comment: string | null
     final: boolean
-}
-
-// Simulated API functions
-const fetchOfferDetails = async (id: string): Promise<OfferDetails> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    return {
-        id,
-        offerStatus: "Supplier Selected",
-        winningSupplier: "PT Coba",
-    }
 }
 
 const fetchNegotiationHistory = async (offerId: string): Promise<NegotiationEntry[]> => {
@@ -71,7 +56,7 @@ const fetchNegotiationHistory = async (offerId: string): Promise<NegotiationEntr
 }
 
 const SupplierNegotiation: React.FC = () => {
-    const [offerDetails, setOfferDetails] = useState<OfferDetails | null>(null)
+    const [offerDetails, setOfferDetails] = useState<TypeOfferDetails | null>(null)
     const [negotiationHistory, setNegotiationHistory] = useState<NegotiationEntry[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [file, setFile] = useState<File | null>(null)
@@ -85,7 +70,7 @@ const SupplierNegotiation: React.FC = () => {
         const loadData = async () => {
             try {
                 const [details, history] = await Promise.all([
-                    fetchOfferDetails("1"), // In a real app, you'd get the ID from the route params
+                    fetchOfferDetails("1"),
                     fetchNegotiationHistory("1"),
                 ])
                 setOfferDetails(details)
@@ -152,10 +137,10 @@ const SupplierNegotiation: React.FC = () => {
                 parentMenu={{ name: "Followed Offers", link: "/offers/followed" }}
             />
             <ToastContainer position="top-right" />
-            <div className="container">
+            <div>
                 <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-8">
                     <div className="p-4 md:p-4 lg:p-6">
-                        <OffersDetails />
+                        <OffersDetails offerDetails={offerDetails} />
                     </div>
                 </div>
 

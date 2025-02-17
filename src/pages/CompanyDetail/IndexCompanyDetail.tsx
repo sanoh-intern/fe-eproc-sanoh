@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import AdminCompanyDetail from "./Admin/AdminCompanyDetail";
 import SupplierCompanyDetail from "./Supplier/SupplierCompanyDetail";
+import AdminCompanyDetail from "./Admin/AdminCompanyDetail";
 
 const IndexCompanyDetail: React.FC = () => {
     const [userRole, setUserRole] = useState<string>('');

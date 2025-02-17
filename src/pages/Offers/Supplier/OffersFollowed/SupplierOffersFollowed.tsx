@@ -289,10 +289,8 @@ const SupplierOffersFollowed: React.FC = () => {
                       ) : paginatedOffers.length > 0 ? (
                         paginatedOffers.map((offer) => (
                           <tr key={offer.id} className="hover:bg-gray-50">
-                            <td className="px-3 py-3 text-center whitespace-nowrap">
-                              <Link to={`../offers/details/${offer.id}`} className="text-blue-600 font-medium underline">
-                                {offer.projectName}
-                              </Link>
+                            <td className="px-3 py-3 text-center font-semibold whitespace-nowrap">
+                              {offer.projectName}                              
                             </td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">{offer.offerType}</td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">{offer.registrationDate}</td>

@@ -9,9 +9,7 @@ import Pagination from "../../../../components/Table/Pagination"
 import Loader from "../../../../common/Loader"
 import Swal from "sweetalert2"
 import OffersDetails from "../../../../components/OffersDetail"
-
-// ----------------------------------------
-// Interfaces
+import fetchOfferDetails, { TypeOfferDetails } from "../../../../api/Offers/OfferDetails"
 
 interface SupplierProposal {
     id: string
@@ -61,22 +59,24 @@ const fetchSupplierProposals = async (offerId: string): Promise<SupplierProposal
     ]
 }
 
-// ----------------------------------------
-// Component
 const AdminNegotiation: React.FC = () => {
     const [registeredSuppliers, setRegisteredSuppliers] = useState<RegisteredSupplier[]>([])
     const [proposals, setProposals] = useState<SupplierProposal[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [currentPage, setCurrentPage] = useState(1)
     const [rowsPerPage, setRowsPerPage] = useState(5)
+    const [offerDetails, setOfferDetails] = useState<TypeOfferDetails | null>(null);
 
     useEffect(() => {
         const loadData = async () => {
             try {
-                // In a real app, you'd get the offer id from route params
+                const [offerdata] = await Promise.all([fetchOfferDetails("1")])
+                setOfferDetails(offerdata)
+
                 const suppliers = await fetchRegisteredSuppliers("offer-1")
-                const proposalData = await fetchSupplierProposals("offer-1")
                 setRegisteredSuppliers(suppliers)
+
+                const proposalData = await fetchSupplierProposals("offer-1")
                 setProposals(proposalData)
             } catch (error) {
                 toast.error("Failed to load negotiation details.")
@@ -157,7 +157,7 @@ const AdminNegotiation: React.FC = () => {
 
             <div >
                 <div className="bg-white shadow-lg rounded-lg p-4 md:p-6 mb-8">
-                    <OffersDetails />
+                    <OffersDetails offerDetails={offerDetails} />
                 </div>
 
                 <div className="bg-white shadow-lg rounded-lg p-4 md:p-6">

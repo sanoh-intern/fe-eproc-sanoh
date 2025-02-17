@@ -13,7 +13,6 @@ import Login from "./pages/Authentication/Login";
 import Register from "./pages/Authentication/Register";
 import ForgotPassword from "./pages/Authentication/ForgotPassword";
 import SettingProfile from "./pages/SettingProfile";
-import CompanyDetail from "./pages/CompanyDetail/Supplier/SupplierCompanyDetail";
 import AdminCreateOffers from "./pages/Offers/Admin/ManageOffers/AdminCreateOffers";
 import AdminEditOffers from "./pages/Offers/Admin/ManageOffers/AdminEditOffers";
 import AdminRegisteredDetail from "./pages/Offers/Admin/Negotiation/AdminRegisteredDetail";
@@ -25,6 +24,7 @@ import SupplierOffersAvailable from "./pages/Offers/Supplier/OffersAvailable/Sup
 import SupplierOffersFollowed from "./pages/Offers/Supplier/OffersFollowed/SupplierOffersFollowed";
 import SupplierNegotiation from "./pages/Offers/Supplier/OffersFollowed/SupplierNegotiation";
 import OffersDetailsPage from "./pages/Offers/OffersDetailsPage";
+import IndexCompanyDetail from "./pages/CompanyDetail/IndexCompanyDetail";
 
 const App: React.FC = () => {
   return (
@@ -117,7 +117,7 @@ const App: React.FC = () => {
               element={
                 <ProtectedRoute allowedRoles={['2','3','4','5']}>
                   <PageTitle title="Company Details | PT SANOH INDONESIA" />
-                  <CompanyDetail />
+                  <IndexCompanyDetail />
                 </ProtectedRoute>
               }
             />

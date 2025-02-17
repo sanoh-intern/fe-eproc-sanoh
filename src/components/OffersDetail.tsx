@@ -1,11 +1,14 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
 import { FiDownload, FiCalendar, FiClock, FiTarget, FiUserCheck, FiFlag, FiAward } from "react-icons/fi"
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import Button from "./Forms/Button"
+
+interface OffersDetailsProps {
+    offerDetails: OfferDetails | null;
+}
 
 interface OfferDetails {
     id: string
@@ -20,44 +23,10 @@ interface OfferDetails {
     winningSupplier?: string
 }
 
-// Simulated API function
-const fetchOfferDetails = async (id: string): Promise<OfferDetails> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    return {
-        id,
-        projectName: "Smart City Infrastructure Development",
-        createdDate: "2023-06-15",
-        closeRegistrationDate: "2023-07-15",
-        overview:
-        "This project aims to develop a comprehensive smart city infrastructure, including IoT sensors, data analytics platforms, and integrated city management systems. The goal is to enhance urban living through technology-driven solutions for traffic management, waste management, and energy efficiency.",
-        attachmentUrl: "/path/to/project-details.pdf",
-        offerType: "Public",  
-        registrationStatus: "Close",
-        offerStatus: "Supplier Selected",
-        winningSupplier: "Global Tech Ltd" 
-    }
-    }
-
-    const OffersDetails: React.FC = () => {
-    const [offerDetails, setOfferDetails] = useState<OfferDetails | null>(null)
-
-
-    useEffect(() => {
-        const loadOfferDetails = async () => {
-            try {
-                const details = await fetchOfferDetails("1")
-                setOfferDetails(details)
-            } catch (error) {
-                console.error("Failed to fetch offer details:", error)
-                toast.error("Failed to load offer details")
-            }
-        }
-
-        loadOfferDetails()
-    }, [])
-
+const OffersDetails: React.FC<OffersDetailsProps> = ({ offerDetails }) => {
 
     if (!offerDetails) {
+        toast.error("Failed to load offer details")
         return (
             <div className="space-y-6 animate-pulse">
                 <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
