@@ -6,7 +6,7 @@ import { toast, ToastContainer } from "react-toastify"
 import OffersDetails from "../../components/OffersDetail"
 import { useEffect, useState } from "react"
 import Loader from "../../common/Loader"
-import fetchOfferDetails, { TypeOfferDetails } from "../../api/Offers/OfferDetails"
+import fetchOfferDetails, { TypeOfferDetails } from "../../api/Data/offers-detail"
 
 const OffersDetailsPage: React.FC = () => {
   const [offerDetails, setOfferDetails] = useState<TypeOfferDetails | null>(null);

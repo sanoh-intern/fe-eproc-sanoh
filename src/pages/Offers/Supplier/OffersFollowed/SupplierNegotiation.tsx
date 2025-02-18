@@ -10,7 +10,7 @@ import Pagination from "../../../../components/Table/Pagination"
 import Swal from "sweetalert2"
 import Loader from "../../../../common/Loader"
 import OffersDetails from "../../../../components/OffersDetail"
-import fetchOfferDetails, { TypeOfferDetails } from "../../../../api/Offers/OfferDetails"
+import fetchOfferDetails, { TypeOfferDetails } from "../../../../api/Data/offers-detail"
 
 interface NegotiationEntry {
     id: string

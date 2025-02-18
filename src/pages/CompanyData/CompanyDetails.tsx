@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import FetchCompanyData, { TypeCompanyData } from "../../api/Data/CompanyData";
+import fetchCompanyData, { TypeCompanyData } from "../../api/Data/company-data";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
 import CompanyDetails from "../../components/CompanyDetails";
 import { toast } from "react-toastify";
@@ -11,7 +11,7 @@ const CompanyDetail = () => {
 
         const loadData = async () => {
             try {
-                const [companyData] = await Promise.all([FetchCompanyData("1")])
+                const [companyData] = await Promise.all([fetchCompanyData("1")])
                 setCompanyData(companyData)
             } catch (error) {
                 toast.error("Failed to load company data.")

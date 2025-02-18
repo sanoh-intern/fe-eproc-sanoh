@@ -3,7 +3,7 @@ import { FaEnvelope, FaPhone, FaMapMarkerAlt } from "react-icons/fa"
 import Button from "../components/Forms/Button"
 import { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import { API_Email } from "../api/api";
+import { API_Email } from "../api/route-api";
 
 const ContactUs = () => {
     const [formData, setFormData] = useState({

@@ -9,38 +9,12 @@ import Pagination from "../../../../components/Table/Pagination"
 import { FaSortUp, FaSortDown } from "react-icons/fa"
 import SearchBar from "../../../../components/Table/SearchBar"
 import { Link } from "react-router-dom"
+import fetchRegisteredOffers, { TypeListRegisteredOffer } from "../../../../api/Data/Admin/Offers/list-registered-offers"
 
-interface RegisteredOffer {
-    id: string
-    projectName: string
-    offerType: "Public" | "Private"
-    createdDate: string
-    offerStatus: "Open" | "Supplier Selected"
-    totalSuppliers: number
-    winningSupplier: string | null
-}
-
-// Dummy API function
-const fetchRegisteredOffers = async (): Promise<RegisteredOffer[]> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    return Array.from({ length: 10 }, (_, i) => ({
-        id: `offer-${i + 1}`,
-        projectName: `Project ${i + 1}`,
-        offerType: Math.random() > 0.5 ? "Public" : "Private",
-        createdDate: new Date(
-            Date.now() - Math.floor(Math.random() * 10000000000)
-        )
-        .toISOString()
-        .split("T")[0],
-        offerStatus: Math.random() > 0.5 ? "Open" : "Supplier Selected",
-        totalSuppliers: Math.floor(Math.random() * 50) + 1,
-        winningSupplier: Math.random() > 0.7 ? `Supplier ${Math.floor(Math.random() * 100)}` : null,
-    }))
-}
 
 const AdminRegistered: React.FC = () => {
-    const [offers, setOffers] = useState<RegisteredOffer[]>([])
-    const [filteredOffers, setFilteredOffers] = useState<RegisteredOffer[]>([])
+    const [offers, setOffers] = useState<TypeListRegisteredOffer[]>([])
+    const [filteredOffers, setFilteredOffers] = useState<TypeListRegisteredOffer[]>([])
     const [loading, setLoading] = useState(true)
     const [searchQuery, setSearchQuery] = useState("")
     const [typeFilter, setTypeFilter] = useState("all")
@@ -86,8 +60,8 @@ const AdminRegistered: React.FC = () => {
         // Sort
         if (sortConfig.key) {
             updated.sort((a, b) => {
-                let aVal: any = a[sortConfig.key as keyof RegisteredOffer]
-                let bVal: any = b[sortConfig.key as keyof RegisteredOffer]
+                let aVal: any = a[sortConfig.key as keyof TypeListRegisteredOffer]
+                let bVal: any = b[sortConfig.key as keyof TypeListRegisteredOffer]
                 if (sortConfig.key === "createdDate") {
                     aVal = new Date(aVal).toISOString()
                     bVal = new Date(bVal).toISOString()
@@ -110,7 +84,7 @@ const AdminRegistered: React.FC = () => {
         setCurrentPage(page)
     }
 
-    const handleSort = (key: keyof RegisteredOffer) => {
+    const handleSort = (key: keyof TypeListRegisteredOffer) => {
         let direction: "asc" | "desc" = "asc"
         if (sortConfig.key === key && sortConfig.direction === "asc") {
             direction = "desc"
@@ -131,9 +105,13 @@ const AdminRegistered: React.FC = () => {
                         <div className="w-full">
                             <Select
                                 options={[
-                                { value: "all", label: "All Types" },
-                                { value: "Public", label: "Public" },
-                                { value: "Private", label: "Private" },
+                                    { value: "all", label: "All Types" },
+                                    ...([...new Set(offers.map((offer) => offer.offerType))].map(
+                                        (type) => ({
+                                            value: type,
+                                            label: type,
+                                        })
+                                    )),
                                 ]}
                                 value={{ value: typeFilter, label: typeFilter === "all" ? "All Types" : typeFilter }}
                                 onChange={(e: any) => setTypeFilter(e.value)}
@@ -144,13 +122,17 @@ const AdminRegistered: React.FC = () => {
                         <div className="w-full">
                             <Select
                                 options={[
-                                { value: "all", label: "All Statuses" },
-                                { value: "Open", label: "Open" },
-                                { value: "Supplier Selected", label: "Supplier Selected" },
+                                    { value: "all", label: "All Statuses" },
+                                    ...([...new Set(offers.map((offer) => offer.offerStatus))].map(
+                                        (status) => ({
+                                            value: status,
+                                            label: status,
+                                        })
+                                    )),
                                 ]}
                                 value={{
-                                value: statusFilter,
-                                label: statusFilter === "all" ? "All Statuses" : statusFilter,
+                                    value: statusFilter,
+                                    label: statusFilter === "all" ? "All Statuses" : statusFilter,
                                 }}
                                 onChange={(e: any) => setStatusFilter(e.value)}
                                 placeholder="Filter by Offer Status"
@@ -222,7 +204,7 @@ const AdminRegistered: React.FC = () => {
                                                         <tr key={offer.id} className="hover:bg-gray-50">
                                                             <td className="px-3 py-3 text-center whitespace-nowrap">
                                                                 <Link
-                                                                    to={`/offers/registered/details/${offer.id}`}
+                                                                    to={`/offers/registered/details/offersId=${offer.id}`}
                                                                     className="text-blue-600 underline font-medium hover:text-blue-800"
                                                                 >
                                                                     {offer.projectName}

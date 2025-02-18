@@ -16,7 +16,7 @@ import SettingProfile from "./pages/SettingProfile";
 import AdminCreateOffers from "./pages/Offers/Admin/ManageOffers/AdminCreateOffers";
 import AdminEditOffers from "./pages/Offers/Admin/ManageOffers/AdminEditOffers";
 import AdminRegisteredDetail from "./pages/Offers/Admin/Negotiation/AdminRegisteredDetail";
-import AdminRegistered from "./pages/Offers/Admin/Negotiation/AdminRegistered";
+import AdminRegistered from "./pages/Offers/Admin/Negotiation/AdminListRegistered";
 import AdminNegotiation from "./pages/Offers/Admin/Negotiation/AdminNegotiation";
 import IndexVerification from "./pages/Verification/IndexVerification";
 import AdminManageOffers from "./pages/Offers/Admin/ManageOffers/AdminManageOffers";
@@ -213,7 +213,7 @@ const App: React.FC = () => {
               }
             />
             <Route
-              path="/offers/registered/details/:id"
+              path="/offers/registered/details/:offersId"
               element={
                 <ProtectedRoute allowedRoles={['2','3','4']}>
                   <PageTitle title="Offers Registered Detail | PT SANOH INDONESIA" />
@@ -222,7 +222,7 @@ const App: React.FC = () => {
               }
             />
             <Route
-              path="/offers/negotiation/details/:id"
+              path="/offers/negotiation/details/:offersId/:bpcode"
               element={
                 <ProtectedRoute allowedRoles={['2','3','4']}>
                   <PageTitle title="Offers Negotiation | PT SANOH INDONESIA" />

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import Breadcrumb from "../../../../components/Breadcrumbs/Breadcrumb"
 import Select from "react-select"
 import Pagination from "../../../../components/Table/Pagination"
@@ -12,82 +12,44 @@ import Swal from "sweetalert2"
 import SearchBar from "../../../../components/Table/SearchBar"
 import OffersDetails from "../../../../components/OffersDetail"
 import Button from "../../../../components/Forms/Button"
-import fetchOfferDetails, { TypeOfferDetails } from "../../../../api/Offers/OfferDetails"
+import fetchOfferDetails, { TypeOfferDetails } from "../../../../api/Data/offers-detail"
+import fetchSupplierProposals, { TypeSupplierProposal } from "../../../../api/Data/Admin/Offers/supplier-proposal"
+import fetchListSupplierRegistered, { TypeListSupplierRegistered } from "../../../../api/Data/Admin/Offers/list-supplier-registered"
+import { FaLock, FaEye, FaEyeSlash } from "react-icons/fa"
 
-interface SupplierProposal {
-  bpcode: string
-  companyName: string
-  totalAmount: number
-  revisionNo: number
-  lastStatus: "Not Uploaded" | "Need Revision" | "On Review" | "Declined" | "Accepted"
-  lastComment: string
-  lastUploadAt: string
-}
-
-interface RegisteredSupplier {
-  bpcode: string
-  companyName: string
-  registrationDate: string
-}
-
-const fetchSupplierProposals = async (): Promise<SupplierProposal[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-  return Array.from({ length: 6 }, (_, i) => ({
-    bpcode: `BP${1000 + i}`,
-    companyName: `Company ${i + 1}`,
-    totalAmount: Math.floor(Math.random() * 100000) + 1000,
-    revisionNo: Math.floor(Math.random() * 5),
-    lastStatus: ["Not Uploaded", "Need Revision", "On Review", "Declined", "Accepted"][
-      Math.floor(Math.random() * 5)
-    ] as SupplierProposal["lastStatus"],
-    lastComment: "Lorem ipsum dolor sit amet.",
-    lastUploadAt: new Date(Date.now() - Math.floor(Math.random() * 600000000))
-      .toISOString()
-      .replace("T", " ")
-      .split(".")[0],
-  }))
-}
-
-const fetchRegisteredSuppliers = async (): Promise<RegisteredSupplier[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-  return Array.from({ length: 8 }, (_, i) => ({
-    bpcode: `BP${2000 + i}`,
-    companyName: `Supplier ${i + 1}`,
-    registrationDate: new Date(
-      Date.now() - Math.floor(Math.random() * 10000000000)
-    )
-      .toISOString()
-      .split("T")[0],
-  }))
-}
 
 const AdminRegisteredDetail: React.FC = () => {
-  const [proposals, setProposals] = useState<SupplierProposal[]>([])
-  const [filteredProposals, setFilteredProposals] = useState<SupplierProposal[]>([])
-  const [allSuppliers, setAllSuppliers] = useState<RegisteredSupplier[]>([])
+  const [proposals, setProposals] = useState<TypeSupplierProposal["data"]>([])
+  const [filteredProposals, setFilteredProposals] = useState<TypeSupplierProposal["data"]>([])
+  const [allSuppliers, setAllSuppliers] = useState<TypeListSupplierRegistered[]>([])
   const [loading, setLoading] = useState(true)
   const [offerDetails, setOfferDetails] = useState<TypeOfferDetails | null>(null);
-
-  // Table states for proposals
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [currentPage, setCurrentPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState(10)
-
   const navigate = useNavigate()
+  const { offersId } = useParams<{ offersId: string }>(); 
+  const [lastViewed, setLastViewed] = useState<string | null>(null)
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [offerdata] = await Promise.all([fetchOfferDetails("1")])
+        const offerdata = await fetchOfferDetails(offersId!)
         setOfferDetails(offerdata)
 
-        const propData = await fetchSupplierProposals()
-        setProposals(propData)
-        setFilteredProposals(propData)
+        const supplierdata = await fetchSupplierProposals(offersId!)
 
-        const registered = await fetchRegisteredSuppliers()
+        const lastViewedFromApi = supplierdata.length > 0 ? supplierdata[0].lastViewed : null
+        setLastViewed(lastViewedFromApi)
+
+        const flattenedData = supplierdata.flatMap((item) => item.data)
+        setProposals(flattenedData)
+        setFilteredProposals(flattenedData)
+
+        const registered = await fetchListSupplierRegistered(offersId!)
         setAllSuppliers(registered)
+
       } catch (error) {
         toast.error("Failed to load data")
       } finally {
@@ -95,7 +57,7 @@ const AdminRegisteredDetail: React.FC = () => {
       }
     }
     loadData()
-  }, [])
+  }, [offersId])
 
   // Filter logic for proposals
   useEffect(() => {
@@ -119,6 +81,28 @@ const AdminRegisteredDetail: React.FC = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
+  }
+
+  const handleLastViewed = async () => {
+    try {
+      await fetch("/api/proposals/last-viewed", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ offersId }),
+      })
+
+      const updatedData = await fetchSupplierProposals(offersId!)
+      const newLastViewed = updatedData.length > 0 ? updatedData[0].lastViewed : null
+      setLastViewed(newLastViewed)
+
+      // Update the proposals with any new changes
+      const flattened = updatedData.flatMap((item) => item.data)
+      setProposals(flattened)
+      setFilteredProposals(flattened)
+      toast.success("Last viewed updated!")
+    } catch {
+      toast.error("Failed to update last viewed")
+    }
   }
 
   // Accept / Decline proposal
@@ -148,9 +132,10 @@ const AdminRegisteredDetail: React.FC = () => {
             });
             
             // Refresh the proposals data
-            const updatedProposals = await fetchSupplierProposals();
-            setProposals(updatedProposals);
-            setFilteredProposals(updatedProposals);
+            const updatedProposals = await fetchSupplierProposals(offersId!);
+            const flattenedData = updatedProposals.flatMap((item) => item.data)
+            setProposals(flattenedData);
+            setFilteredProposals(flattenedData);
           } catch (error) {
             toast.error('Failed to accept proposal');
           }
@@ -166,9 +151,10 @@ const AdminRegisteredDetail: React.FC = () => {
             });
             
             // Refresh the proposals data
-            const updatedProposals = await fetchSupplierProposals();
-            setProposals(updatedProposals);
-            setFilteredProposals(updatedProposals);
+            const updatedProposals = await fetchSupplierProposals(offersId!);
+            const flattenedData = updatedProposals.flatMap((item) => item.data)
+            setProposals(flattenedData);
+            setFilteredProposals(flattenedData);
           } catch (error) {
             toast.error('Failed to decline proposal');
           }
@@ -190,26 +176,46 @@ const AdminRegisteredDetail: React.FC = () => {
 
         {/* Supplier Proposals Section */}
         <div className="mt-6">
-          <h2 className="text-xl font-semibold mb-4">List of Supplier Proposals</h2>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 items-center mb-4 justify-between">
-            <SearchBar placeholder="Search company name..." onSearchChange={setSearchQuery} />
-            <Select
-              options={[
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold mb-4">List of Supplier Proposals</h2>
+            {localStorage.getItem("role") === "presdir" && (
+              <div>
+              {lastViewed ? (
+                <Button
+                title={lastViewed}
+                onClick={handleLastViewed}
+                icon={FaEye}
+                />
+              ) : (
+                <Button
+                title="View Amounts"
+                onClick={handleLastViewed}
+                icon={FaEyeSlash}
+                />
+              )}
+              </div>
+            )}
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 items-center mb-4 justify-between">
+              <SearchBar placeholder="Search company name..." onSearchChange={setSearchQuery} />
+              <Select
+                options={[
                 { value: "all", label: "All Statuses" },
-                { value: "Not Uploaded", label: "Not Uploaded" },
-                { value: "Need Revision", label: "Need Revision" },
-                { value: "On Review", label: "On Review" },
-                { value: "Declined", label: "Declined" },
-                { value: "Accepted", label: "Accepted" },
-              ]}
-              value={{
-                value: statusFilter,
-                label: statusFilter === "all" ? "All Statuses" : statusFilter,
-              }}
-              onChange={(val: any) => setStatusFilter(val.value)}
-              placeholder="Filter by Status"
-            />
-          </div>
+                  ...Array.from(new Set(proposals.map((p) => p.lastStatus))).map(
+                    (status) => ({
+                      value: status,
+                      label: status,
+                    })
+                  ),
+                ]}
+                value={{
+                  value: statusFilter,
+                  label: statusFilter === "all" ? "All Statuses" : statusFilter,
+                }}
+                onChange={(val: any) => setStatusFilter(val.value)}
+                placeholder="Filter by Status"
+              />
+            </div>
 
           {filteredProposals.length === 0 ? (
             <div className="text-center">
@@ -238,9 +244,6 @@ const AdminRegisteredDetail: React.FC = () => {
                           Last Status
                         </th>
                         <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
-                          Last Comment
-                        </th>
-                        <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
                           Last Upload
                         </th>
                         <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
@@ -259,49 +262,69 @@ const AdminRegisteredDetail: React.FC = () => {
                             {proposal.companyName}
                           </td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
-                              <span className="mr-2 border rounded-sm border-gray-300 px-1">IDR</span>
-                              <span>{Number(proposal.totalAmount).toLocaleString('id-ID')}</span>
+                            {lastViewed
+                              ? <>
+                                <span className="mr-2 border rounded-sm border-gray-300 px-1">IDR</span>
+                                {Number(proposal.totalAmount).toLocaleString("id-ID")}
+                              </>
+                              : "XXX.XXX"
+                            }
                           </td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
                             {proposal.revisionNo}
+                            {proposal.isFinal && (
+                                <span className="ml-2 px-2 py-1 text-blue-800 rounded border border-blue-500">
+                                    Final
+                                </span>
+                            )}
                           </td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
                             {proposal.lastStatus}
                           </td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
-                            {proposal.lastComment}
-                          </td>
-                          <td className="px-3 py-3 text-center whitespace-nowrap">
                             {proposal.lastUploadAt}
                           </td>
-                            <td className="px-3 py-3 text-center whitespace-nowrap">
-                              <div className="flex justify-center">
-                                <Button
-                                  title="View"
-                                  onClick={() => navigate(`/offers/negotiation/details/${proposal.bpcode}`)}
-                                  color="bg-gray-600"
-                                />
-                              </div>
-                            </td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
-                            
-                            {proposal.lastStatus === "Accepted" ? (
+                            <div className="flex justify-center">
+                              <Button
+                              title="View"
+                              onClick={() => navigate(`/offers/negotiation/details/${offersId}/${proposal.id}`)}
+                              color="bg-gray-600"
+                              />
+                            </div>
+                          </td>
+                            <td className="px-3 py-3 text-center whitespace-nowrap">
+                            {localStorage.getItem("role") === "presdir" ? (
+                              proposal.lastStatus === "Accepted" ? (
                               <span className="text-white font-semibold bg-green-600 px-3 py-2 rounded-full">Accepted</span>
-                            ) : proposal.lastStatus === "Declined" ? (
+                              ) : proposal.lastStatus === "Declined" ? (
                               <span className="text-white font-semibold bg-red-600 px-3 py-2 rounded-full">Declined</span>
-                            ) : (
+                              ) : (
                               <div className="flex justify-center space-x-2">
                                 <Button
-                                  title="Accept"
-                                  color="bg-green-600"
-                                  onClick={() => handleProposalAction(proposal.bpcode, "Accepted")}
+                                title="Accept"
+                                color="bg-green-600"
+                                onClick={() => handleProposalAction(proposal.id, "Accepted")}
                                 />
                                 <Button
-                                  title="Decline"
-                                  onClick={() => handleProposalAction(proposal.bpcode, "Declined")}
-                                  color="bg-red-600"
+                                title="Decline"
+                                onClick={() => handleProposalAction(proposal.id, "Declined")}
+                                color="bg-red-600"
                                 />
                               </div>
+                              )
+                            ) : (
+                              (proposal.lastStatus === "Accepted" ) ? (
+                                <span className="text-white font-semibold bg-green-600 px-3 py-2 rounded-full">Accepted</span>
+                              ) : proposal.lastStatus === "Declined" ? (
+                                <span className="text-white font-semibold bg-red-600 px-3 py-2 rounded-full">Declined</span>
+                              ) : (
+                                <div className="flex justify-center">
+                                  <span className="text-primary" title="Only presdir can access">
+                                  <FaLock />
+                                  </span>
+                                </div>
+                              )
                             )}
                           </td>
                         </tr>
