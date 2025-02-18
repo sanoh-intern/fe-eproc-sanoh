@@ -13,73 +13,35 @@ import "react-toastify/dist/ReactToastify.css"
 import SearchBar from "../../../../components/Table/SearchBar"
 import Button from "../../../../components/Forms/Button"
 import Pagination from "../../../../components/Table/Pagination"
-
-interface Offer {
-    id: string
-    projectName: string
-    createdDate: string
-    offerType: "Invited" | "Public"
-    registrationDueDate: string
-    status: "Open" | "Closed"
-    isRegistered?: boolean
-}
-
-// Simulated API functions
-const fetchInvitedOffers = async (): Promise<Offer[]> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    return Array.from({ length: 25 }, (_, i) => ({
-        id: `invited-${i + 1}`,
-        projectName: `Invited Project ${i + 1}`,
-        createdDate: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString().split("T")[0],
-        offerType: "Invited",
-        registrationDueDate: new Date(Date.now() + Math.floor(Math.random() * 10000000000)).toISOString().split("T")[0],
-        status: Math.random() > 0.3 ? "Open" : "Closed",
-        isRegistered: true,
-    }))
-}
-
-const fetchPublicOffers = async (): Promise<Offer[]> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    return Array.from({ length: 25 }, (_, i) => ({
-        id: `public-${i + 1}`,
-        projectName: `Public Project ${i + 1}`,
-        createdDate: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString().split("T")[0],
-        offerType: "Public",
-        registrationDueDate: new Date(Date.now() + Math.floor(Math.random() * 10000000000)).toISOString().split("T")[0],
-        status: Math.random() > 0.3 ? "Open" : "Closed",
-        isRegistered: false,
-    }))
-}
-
-const submitAgreement = async (offerId: string): Promise<{ success: boolean; message: string }> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    return { success: true, message: "Agreement submitted successfully" }
-}
+import fetchListOffers, { TypeOffers } from "../../../../api/Data/Supplier/list-offers"
+import { getRegisterOffers } from "../../../../api/Action/Supplier/get-register-offers"
 
 const SupplierOffersAvailable: React.FC = () => {
     const [selectedTab, setSelectedTab] = useState(0)
     const [currentPage, setCurrentPage] = useState(1)
     const [rowsPerPage, setRowsPerPage] = useState(10)
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null)
+    const [selectedOffer, setSelectedOffer] = useState<TypeOffers | null>(null)
     const [agreementChecked, setAgreementChecked] = useState(false)
     const [loading, setLoading] = useState(true)
     const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" })
     const [searchQuery, setSearchQuery] = useState("")
-    const [invitedOffers, setInvitedOffers] = useState<Offer[]>([])
-    const [publicOffers, setPublicOffers] = useState<Offer[]>([])
+    const [invitedOffers, setInvitedOffers] = useState<TypeOffers[]>([])
+    const [publicOffers, setPublicOffers] = useState<TypeOffers[]>([])
 
     useEffect(() => {
-        const fetchOffers = async () => {
+        const fetchOffersData = async () => {
             setLoading(true)
-            const [invited, public_] = await Promise.all([fetchInvitedOffers(), fetchPublicOffers()])
-            setInvitedOffers(invited)
-            setPublicOffers(public_)
-            setLoading(false)
-        }
+            const offers = await fetchListOffers();
+            const invited = offers.filter((offer) => offer.offerType === "Invited");
+            const public_ = offers.filter((offer) => offer.offerType === "Public");
+            setInvitedOffers(invited);
+            setPublicOffers(public_);
+            setLoading(false);
+        };
 
-        fetchOffers()
-    }, [])
+        fetchOffersData();
+    }, []);
 
     const handleSort = (key: string) => {
         let direction = "asc"
@@ -100,7 +62,7 @@ const SupplierOffersAvailable: React.FC = () => {
             return 0
         })
 
-    const handleRegister = (offer: Offer) => {
+    const handleRegister = (offer: TypeOffers) => {
         setSelectedOffer(offer)
         setIsModalOpen(true)
     }
@@ -108,9 +70,9 @@ const SupplierOffersAvailable: React.FC = () => {
     const handleAgreementSubmit = async () => {
         if (agreementChecked && selectedOffer) {
             try {
-                const result = await submitAgreement(selectedOffer.id)
+                const result = await getRegisterOffers(selectedOffer.id)
                 if (result.success) {
-                    toast.success(result.message)
+                    toast.success("Registration submitted successfully")
                     setIsModalOpen(false)
                     setAgreementChecked(false)
                 } else {

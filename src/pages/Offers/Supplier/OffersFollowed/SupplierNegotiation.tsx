@@ -11,67 +11,30 @@ import Swal from "sweetalert2"
 import Loader from "../../../../common/Loader"
 import OffersDetails from "../../../../components/OffersDetail"
 import fetchOfferDetails, { TypeOfferDetails } from "../../../../api/Data/offers-detail"
+import { useParams } from "react-router-dom"
+import fetchNegotiationSupplier, { TypeNegotiationSupplier } from "../../../../api/Data/Supplier/negotiation"
+import { postNegotiation } from "../../../../api/Action/Supplier/post-negotiation"
 
-interface NegotiationEntry {
-    id: string
-    submitDate: string
-    totalAmount: number
-    revisionNo: number
-    status: "Revision" | "On Review" | "Accepted" | "Declined"
-    comment: string | null
-    final: boolean
-}
 
-const fetchNegotiationHistory = async (offerId: string): Promise<NegotiationEntry[]> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    return [
-        {
-            id: "nego-1",
-            submitDate: "2024-01-20",
-            totalAmount: 600000,
-            revisionNo: 1,
-            status: "On Review",
-            comment: "Initial proposal",
-            final: false,
-        },
-        {
-            id: "nego-2",
-            submitDate: "2024-01-25",
-            totalAmount: 650000,
-            revisionNo: 2,
-            status: "Revision",
-            comment: "Revised proposal after feedback",
-            final: false,
-        },
-        {
-            id: "nego-3",
-            submitDate: "2024-01-30",
-            totalAmount: 700000,
-            revisionNo: 3,
-            status: "Revision",
-            comment: "SSS approved the proposal",
-            final: false,
-        },
-    ]
-}
 
 const SupplierNegotiation: React.FC = () => {
     const [offerDetails, setOfferDetails] = useState<TypeOfferDetails | null>(null)
-    const [negotiationHistory, setNegotiationHistory] = useState<NegotiationEntry[]>([])
+    const [negotiationHistory, setNegotiationHistory] = useState<TypeNegotiationSupplier[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [file, setFile] = useState<File | null>(null)
     const [totalAmount, setTotalAmount] = useState<string>("")
     const [isFinal, setIsFinal] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
     const [rowsPerPage, setRowsPerPage] = useState(10)
+    const { offersid } = useParams();
     
 
     useEffect(() => {
         const loadData = async () => {
             try {
                 const [details, history] = await Promise.all([
-                    fetchOfferDetails("1"),
-                    fetchNegotiationHistory("1"),
+                    fetchOfferDetails(offersid!),
+                    fetchNegotiationSupplier(offersid!),
                 ])
                 setOfferDetails(details)
                 setNegotiationHistory(history)
@@ -80,7 +43,7 @@ const SupplierNegotiation: React.FC = () => {
                 toast.error("Failed to load negotiation details")
             } finally {
                 setIsLoading(false)
-        }
+            }
         }
 
         loadData()
@@ -109,13 +72,30 @@ const SupplierNegotiation: React.FC = () => {
         })
 
         if (result.isConfirmed) {
-            // Simulated API call
-            await new Promise((resolve) => setTimeout(resolve, 1000))
-            toast.success("Proposal submitted successfully!")
-            setFile(null)
-            setTotalAmount("")
-            setIsFinal(false)
-            // In a real app, you'd update the negotiation history here
+            try {
+                const formData = new FormData()
+                formData.append("offersId", offersid!)
+                formData.append("totalAmount", totalAmount)
+                formData.append("isFinal", String(isFinal))
+                if (file) {
+                    formData.append("file", file)
+                }
+
+                const response = await postNegotiation(formData)
+                console.log(response)
+
+                toast.success("Proposal submitted successfully!")
+                const newHistory = await fetchNegotiationSupplier(offersid!)
+                setNegotiationHistory(newHistory)
+                setFile(null)
+                setTotalAmount("")
+                setIsFinal(false)
+            } catch (error: any) {
+                console.error("There was an error submitting the proposal:", error)
+                toast.error(`Failed to submit proposal: ${error.message}`)
+            } finally {
+                
+            }
         }
     }
 
@@ -231,9 +211,6 @@ const SupplierNegotiation: React.FC = () => {
                                         <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
                                             Status
                                         </th>
-                                        <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
-                                            Comment
-                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200 bg-white">
@@ -277,7 +254,6 @@ const SupplierNegotiation: React.FC = () => {
                                                     {entry.status}
                                                 </span>
                                             </td>
-                                            <td className="px-3 py-3 text-center whitespace-nowrap">{entry.comment || "No comment"}</td>
                                         </tr>
                                     ))}
                                 </tbody>

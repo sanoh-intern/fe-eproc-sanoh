@@ -11,42 +11,11 @@ import Pagination from "../../../../components/Table/Pagination"
 import { Link, useNavigate } from "react-router-dom"
 import Select from 'react-select';
 import Button from "../../../../components/Forms/Button"
-
-interface Offer {
-  id: string
-  projectName: string
-  offerType: "Public" | "Invited"
-  registrationDate: string
-  totalAmount: string
-  revisionNo: string
-  updatedDate: string
-  status: "Not submitted" | "Need revision" | "On Review" | "Accepted" | "Declined"
-  comment?: string
-  offerStatus: "Open" | "Supplier Selected" 
-  winningCompany?: string | null
-}
-
-// Simulated API function
-const fetchFollowedOffers = async (): Promise<Offer[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-  return Array.from({ length: 50 }, (_, i) => ({
-    id: `${i + 1}`,
-    projectName: `Project ${i + 1}`,
-    offerType: Math.random() > 0.5 ? "Public" : "Invited",
-    registrationDate: new Date(Date.now() - Math.floor(Math.random() * 5000000000)).toISOString().split("T")[0],
-    totalAmount: `${Math.floor(Math.random() * 1000000)}`,
-    revisionNo: `${Math.floor(Math.random() * 5)}`,
-    updatedDate: new Date(Date.now() - Math.floor(Math.random() * 1000000000)).toISOString().split("T")[0],
-    status: ["Not submitted", "Need revision", "On Review", "Accepted", "Declined"][Math.floor(Math.random() * 4)] as Offer["status"],
-    winningCompany: Math.random() > 0.8 ? `Company ${Math.floor(Math.random() * 100)}` : null,
-    comment: "Lorem ipsum dolor sit amet",
-    offerStatus: Math.random() > 0.5 ? "Open" : "Supplier Selected",
-  }))
-}
+import fetchFollowedOffers, { TypeOfferFollowed } from "../../../../api/Data/Supplier/list-registered-offers"
 
 const SupplierOffersFollowed: React.FC = () => {
-  const [offers, setOffers] = useState<Offer[]>([])
-  const [filteredOffers, setFilteredOffers] = useState<Offer[]>([])
+  const [offers, setOffers] = useState<TypeOfferFollowed[]>([])
+  const [filteredOffers, setFilteredOffers] = useState<TypeOfferFollowed[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
@@ -89,8 +58,8 @@ const SupplierOffersFollowed: React.FC = () => {
 
     if (sortConfig.key) {
       filtered.sort((a, b) => {
-        let aValue: any = a[sortConfig.key as keyof Offer]
-        let bValue: any = b[sortConfig.key as keyof Offer]
+        let aValue: any = a[sortConfig.key as keyof TypeOfferFollowed]
+        let bValue: any = b[sortConfig.key as keyof TypeOfferFollowed]
 
         if (sortConfig.key === "registrationDate" || sortConfig.key === "updatedDate") {
           aValue = new Date(aValue).toISOString()
@@ -107,7 +76,7 @@ const SupplierOffersFollowed: React.FC = () => {
     setCurrentPage(1)
   }, [searchQuery, statusFilter, sortConfig, offers])
 
-  const handleSort = (key: keyof Offer) => {
+  const handleSort = (key: keyof TypeOfferFollowed) => {
     let direction = "asc"
     if (sortConfig.key === key && sortConfig.direction === "asc") {
       direction = "desc"
@@ -122,8 +91,8 @@ const SupplierOffersFollowed: React.FC = () => {
     localStorage.setItem('offers_followed_current_page', page.toString());
   }
 
-  const handleNegotiate = (offer: Offer) => {
-    navigate(`/offers/followed/negotiation/details/${offer.id}`)
+  const handleNegotiate = (offerid: TypeOfferFollowed) => {
+    navigate(`/offers/followed/negotiation/details/${offerid.offerid}`)
   };
 
   return (
@@ -154,11 +123,10 @@ const SupplierOffersFollowed: React.FC = () => {
                   <Select
                     options={[
                       { value: 'all', label: 'All Statuses' },
-                      { value: 'Not submitted', label: 'Not Submitted' },
-                      { value: 'Need revision', label: 'Need Revision' },
-                      { value: 'On Review', label: 'On Review' },
-                      { value: 'Accepted', label: 'Accepted' },
-                      { value: 'Declined', label: 'Declined' },
+                      ...Array.from(new Set(offers.map(offer => offer.status))).map(status => ({
+                      value: status,
+                      label: status,
+                      })),
                     ]}
                     value={
                       statusFilter
@@ -249,13 +217,6 @@ const SupplierOffersFollowed: React.FC = () => {
                           className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer"
                         >
                           <span className="flex items-center justify-center">
-                          Comment
-                          </span>
-                        </th>
-                        <th
-                          className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer"
-                        >
-                          <span className="flex items-center justify-center">
                           Offer Status
                           </span>
                         </th>
@@ -288,7 +249,7 @@ const SupplierOffersFollowed: React.FC = () => {
                         ))
                       ) : paginatedOffers.length > 0 ? (
                         paginatedOffers.map((offer) => (
-                          <tr key={offer.id} className="hover:bg-gray-50">
+                          <tr key={offer.offerid} className="hover:bg-gray-50">
                             <td className="px-3 py-3 text-center font-semibold whitespace-nowrap">
                               {offer.projectName}                              
                             </td>
@@ -318,7 +279,6 @@ const SupplierOffersFollowed: React.FC = () => {
                                 {offer.status}
                               </span>
                             </td>
-                            <td className="px-3 py-3 text-center whitespace-nowrap">{offer.comment || "-"}</td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">
                                 {offer.offerStatus}
                             </td>

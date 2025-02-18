@@ -20,7 +20,7 @@ interface OfferDetails {
     offerType: string
     registrationStatus: string
     offerStatus: string
-    winningSupplier?: string
+    winningSupplier?: string | null
 }
 
 const OffersDetails: React.FC<OffersDetailsProps> = ({ offerDetails }) => {

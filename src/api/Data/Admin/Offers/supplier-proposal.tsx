@@ -31,7 +31,7 @@ const fetchSupplierProposals = async (offersId: string): Promise<SupplierProposa
     return Array.from({ length: 10 }, (_) => ({
         lastViewed: null,
         data: Array.from({ length: 10 }, (_, i) => ({
-            id: `id-${i + 1}`,
+            id: i + 1,
             bpcode: `bpcode-${i + 1}`,
             companyName: `Company ${i + 1}`,
             totalAmount: Math.floor(Math.random() * 1000000),
@@ -40,10 +40,10 @@ const fetchSupplierProposals = async (offersId: string): Promise<SupplierProposa
             lastUploadAt: new Date(
                 Date.now() - Math.floor(Math.random() * 10000000000)
             )
-            .toISOString()
-            .split("T")[0],
+                .toISOString()
+                .split("T")[0],
             isFinal: Math.random() > 0.5 ? true : false,
-        })),
+        })).map(item => ({ ...item, id: item.id.toString() })),
     }))
 }
 

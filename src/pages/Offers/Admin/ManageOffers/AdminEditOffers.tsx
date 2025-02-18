@@ -8,6 +8,7 @@ import Swal from "sweetalert2"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import Loader from "../../../../common/Loader"
+import { putEditOffers } from "../../../../api/Action/Admin/put-edit-offers"
 
 interface Option {
     value: string
@@ -201,6 +202,7 @@ const AdminEditOffers: React.FC = () => {
 
         // Simulate API call for updating the offer
         console.log("Payload sent", payload)
+        await putEditOffers(payload)
         toast.success("Offer updated successfully!")
     }
 

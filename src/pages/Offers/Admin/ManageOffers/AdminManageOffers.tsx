@@ -12,6 +12,8 @@ import Select from "react-select"
 import Button from "../../../../components/Forms/Button"
 import { FiEdit, FiXCircle, FiTrash2 } from "react-icons/fi"
 import Swal from "sweetalert2"
+import { deleteOffers } from "../../../../api/Action/Admin/delete-offers"
+import { PatchStatusOffer } from "../../../../api/Action/Admin/patch-status-offer"
 
 interface AdminOffer {
     id: string
@@ -132,7 +134,7 @@ const AdminManageOffers: React.FC = () => {
         navigate(`/offers/edit/${offer.id}`)
     }
 
-    const handleClose = (offerId: string) => {
+    const handleClose = async (offerId: string) => {
         Swal.fire({
             title: "Close Offer",
             text: "Are you sure you want to close this offer?",
@@ -142,20 +144,25 @@ const AdminManageOffers: React.FC = () => {
             cancelButtonText: "No, keep it open",
             confirmButtonColor: "#2F4F4F",
             cancelButtonColor: "#dc2626",
-        }).then((result) => {
+        }).then(async (result) => {
             if (result.isConfirmed) {
-                setOffers((prev) =>
-                    prev.map((offer) =>
-                        offer.id === offerId ? { ...offer, status: "Closed" } : offer
+                try {
+                    // await fetch(`/api/offers/${offerId}/close`, { method: 'PUT' });
+                    await PatchStatusOffer({ offersId: offerId})
+                    setOffers((prev) =>
+                        prev.map((offer) =>
+                            offer.id === offerId ? { ...offer, status: "Closed" } : offer
+                        )
                     )
-                )
-                toast.success("Offer closed successfully")
+                    toast.success("Offer closed successfully")
+                } catch (error) {
+                    toast.error("Failed to close offer")
+                }
             }
         })
     }
-    
 
-    const handleRemove = (offerId: string) => {
+    const handleRemove = async (offerId: string) => {
         Swal.fire({
             title: "Remove Offer",
             text: "Are you sure you want to remove this offer?",
@@ -165,10 +172,16 @@ const AdminManageOffers: React.FC = () => {
             cancelButtonText: "No, keep it",
             confirmButtonColor: "#2F4F4F",
             cancelButtonColor: "#dc2626",
-        }).then((result) => {
+        }).then(async (result) => {
             if (result.isConfirmed) {
-                setOffers((prev) => prev.filter((offer) => offer.id !== offerId))
-                toast.success("Offer removed successfully")
+                try {
+                    await deleteOffers({ offersId: offerId })
+
+                    setOffers((prev) => prev.filter((offer) => offer.id !== offerId))
+                    toast.success("Offer removed successfully")
+                } catch (error) {
+                    toast.error("Failed to remove offer")
+                }
             }
         })
     }

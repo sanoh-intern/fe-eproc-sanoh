@@ -16,6 +16,8 @@ import fetchOfferDetails, { TypeOfferDetails } from "../../../../api/Data/offers
 import fetchSupplierProposals, { TypeSupplierProposal } from "../../../../api/Data/Admin/Offers/supplier-proposal"
 import fetchListSupplierRegistered, { TypeListSupplierRegistered } from "../../../../api/Data/Admin/Offers/list-supplier-registered"
 import { FaLock, FaEye, FaEyeSlash } from "react-icons/fa"
+import { postOffersAccepted, postOffersDeclined } from "../../../../api/Action/Admin/post-final-winner"
+import { updateLastViewed } from "../../../../api/Action/Admin/put-view-amount"
 
 
 const AdminRegisteredDetail: React.FC = () => {
@@ -29,7 +31,7 @@ const AdminRegisteredDetail: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const navigate = useNavigate()
-  const { offersId } = useParams<{ offersId: string }>(); 
+  const { offersId } = useParams<{ offersId?: string }>();
   const [lastViewed, setLastViewed] = useState<string | null>(null)
 
   useEffect(() => {
@@ -85,11 +87,7 @@ const AdminRegisteredDetail: React.FC = () => {
 
   const handleLastViewed = async () => {
     try {
-      await fetch("/api/proposals/last-viewed", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ offersId }),
-      })
+      await updateLastViewed({ offersId: offersId! })
 
       const updatedData = await fetchSupplierProposals(offersId!)
       const newLastViewed = updatedData.length > 0 ? updatedData[0].lastViewed : null
@@ -106,7 +104,7 @@ const AdminRegisteredDetail: React.FC = () => {
   }
 
   // Accept / Decline proposal
-  const handleProposalAction = (bpcode: string, action: "Accepted" | "Declined") => {
+  const handleProposalAction = (id: string, bpcode: string, action: "Accepted" | "Declined") => {
     Swal.fire({
       title: `Confirm ${action}`,
       text: `Are you sure you want to mark this proposal as ${action}?`,
@@ -123,13 +121,7 @@ const AdminRegisteredDetail: React.FC = () => {
         if (action === "Accepted") {
           try {
             // Replace this with your actual API endpoint
-            await fetch('/api/proposals/accept', {
-              method: 'POST',
-              headers: {
-          'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ bpcode }),
-            });
+            await postOffersAccepted({ negotiationId: id });
             
             // Refresh the proposals data
             const updatedProposals = await fetchSupplierProposals(offersId!);
@@ -142,13 +134,7 @@ const AdminRegisteredDetail: React.FC = () => {
         } else {
           try {
             // Replace this with your actual API endpoint
-            await fetch('/api/proposals/decline', {
-              method: 'POST',
-              headers: {
-          'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ bpcode }),
-            });
+            await postOffersDeclined({ negotiationId: id });
             
             // Refresh the proposals data
             const updatedProposals = await fetchSupplierProposals(offersId!);
@@ -304,11 +290,11 @@ const AdminRegisteredDetail: React.FC = () => {
                                 <Button
                                 title="Accept"
                                 color="bg-green-600"
-                                onClick={() => handleProposalAction(proposal.id, "Accepted")}
+                                onClick={() => handleProposalAction(proposal.id, proposal.bpcode, "Accepted")}
                                 />
                                 <Button
                                 title="Decline"
-                                onClick={() => handleProposalAction(proposal.id, "Declined")}
+                                onClick={() => handleProposalAction(proposal.id, proposal.bpcode, "Declined")}
                                 color="bg-red-600"
                                 />
                               </div>

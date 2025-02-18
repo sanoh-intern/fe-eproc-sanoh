@@ -21,7 +21,7 @@ interface ListRegisteredOffer {
 const fetchListRegisteredOffers = async (): Promise<ListRegisteredOffer[]> => {
     await new Promise((resolve) => setTimeout(resolve, 1000))
     return Array.from({ length: 10 }, (_, i) => ({
-        id: `offer-${i + 1}`,
+        id: (i + 1).toString(),
         projectName: `Project ${i + 1}`,
         offerType: Math.random() > 0.5 ? "Public" : "Private",
         createdDate: new Date(

@@ -7,6 +7,7 @@ import Select from "react-select"
 import Swal from "sweetalert2"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
+import { postCreateOffers } from "../../../../api/Action/Admin/post-create-offers"
 
 interface Option {
     value: string
@@ -175,6 +176,7 @@ const AdminCreateOffers: React.FC = () => {
 
         // Simulate API call
         console.log("Payload sent", payload)
+        await postCreateOffers(payload)
         toast.success("Offer created successfully!")
 
         // Reset form fields

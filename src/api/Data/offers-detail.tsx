@@ -8,7 +8,7 @@ export type TypeOfferDetails = {
     offerType: string;
     registrationStatus: string;
     offerStatus: string;
-    winningSupplier?: string;
+    winningSupplier?: string | null
 };
 
 interface OfferDetails {
@@ -21,13 +21,13 @@ interface OfferDetails {
     offerType: string
     registrationStatus: string
     offerStatus: string
-    winningSupplier?: string
+    winningSupplier?: string | null
   }
 
-const fetchOfferDetails = async (id: string): Promise<OfferDetails> => {
+const fetchOfferDetails = async (offersId: string): Promise<OfferDetails> => {
     await new Promise((resolve) => setTimeout(resolve, 1000))
     return {
-        id,
+        id: "id-1",
         projectName: "Smart City Infrastructure Development",
         createdDate: "2023-06-15",
         closeRegistrationDate: "2023-07-15",
@@ -36,8 +36,8 @@ const fetchOfferDetails = async (id: string): Promise<OfferDetails> => {
         attachmentUrl: "/path/to/project-details.pdf",
         offerType: "Public",  
         registrationStatus: "Close",
-        offerStatus: "Supplier Selected",
-        winningSupplier: "Global Tech Ltd" 
+        offerStatus: "Open",
+        winningSupplier: null 
     }
 }
 
