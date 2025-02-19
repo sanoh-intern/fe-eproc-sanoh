@@ -1,92 +1,55 @@
-import React, { useState, useEffect } from "react";
-import { FaCog, FaBell, FaEnvelope, FaGithub } from "react-icons/fa";
-import { motion } from "framer-motion"; // You'll need to install framer-motion
+import { useState, useEffect } from "react"
+import { FaCog } from "react-icons/fa"
 
 const ComingSoon = () => {
-    const [dotCount, setDotCount] = useState(0);
-    const [isHovered, setIsHovered] = useState(false);
+    const [dotCount, setDotCount] = useState(0)
+    const [showDetails, setShowDetails] = useState(false)
 
     useEffect(() => {
         const intervalId = setInterval(() => {
-            setDotCount((prevCount) => (prevCount + 1) % 4);
-        }, 500);
+            setDotCount((prev) => (prev + 1) % 4) // Cycle through 0, 1, 2, 3
+        }, 500)
 
-        return () => clearInterval(intervalId);
-    }, []);
+        return () => clearInterval(intervalId)
+    }, [])
 
-    const dots = ".".repeat(dotCount);
+    const dots = ".".repeat(dotCount)
+
+    const toggleDetails = () => {
+        setShowDetails((prev) => !prev)
+    }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50">
-            <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.5 }}
-                className="max-w-md w-full p-8 bg-white rounded-lg shadow-2xl space-y-8"
-                onHoverStart={() => setIsHovered(true)}
-                onHoverEnd={() => setIsHovered(false)}
-            ></motion.div>
-                <motion.div
-                    className="text-center"
-                    animate={{ y: isHovered ? -5 : 0 }}
-                    transition={{ duration: 0.2 }}
-                >
-                    <h2 className="text-4xl font-bold text-gray-800 mb-4">
+        <div className="min-h-screen flex items-center justify-center">
+            <div
+                onClick={toggleDetails}
+                className="max-w-md w-full p-6 bg-white rounded-lg shadow-xl space-y-6 hover:scale-105 transition-transform duration-300 cursor-pointer"
+            >
+                <div className="text-center">
+                    <h2 className="text-3xl font-semibold text-primary">
                         Feature Coming Soon
                     </h2>
-                    <p className="text-gray-600 text-lg">
-                        We're working on something awesome{dots}
+                    <p className="text-gray-500 mt-2">
+                        We're working on something awesome{dots} Please check back later!
                     </p>
-                </motion.div>
-
-                <div className="flex justify-center space-x-6">
-                    <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                    >
-                        <FaCog className="text-5xl text-blue-500" />
-                    </motion.div>
-                    <motion.div
-                        animate={{ rotate: -360 }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                    >
-                        <FaCog className="text-5xl text-purple-500" />
-                    </motion.div>
                 </div>
 
-                <motion.div className="flex justify-center space-x-4 mt-6">
-                    {[FaBell, FaEnvelope, FaGithub].map((Icon, index) => (
-                        <motion.div
-                            key={index}
-                            whileHover={{ scale: 1.2, rotate: 15 }}
-                            whileTap={{ scale: 0.9 }}
-                            className="cursor-pointer"
-                        >
-                            <Icon className="text-2xl text-gray-600 hover:text-blue-500 transition-colors" />
-                        </motion.div>
-                    ))}
-                </motion.div>
-
-                <motion.div
-                    className="text-center text-sm text-gray-400"
-                    animate={{ opacity: [0.5, 1, 0.5] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                >
-                    <p>Stay tuned for updates!</p>
-                </motion.div>
-
-                <div className="text-center">
-                    <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
-                    >
-                        Notify Me
-                    </motion.button>
+                <div className="flex justify-center">
+                    <FaCog className="animate-spin text-6xl text-primary hover:scale-125 transition-transform duration-300" />
                 </div>
-            </motion.div>
+
+                {showDetails && (
+                    <div className="text-center text-sm secondary transform transition-opacity duration-500 opacity-100">
+                        <p className="animate-bounce">Extra details coming your way soon!</p>
+                    </div>
+                )}
+
+                <div className="text-center text-xs text-secondary">
+                    <p>Click anywhere to {showDetails ? "hide" : "show"} more info</p>
+                </div>
+            </div>
         </div>
-    );
-};
+    )
+}
 
-export default ComingSoon;
+export default ComingSoon

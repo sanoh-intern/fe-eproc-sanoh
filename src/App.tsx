@@ -28,6 +28,7 @@ import IndexCompanyData from "./pages/CompanyData/IndexCompanyData";
 import CompanyDetails from "./pages/CompanyData/CompanyDetails";
 import ManageUser from "./pages/ManageUser/ManageUser";
 import AddUser from "./pages/ManageUser/AddUser";
+import EditUser from "./pages/ManageUser/EditUser";
 
 const App: React.FC = () => {
   return (
@@ -247,6 +248,15 @@ const App: React.FC = () => {
                 <ProtectedRoute allowedRoles={['1']}>
                   <PageTitle title="Add User | PT SANOH INDONESIA" />
                   <AddUser />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/edit-user"
+              element={
+                <ProtectedRoute allowedRoles={['1']}>
+                  <PageTitle title="Edit User | PT SANOH INDONESIA" />
+                  <EditUser />
                 </ProtectedRoute>
               }
             />

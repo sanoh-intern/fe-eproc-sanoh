@@ -30,7 +30,7 @@ const ManageUser: React.FC = () => {
     const [data, setData] = useState<User[]>([]);
     const [filteredData, setFilteredData] = useState<User[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [rowsPerPage] = useState(10);
+    const [rowsPerPage, setRowsPerPage] = useState(10)
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
@@ -192,34 +192,9 @@ const ManageUser: React.FC = () => {
         setSortConfig({ key, direction });
     };
 
-    // const getRoleName = (role: string) => {
-    //     switch (role) {
-    //         case '1':
-    //             return 'Super Admin';
-    //         case '2':
-    //             return 'Admin Purchasing';
-    //         case '3':
-    //             return 'Admin Warehouse';
-    //         case '4':
-    //             return 'Admin Subcont';
-    //         case '5':
-    //             return 'Supplier Marketing';
-    //         case '6':
-    //             return 'Supplier Subcont Marketing';
-    //         case '7':
-    //             return 'Supplier Warehouse';
-    //         case '8':
-    //             return 'Supplier Subcont';
-    //         case '9':
-    //             return 'Super User';
-    //         default:
-    //             return 'Unknown Role';
-    //     }
-    // };
-
     const handleEditPage = (UserId: string) => {
         navigate(`/edit-user?userId=${UserId}`);
-      };
+    };
 
     return (
         <>
@@ -233,7 +208,7 @@ const ManageUser: React.FC = () => {
                         <div className='flex flex-col sm:flex-row gap-4 w-full lg:w-1/2'>
                             {/* <button
                                 onClick={() => navigate('/add-user')}
-                                className="bg-blue-900 text-white px-4 py-2 rounded-md hover:bg-blue-800 transition-colors whitespace-nowrap flex items-center justify-center"
+                                className="bg-primary text-white px-4 py-2 rounded-md hover:bg-blue-800 transition-colors whitespace-nowrap flex items-center justify-center"
                             >
                                 <FaUserPlus className="mr-2" />
                                 Add User
@@ -272,12 +247,13 @@ const ManageUser: React.FC = () => {
                             <table className="w-full text-sm text-left">
                                 <thead className="bg-gray-50">
                                     <tr>
-                                        <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b w[20%]">Username</th>
-                                        <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b w[10%]">Supplier Code</th>
-                                        <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b w[25%]">Name</th>
-                                        <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b w-[15%]">Role</th>
+                                        <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">Email</th>
+                                        <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">Supplier Code</th>
+                                        <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">Company Name</th>
+                                        <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">Verification Status</th>
+                                        <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">Role</th>
                                         <th
-                                            className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b w-[10%] cursor-pointer"
+                                            className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer"
                                             onClick={() => handleSort('Status')}
                                         >
                                             <span className="flex items-center justify-center">
@@ -293,14 +269,17 @@ const ManageUser: React.FC = () => {
                                                 Status
                                             </span>
                                         </th>
-                                        <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b w-[10%]">Action</th>
-                                        <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b w-[10%]">Edit User</th>
+                                        <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">Action</th>
+                                        <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">Edit User</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200 bg-white">
                                     {loading ? (
                                         Array.from({ length: rowsPerPage }).map((_, index) => (
                                             <tr key={index} className="animate-pulse">
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">
+                                                    <div className="h-4 bg-gray-200 rounded"></div>
+                                                </td>
                                                 <td className="px-3 py-3 text-center whitespace-nowrap">
                                                     <div className="h-4 bg-gray-200 rounded"></div>
                                                 </td>
@@ -330,12 +309,13 @@ const ManageUser: React.FC = () => {
                                                 <td className="px-3 py-3 text-center whitespace-nowrap">{row.Username}</td>
                                                 <td className="px-3 py-3 text-center whitespace-nowrap">{row.SupplierCode}</td>
                                                 <td className="px-3 py-3 text-center whitespace-nowrap">{row.Name}</td>
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">{row.Name}</td>
                                                 <td className="px-3 py-3 text-center whitespace-nowrap">{row.Role}</td>
                                                 <td className="px-3 py-3 text-center whitespace-nowrap">{row.Status}</td>
                                                 <td className="px-3 py-3 text-center whitespace-nowrap">
                                                     {row.isLoading ? (
                                                         <div className="flex justify-center">
-                                                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-900"></div>
+                                                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
                                                         </div>
                                                     ) : (
                                                         <button
@@ -349,7 +329,7 @@ const ManageUser: React.FC = () => {
                                                             className="hover:opacity-80 transition-opacity"
                                                         >
                                                             {row.Status === 'Active' ?
-                                                                <FaToggleOn className="text-3xl text-blue-900" /> :
+                                                                <FaToggleOn className="text-3xl text-primary" /> :
                                                                 <FaToggleOff className="text-3xl text-gray-400" />
                                                             }
                                                         </button>
@@ -360,14 +340,14 @@ const ManageUser: React.FC = () => {
                                                         onClick={() => handleEditPage(row.UserID)}
                                                         className="hover:opacity-80 transition-opacity"
                                                     >
-                                                        <FaUserEdit className="text-2xl text-blue-900" />
+                                                        <FaUserEdit className="text-2xl text-primary" />
                                                     </button>
                                                 </td>
                                             </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={7} className="px-3 py-4 text-center text-gray-500">
+                                            <td colSpan={8} className="px-3 py-4 text-center text-gray-500">
                                                 No List User available for now
                                             </td>
                                         </tr>
@@ -382,7 +362,7 @@ const ManageUser: React.FC = () => {
                         rowsPerPage={rowsPerPage}
                         currentPage={currentPage}
                         onPageChange={handlePageChange}
-                        onRowsPerPageChange={handlePageChange}
+                        onRowsPerPageChange={setRowsPerPage}
                     />
                 </div>
             </div>

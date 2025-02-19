@@ -4,7 +4,6 @@ import DashboardSupplier from './Pages/Customer/Supplier';
 import DashboardPurchasing from './Pages/Admin/Purchasing';
 import DashboardReview from './Pages/Admin/Review';
 import DashboardPresdir from './Pages/Admin/Presdir';
-import ComingSoon from '../ComingSoon';
 
 const Dashboard: React.FC = () => {
   const [userRole, setUserRole] = useState<string>('');
@@ -17,7 +16,7 @@ const Dashboard: React.FC = () => {
   if (userRole === 'super-admin') {
     return <DashboardSuperAdmin />;
   } else if (userRole === 'presdir') {
-    return <ComingSoon />;
+    return <DashboardPresdir />;
   } else if (userRole === 'review') {
     return <DashboardReview />;
   } else if (userRole === 'purchasing') {
