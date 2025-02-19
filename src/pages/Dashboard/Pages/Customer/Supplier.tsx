@@ -26,18 +26,6 @@ interface CardProps {
 const Card: React.FC<CardProps> = ({ children, className = "" }) => {
     return <div className={`bg-white shadow-sm rounded-xl border border-gray-200 p-6 ${className}`}>{children}</div>
 }
-
-
-interface CompanyData {
-    name: string
-    id: string
-    description: string
-    field: string
-    subFields: string[]
-    profileImage?: string // Optional profile image URL
-  }
-
-// Main SupplierDashboard Component
 const SupplierDashboard: React.FC = () => {
     const [verificationStatus, setVerificationStatus] = useState<string | null>(null)
     const [announcements, setAnnouncements] = useState<any[]>([])

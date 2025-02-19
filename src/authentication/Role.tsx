@@ -1,8 +1,8 @@
 export const roles = [
     { value: '1', label: 'Super Admin' },
-    { value: '2', label: 'Admin Presdir' },
-    { value: '3', label: 'Admin Purchasing' },
-    { value: '4', label: 'Admin Review' },
+    { value: '2', label: 'Presdir' },
+    { value: '3', label: 'Purchasing' },
+    { value: '4', label: 'Review' },
     { value: '5', label: 'Supplier' },
 ];
 

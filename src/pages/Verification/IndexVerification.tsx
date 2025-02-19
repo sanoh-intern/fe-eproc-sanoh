@@ -10,7 +10,7 @@ const IndexVerification: React.FC = () => {
         setUserRole(role);
     }, []);
     
-    if (userRole === 'admin-purchasing' || userRole === 'admin-presdir' || userRole === 'admin-review') {
+    if (userRole === 'purchasing' || userRole === 'presdir' || userRole === 'review') {
         return <AdminVerification />;
     } else if (userRole === 'supplier') {
         return <SupplierVerification />;

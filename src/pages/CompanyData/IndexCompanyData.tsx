@@ -10,7 +10,7 @@ const IndexCompanyData: React.FC = () => {
         setUserRole(role);
     }, []);
     
-    if (userRole === 'admin-purchasing' || userRole === 'admin-presdir' || userRole === 'admin-review') {
+    if (userRole === 'purchasing' || userRole === 'presdir' || userRole === 'review') {
         return <AdminCompanyData />;
     } else if (userRole === 'supplier') {
         return <SupplierCompanyData />;

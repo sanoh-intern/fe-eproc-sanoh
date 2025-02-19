@@ -10,7 +10,7 @@ export const AdminPresdir = () => {
         <div>
             <div>
                 <h3 className="mb-4 ml-4 text-sm font-semibold text-black-2  dark:text-bodydark2">
-                ADMIN PURCHASING MENU 
+                ADMIN PRESDIR MENU 
                 </h3>
                 <ul className="mb-6 flex flex-col gap-1.5">
                     {/* <!-- Menu Item Dashboard --> */}            

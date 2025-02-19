@@ -26,6 +26,8 @@ import SupplierNegotiation from "./pages/Offers/Supplier/OffersFollowed/Supplier
 import OffersDetailsPage from "./pages/Offers/OffersDetailsPage";
 import IndexCompanyData from "./pages/CompanyData/IndexCompanyData";
 import CompanyDetails from "./pages/CompanyData/CompanyDetails";
+import ManageUser from "./pages/ManageUser/ManageUser";
+import AddUser from "./pages/ManageUser/AddUser";
 
 const App: React.FC = () => {
   return (
@@ -227,6 +229,24 @@ const App: React.FC = () => {
                 <ProtectedRoute allowedRoles={['2','3','4']}>
                   <PageTitle title="Offers Negotiation | PT SANOH INDONESIA" />
                   <AdminNegotiation />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/manage-user"
+              element={
+                <ProtectedRoute allowedRoles={['1']}>
+                  <PageTitle title="Manage User | PT SANOH INDONESIA" />
+                  <ManageUser />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/add-user"
+              element={
+                <ProtectedRoute allowedRoles={['1']}>
+                  <PageTitle title="Add User | PT SANOH INDONESIA" />
+                  <AddUser />
                 </ProtectedRoute>
               }
             />

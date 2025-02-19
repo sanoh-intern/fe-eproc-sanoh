@@ -18,74 +18,11 @@ import {
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb"
 import Swal from "sweetalert2"
 import Loader from "../../../common/Loader"
-
-const api = {
-  fetchCompanyData: async () => {
-    // Simulating API delay
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    return {
-      generalData: {
-        companyName: null,
-        description: "Leading IT solutions provider",
-        field: "Information Technology",
-        subField: "Software Development",
-        taxId: "123456789",
-        address: "123 Tech Street, Silicon Valley",
-        state: "California",
-        city: "San Francisco",
-        postalCode: "94105",
-        companyStatus: "PMDN",
-        phone: "+1 (555) 123-4567",
-        fax: "+1 (555) 987-6543",
-        website: "www.abccorp.com",
-        profileImage: "https://v0.blob.com/DPYHH.png",
-        products: ["Software Solutions", "Cloud Services"],
-      },
-      contacts: [
-        {
-          position: "Director",
-          department: "Marketing",
-          name: "John Doe",
-          phone: "+1 (555) 111-2222",
-          email: "john@abccorp.com",
-        },
-      ],
-      nib: {
-        issuingAgency: "Business Registration Office",
-        number: "NIB123456",
-        issueDate: "2022-01-01",
-        investmentStatus: "Done",
-        kbli: "KBLI62019",
-        file: "nib_document.pdf",
-      },
-      businessLicenses: [
-        {
-          type: "Software Development License",
-          issuingAgency: "Tech Regulatory Board",
-          number: "SDL987654",
-          issueDate: "2022-02-15",
-          expiryDate: "2025-02-14",
-          qualification: "Advanced",
-          subClassification: "Enterprise Software",
-          file: "software_license.pdf",
-        },
-      ],
-      integrityPact: {
-        file: "integrity_pact.pdf",
-        description: "Signed integrity pact for ethical business conduct",
-      },
-    }
-  },
-  updateCompanyData: async (data: any) => {
-    // Simulating API delay
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    console.log("Data sent to API:", data)
-    return { success: true, message: "Company data updated successfully" }
-  },
-}
+import fetchCompanyData, { TypeCompanyData } from "../../../api/Data/company-data"
+import { postUpdateCompanyData } from "../../../api/Action/Supplier/post-update-company-data"
 
 const SupplierCompanyData: React.FC = () => {
-  const [companyData, setCompanyData] = useState<any>(null);
+  const [companyData, setCompanyData] = useState<TypeCompanyData>();
   const [activeTab, setActiveTab] = useState(0);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const [tabCompleteness, setTabCompleteness] = useState({
@@ -99,7 +36,7 @@ const SupplierCompanyData: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await api.fetchCompanyData()
+        const data = await fetchCompanyData()
         setTabCompleteness({
           generalData: checkGeneralDataCompleteness(data.generalData),
           contacts: checkContactsCompleteness(data.contacts),
@@ -159,7 +96,7 @@ const SupplierCompanyData: React.FC = () => {
 
   const handleSubmit = async (tabData: any, tabName: string) => {
     try {
-      const response = await api.updateCompanyData({ [tabName]: tabData })
+      const response = await postUpdateCompanyData( tabName, tabData )
       if (response.success) {
         toast.success(response.message)
         setTabCompleteness((prev) => ({

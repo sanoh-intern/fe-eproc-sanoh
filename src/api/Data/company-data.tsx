@@ -96,7 +96,7 @@ interface CompanyData {
     }
 }
 
-const fetchCompanyData = async (companyId: string): Promise<CompanyData> => {
+const fetchCompanyData = async (companyId?: string): Promise<CompanyData> => {
     await new Promise((resolve) => setTimeout(resolve, 1000))
     return {
         generalData: {
