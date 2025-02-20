@@ -5,7 +5,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { toast, ToastContainer } from 'react-toastify';
 import Button from '../../components/Forms/Button';
 import { roles } from '../../authentication/Role';
-import { createUserAdmin } from '../../api/Action/Admin/create-user';
+import { createUserAdmin } from '../../api/Action/Admin/manage-user';
 
 const AddUser = () => {
   const [companyName, setCompanyName] = useState("");

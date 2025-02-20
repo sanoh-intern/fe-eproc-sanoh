@@ -1,7 +1,7 @@
 import { toast } from 'react-toastify';
 import { API_Create_User_Admin } from '../../route-api';
 
-export async function createUserAdmin(payload: any, resetForm: () => void) {
+export async function editUserAdmin(payload: any, resetForm: () => void) {
     try {
         const token = localStorage.getItem('access_token');
         const response = await fetch(API_Create_User_Admin(), {
