@@ -74,9 +74,9 @@ export function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                         </form>
                         <div className="mt-6 text-sm text-center text-gray-600 dark:text-gray-400">
                         Not registered?{" "}
-                            <a href="#" className="text-black hover:underline">
-                                Create an account
-                            </a>
+                            <Link to="/auth/register" className="text-primary hover:underline">
+                                Register here
+                            </Link>
                         </div>
                     </div>
                 </div>

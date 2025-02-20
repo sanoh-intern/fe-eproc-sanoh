@@ -3,7 +3,6 @@ import { API_Logout } from '../api/route-api';
 import { toast, ToastContainer } from 'react-toastify';
 import { API_Login } from '../api/route-api';
 import axios from 'axios';
-import { getRolePath } from './Role';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 type Role = '1' | '2' | '3' | '4' | '5' | null;
@@ -60,7 +59,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(false);
   }, []);
 
-  // On route change, update lastActivity only if user is authenticated and token exists
   useEffect(() => {
     if (isAuthenticated && localStorage.getItem("access_token")) {
       localStorage.setItem("lastActivity", Date.now().toString());
@@ -74,7 +72,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (!lastActivityStr) return;
       const lastActivity = parseInt(lastActivityStr);
       const now = Date.now();
-      const oneHour = 3600000; // 1 hour in milliseconds
+      const oneHour = 3600000;
       if (now - lastActivity > oneHour) {
         localStorage.clear();
         setUserRole(null);
@@ -88,32 +86,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => clearInterval(interval);
   }, [navigate, isAuthenticated]);
 
-  const login = async (username: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     try {
-      const response = await axios.post(API_Login(), { username, password });
-      const { access_token, role, bp_code, name, supplier_name } = response.data;
+      const response = await axios.post(API_Login(), { email, password });
+      const { access_token, role_tags, bp_code, company_name, role_id } = response.data.data;
   
       localStorage.setItem('access_token', access_token);
-      localStorage.setItem('name', name);
+      localStorage.setItem('company_name', company_name);
       localStorage.setItem('bp_code', bp_code);
-      localStorage.setItem('supplier_name', supplier_name);  
-      localStorage.setItem("role", getRolePath(role));
+      localStorage.setItem("role", role_tags);
+      localStorage.setItem("role_id", role_id);
       
-      setUserRole(role);
+      setUserRole(role_id);
       setIsAuthenticated(true);
 
       localStorage.setItem("lastActivity", Date.now().toString());
 
-      toast.success('Welcome back! ' + name);
+      toast.success('Welcome back! ' + company_name);
       return true;
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        sessionStorage.setItem('login_error', error.response.data.message);
+        const { message, error: errors } = error.response.data;
+        let errorMsg = message;
+        if (errors && typeof errors === 'object') {
+          const msgs = Object.values(errors).flat();
+          errorMsg = msgs;
+        }
+        sessionStorage.setItem('login_error', errorMsg);
       } else {
-        sessionStorage.setItem('login_error', 'An unexpected error occurred');
+        sessionStorage.setItem('login_error', 'Server error, please try again later');
       }
-      setTimeout(() => window.location.reload(), 100);
+      setTimeout(() => window.location.reload(), 10);
       return false;
     } finally {
       setIsLoading(false);

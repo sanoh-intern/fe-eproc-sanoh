@@ -1,4 +1,4 @@
-const API = 'https://apiv2.profileporto.site/api';
+const API = 'https://api.e-proc.profileporto.site/api/v1';
 // const API = 'http://127.0.0.1:8000/api';
 // const API = 'https://be-sss-dev.sanohindonesia.co.id:8443/api';
 
@@ -40,7 +40,7 @@ export const API_User_Online_Admin = () => API + getRolePath() + `/user/online`;
 export const API_User_Logout_Admin = () => API + getRolePath() + `/user/logout`;
 export const API_User_Login_Performance__Admin = () => API + getRolePath() + `/user/monthly`;
 
-export const API_Create_User_Admin = () => API + getRolePath() + '/user/store';
+export const API_Create_User_Admin = () => API + getRolePath() + '/user/create';
 export const API_Edit_User_Admin = () => API + getRolePath() + '/user/edit/';
 export const API_Get_Email_Admin = () => API + getRolePath() + '/user/email/';
 export const API_Update_User_Admin = () => API + getRolePath() + '/user/update/';
