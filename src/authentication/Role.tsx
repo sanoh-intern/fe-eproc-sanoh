@@ -1,7 +1,7 @@
 export const roles = [
     { value: '1', label: 'Super Admin' },
-    { value: '2', label: 'Presdir' },
-    { value: '3', label: 'Purchasing' },
+    { value: '2', label: 'Purchasing' },
+    { value: '3', label: 'Presdir' },
     { value: '4', label: 'Review' },
     { value: '5', label: 'Supplier' },
 ];

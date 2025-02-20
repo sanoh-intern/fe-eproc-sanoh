@@ -5,7 +5,6 @@ import Pagination from '../../components/Table/Pagination';
 import SearchBar from '../../components/Table/SearchBar';
 import { FaSortDown, FaSortUp, FaToggleOff, FaToggleOn, FaUserEdit, FaUserPlus } from 'react-icons/fa';
 import MultiSelect from '../../components/Forms/MultiSelect';
-import { ToastContainer } from 'react-toastify';
 import Button from '../../components/Forms/Button';
 import { getRoleName } from '../../authentication/Role';
 import { fetchUserListAdmin, updateUserStatusAdmin } from '../../api/Action/Admin/manage-user';
@@ -162,7 +161,6 @@ const ManageUser: React.FC = () => {
 
     return (
         <>
-            <ToastContainer position="top-right" />
             <Breadcrumb pageName="Manage User" />
             <div className="bg-white">
                 <div className="p-2 md:p-4 lg:p-6 space-y-6">

@@ -3,7 +3,7 @@ import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
 import Swal from "sweetalert2";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import Button from "../../components/Forms/Button";
 import { roles } from "../../authentication/Role";
 import { editUserAdmin, fetchUserDataAdmin } from "../../api/Action/Admin/manage-specific-user";
@@ -96,7 +96,6 @@ const EditUser = () => {
 
   return (
     <>
-      <ToastContainer position="top-right" />
       <Breadcrumb 
         pageName="Edit User" 
         isSubMenu={true}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { API_Dashboard,  API_User_Login_Performance__Admin,  API_User_Logout_Admin, API_User_Online_Admin } from '../../../../api/route-api';
 import CardDataStats from '../../../../components/CardDataStats';
 import { FaUserCheck, FaUserClock, FaUsers, FaUserTimes } from 'react-icons/fa';
@@ -197,7 +197,6 @@ const DashboardSuperAdmin: React.FC = () => {
 
   return (
     <>
-      <ToastContainer position="top-right" />
       <div className='space-y-6'>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">

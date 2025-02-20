@@ -1,185 +1,351 @@
 "use client"
 
-import type React from "react"
-import { useState, useEffect } from "react"
-import { FaCheckCircle, FaExclamationTriangle, FaClock, FaEdit } from "react-icons/fa"
-import { ToastContainer, toast } from "react-toastify"
+import React, { useState, useEffect } from "react"
+import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb"
 import Button from "../../../components/Forms/Button"
 import Loader from "../../../common/Loader"
+import CompanyDetails from "../../../components/CompanyDetails"
+import FetchCompanyData,{ TypeCompanyData } from "../../../api/Data/company-data"
+import SearchBar from "../../../components/Table/SearchBar"
+import Select from "react-select"
 
-type VerificationStatus = "null" | "verified" | "verified-edited" | "edited-completed" | "edited-not-completed" | "pending-verification"
+type VerificationRequest = {
+    id: string
+    date: string
+    companyName: string
+    npwp: string
+}
 
-// Dummy data for initial render
-const initialVerificationHistory = [
-    { date: "2023-05-15", status: "Approved", message: "All documents verified successfully." },
-    { date: "2023-03-10", status: "Rejected", message: "Missing tax identification number." },
-    { date: "2023-01-22", status: "Pending", message: "Verification in progress." },
+type Company = {
+    id: string
+    companyName: string
+    supplierCode: string
+    status:
+        | "null"
+        | "verified"
+        | "verified-edited"
+        | "edited-completed"
+        | "edited-not-completed"
+        | "pending-verification"
+    verifiedAt: string
+}
+
+// Dummy data
+const initialVerificationRequests: VerificationRequest[] = [
+    { id: "1", date: "2023-05-15", companyName: "PT. ALPHA", npwp: "1234567890" },
+    { id: "2", date: "2023-03-10", companyName: "CV. BETA", npwp: "0987654321" },
+]
+
+const initialCompanies: Company[] = [
+    {
+        id: "1",
+        companyName: "PT. ALPHA",
+        supplierCode: "ALPHA001",
+        status: "null",
+        verifiedAt: "2023-05-16",
+    },
+    {
+        id: "2",
+        companyName: "CV. BETA",
+        supplierCode: "BETA002",
+        status: "verified",
+        verifiedAt: "2023-03-12",
+    },
 ]
 
 const AdminVerification: React.FC = () => {
-    const [verificationStatus, setVerificationStatus] = useState<VerificationStatus>("null")
-    const [verificationHistory, setVerificationHistory] = useState(initialVerificationHistory)
+    const [verificationRequests, setVerificationRequests] = useState<VerificationRequest[]>(
+        initialVerificationRequests
+    )
+    const [listCompanies, setListCompanies] = useState<Company[]>(initialCompanies)
+    const [companyData, setCompanyData] = useState<TypeCompanyData | null>(null)
+    const [searchQuery, setSearchQuery] = useState("")
+    const [filterStatus, setFilterStatus] = useState("")
+    const [loading, setLoading] = useState(true)
+    const [companyModalOpen, setCompanyModalOpen] = useState(false)
+    const [modalOpen, setModalOpen] = useState(false) 
+    const [modalData, setModalData] = useState<Company | VerificationRequest | null>(null)
+    const [supplierCodeInput, setSupplierCodeInput] = useState("")
+
+    const fetchData = async () => {
+        await new Promise((resolve) => setTimeout(resolve, 800))
+        setVerificationRequests(initialVerificationRequests)
+        setListCompanies(initialCompanies)
+        setLoading(false)
+    }
 
     useEffect(() => {
-        // Simulating API call to fetch verification status
-        const fetchVerificationStatus = async () => {
-        // This would be replaced with an actual API call
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        // Simulating different statuses for demonstration
-        const statuses: VerificationStatus[] = [
-            "null",
-            "verified",
-            "verified-edited",
-            "edited-completed",
-            "edited-not-completed",
-            "pending-verification",
-        ]
-        const randomStatus = statuses[Math.floor(Math.random() * statuses.length)]
-        setVerificationStatus(randomStatus)
-        }
-
-        fetchVerificationStatus()
+        fetchData()
     }, [])
 
-    const handleVerificationRequest = async () => {
-        // This would be replaced with an actual API call to submit verification request
-        await new Promise((resolve) => setTimeout(resolve, 1500))
-        toast.success("Verification request submitted successfully!")
-        setVerificationHistory((prevHistory) => [
-            { date: new Date().toISOString().split("T")[0], status: "Pending", message: "Verification request submitted." },
-            ...prevHistory,
-        ])
-        setVerificationStatus("null") // Reset status after submission
-    }
-
-    const renderStatusMessage = () => {
-        switch (verificationStatus) {
-            case "null":
-                return (
-                    <div className="flex items-center text-yellow-600">
-                        <FaExclamationTriangle className="mr-2" />
-                        <span>Please complete your company profile before requesting verification.</span>
-                    </div>
-                )
-            case "verified":
-                return (
-                    <div className="flex items-center text-green-600">
-                        <FaCheckCircle className="mr-2" />
-                        <span>Your company profile is verified.</span>
-                    </div>
-                )
-            case "verified-edited":
-                return (
-                    <div className="flex items-center text-yellow-600">
-                        <FaEdit className="mr-2" />
-                        <span>Your data has changed. Please request re-verification.</span>
-                    </div>
-                )
-            case "edited-completed":
-                return (
-                    <div className="flex items-center text-blue-600">
-                        <FaEdit className="mr-2" />
-                        <span>Your profile has been updated. You can now request verification.</span>
-                    </div>
-                )
-            case "edited-not-completed":
-                return (
-                    <div className="flex items-center text-yellow-600">
-                        <FaExclamationTriangle className="mr-2" />
-                        <span>Please complete your company profile before requesting verification.</span>
-                    </div>
-                )
-            case "pending-verification":
-                return (
-                    <div className="flex items-center text-blue-600">
-                        <FaClock className="mr-2" />
-                        <span>Under verification, please wait.</span>
-                    </div>
-                )
-        default:
-            return null
+    const handleAction = async (request: VerificationRequest, action: "accept" | "decline") => {
+        if (action === "accept") {
+            setModalData(request)
+            setModalOpen(true)
+        } else {
+            try {
+                await new Promise((resolve) => setTimeout(resolve, 500)) // Dummy
+                toast.success("Verification declined successfully!")
+                await fetchData()
+            } catch (error) {
+                toast.error("Failed to decline verification.")
+            }
         }
     }
 
-    const isVerificationButtonDisabled =
-        verificationStatus === "null" || verificationStatus === "verified" || verificationStatus === "edited-not-completed" || verificationStatus === "pending-verification"
+    const handleAcceptSubmit = async (supplierCodeInput: string) => {
+        if (!supplierCodeInput.trim()) {
+            toast.error("Please enter a new supplier code.")
+            return
+        }
+        if (modalData && "id" in modalData) {
+            try {
+                await new Promise((resolve) => setTimeout(resolve, 500)) // Dummy
+                toast.success("Verification accepted successfully!")
+                await fetchData()
+            } catch (error) {
+                toast.error("Failed to accept verification.")
+            }
+            setModalOpen(false)
+            setModalData(null)
+        }
+    }
 
-    const buttonTitle =
-        verificationStatus === "verified-edited"
-        ? "Request Re-verification"
-        : verificationStatus === "pending-verification"
-        ? "Under Verification"
-        : "Request Verification"
+    const filteredCompanies = listCompanies.filter((company) => {
+        const term = searchQuery.toLowerCase()
+        const matchTerm =
+        company.companyName.toLowerCase().includes(term) ||
+        company.supplierCode.toLowerCase().includes(term)
+        const matchStatus = filterStatus ? company.status === filterStatus : true
+        return matchTerm && matchStatus
+    })
 
-    if(!verificationHistory)
+    // Example for opening the CompanyDetails modal
+    const handleCompanyDetail = async (id: string) => {
+        setCompanyModalOpen(true)
+        try {
+            const data = await FetchCompanyData(id)
+            setCompanyData(data)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const DetailModal = () => {
+        if (!modalData) return null
+        const isRequest = (data: Company | VerificationRequest): data is VerificationRequest =>
+        (data as VerificationRequest).npwp !== undefined
         return (
-            <Loader />
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-999">
+                <div className="bg-white p-4 rounded shadow relative max-w-xl w-full mx-4 my-8">
+                    <Button
+                        title="Close"
+                        onClick={() => {
+                            setModalOpen(false)
+                            setModalData(null)
+                        }}
+                        color="bg-red-500 text-white"
+                        className="absolute top-2 right-2"
+                    />
+                    {isRequest(modalData) ? (
+                        <>
+                            <div className="mb-4">
+                                <h2 className="text-xl font-bold mb-2">Request Detail</h2>
+                                <p>
+                                    <strong>Company Name:</strong> {modalData.companyName}
+                                </p>
+                                <p>
+                                    <strong>NPWP:</strong> {modalData.npwp}
+                                </p>
+                                <p>
+                                    <strong>Request Date:</strong> {modalData.date}
+                                </p>
+                            </div>
+                            <div>
+                                <label className="block text-base font-bold mb-2">New Supplier Code</label>
+                                <input
+                                    type="text"
+                                    value={supplierCodeInput}
+                                    onChange={(e) => setSupplierCodeInput(e.target.value)}
+                                    className="w-full p-2 border rounded border-primary focus:outline-none focus:ring-2 focus:ring-primary"
+                                    autoFocus
+                                />
+                            </div>
+                            <div className="mt-4 flex justify-end gap-3">
+                                <Button 
+                                    title="Cancel" 
+                                    onClick={() => setModalOpen(false)} 
+                                    color="bg-red-600"
+                                />
+                                <Button 
+                                    title="Accepted" 
+                                    onClick={() => handleAcceptSubmit(supplierCodeInput)} 
+                                />
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <h2 className="text-xl font-bold mb-2">Company Detail</h2>
+                            <p>
+                                <strong>Company Name:</strong> {(modalData as Company).companyName}
+                            </p>
+                            <p>
+                                <strong>Supplier Code:</strong> {(modalData as Company).supplierCode}
+                            </p>
+                            <p>
+                                <strong>Status:</strong> {(modalData as Company).status}
+                            </p>
+                            <p>
+                                <strong>Verified At:</strong> {(modalData as Company).verifiedAt}
+                            </p>
+                        </>
+                    )}
+                </div>
+            </div>
         )
+    }
+
+    if (loading) return <Loader />
 
     return (
         <>
             <Breadcrumb pageName="Verification" />
-            <ToastContainer position="top-right" />
-            <div className="bg-white shadow-lg rounded-lg overflow-hidden text-primary">
+
+            {/* Verification Requests Section */}
+            <div className="bg-white shadow-lg rounded-lg overflow-hidden text-primary mb-8">
                 <div className="p-6 sm:p-8">
-                    <div className="mb-8">
-                        <h2 className="text-xl font-semibold mb-4">Verification Status</h2>
-                        {renderStatusMessage()}
-                    </div>
-
-                    <div className="mb-8">
-                        <Button
-                        onClick={handleVerificationRequest}
-                        disabled={isVerificationButtonDisabled}
-                        title={buttonTitle}
-                        />
-                    </div>
-
-                    <div>
-                        <h2 className="text-xl font-semibold mb-4">Verification History</h2>
-                        <div className="overflow-x-auto">
-                            <table className="min-w-full bg-white">
-                                <thead className="bg-gray-100">
-                                    <tr>
-                                        <th className="py-2 px-4 text-left">Date</th>
-                                        <th className="py-2 px-4 text-left">Status</th>
-                                        <th className="py-2 px-4 text-left">Message</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                {verificationHistory.map((entry, index) => (
-                                    <tr key={index} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
-                                        <td className="py-2 px-4">{entry.date}</td>
-                                        <td className="py-2 px-4">
-                                            <span
-                                            className={`inline-flex items-center ${
-                                                entry.status === "Approved"
-                                                ? "text-green-600"
-                                                : entry.status === "Rejected"
-                                                    ? "text-red-600"
-                                                    : "text-yellow-600"
-                                            }`}
-                                            >
-                                            {entry.status === "Approved" && <FaCheckCircle className="mr-1" />}
-                                            {entry.status === "Rejected" && <FaExclamationTriangle className="mr-1" />}
-                                            {entry.status === "Pending" && <FaClock className="mr-1" />}
-                                            {entry.status}
-                                            </span>
-                                        </td>
-                                        <td className="py-2 px-4">{entry.message}</td>
-                                    </tr>
+                    <h2 className="text-xl font-semibold mb-4">Verification Requests</h2>
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full bg-white">
+                            <thead className="bg-gray-100">
+                                <tr>
+                                    <th className="py-2 px-4 text-left">Request Date</th>
+                                    <th className="py-2 px-4 text-left">Company Name</th>
+                                    <th className="py-2 px-4 text-left">NPWP</th>
+                                    <th className="py-2 px-4 text-left">Detail</th>
+                                    <th className="py-2 px-4 text-left">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {verificationRequests.map((req, index) => (
+                                <tr key={req.id} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                                    <td className="py-2 px-4">{req.date}</td>
+                                    <td className="py-2 px-4">{req.companyName}</td>
+                                    <td className="py-2 px-4">{req.npwp}</td>
+                                    <td className="py-2 px-4">
+                                        <Button title="View Detail" onClick={() => handleCompanyDetail(req.id)} />
+                                    </td>
+                                    <td className="py-2 px-4 flex gap-2">
+                                        <Button
+                                            title="Accept"
+                                            onClick={() => handleAction(req, "accept")}
+                                            className="bg-green-600"
+                                        />
+                                        <Button
+                                            title="Decline"
+                                            onClick={() => handleAction(req, "decline")}
+                                            className="bg-red-600"
+                                        />
+                                    </td>
+                                </tr>
                                 ))}
-                                </tbody>
-                            </table>
+                            </tbody>
+                        </table>
+
+                        {companyModalOpen && (
+                        <div className="fixed inset-0 flex items-center justify-center z-999 overflow-y-auto">
+                            <div
+                            className="absolute inset-0 bg-black opacity-50"
+                            onClick={() => setCompanyModalOpen(false)}
+                            ></div>
+                            <div className="bg-white p-4 rounded shadow relative z-10 max-w-7xl w-full mx-4 my-8">
+                                <Button
+                                    title="Close"
+                                    onClick={() => setCompanyModalOpen(false)}
+                                    className="bg-red-500 text-white absolute top-2 right-2"
+                                />
+                                <div className="overflow-y-auto max-h-[calc(100vh-100px)]">
+                                    <CompanyDetails companyData={companyData} />
+                                </div>
+                            </div>
                         </div>
+                        )}
                     </div>
                 </div>
             </div>
+
+            {/* List of Companies Section */}
+            <div className="bg-white shadow-lg rounded-lg overflow-hidden text-primary">
+                <div className="p-6 sm:p-8">
+                    <h2 className="text-xl font-semibold mb-4">List of Companies</h2>
+                    <div className="mb-4 flex flex-col md:flex-row gap-4">
+                        <div className="w-full lg:w-1/2">
+                            <SearchBar
+                                onSearchChange={setSearchQuery}
+                                placeholder="Search Company Name or Supplier Code"
+                            />
+                        </div>
+                        <div className="w-full lg:w-1/4">
+                            <Select
+                                options={[
+                                    { value: "all", label: "All Statuses" },
+                                    ...[...new Set(listCompanies.map((company) => company.status))].map(
+                                        (status) => ({
+                                            value: status,
+                                            label: status,
+                                        })
+                                    ),
+                                ]}
+                                value={
+                                    filterStatus
+                                        ? {
+                                            value: filterStatus,
+                                            label: filterStatus === "all" ? "All Statuses" : filterStatus,
+                                        }
+                                        : null
+                                }
+                                onChange={(option: any) => setFilterStatus(option.value)}
+                                placeholder="Filter by Verification Status"
+                            />
+                        </div>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full bg-white">
+                            <thead className="bg-gray-100">
+                                <tr>
+                                    <th className="py-2 px-4 text-left">Company Name (PT)</th>
+                                    <th className="py-2 px-4 text-left">Supplier Code</th>
+                                    <th className="py-2 px-4 text-left">Status</th>
+                                    <th className="py-2 px-4 text-left">Verified At</th>
+                                    <th className="py-2 px-4 text-left">Detail</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredCompanies.map((comp, idx) => (
+                                <tr key={comp.id} className={idx % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                                    <td className="py-2 px-4">{comp.companyName}</td>
+                                    <td className="py-2 px-4">{comp.supplierCode}</td>
+                                    <td className="py-2 px-4">{comp.status}</td>
+                                    <td className="py-2 px-4">{comp.verifiedAt}</td>
+                                    <td className="py-2 px-4">
+                                        <Button 
+                                            title="View Detail"
+                                            onClick={() => handleCompanyDetail(comp.id)} 
+                                        />
+                                    </td>
+                                </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        {modalOpen && <DetailModal />}
         </>
     )
 }
 
 export default AdminVerification
-

@@ -27,7 +27,7 @@ import OffersDetailsPage from "./pages/Offers/OffersDetailsPage";
 import IndexCompanyData from "./pages/CompanyData/IndexCompanyData";
 import CompanyDetails from "./pages/CompanyData/CompanyDetails";
 import ManageUser from "./pages/ManageUser/ListUser";
-import AddUser from "./pages/ManageUser/AddUser";
+import AddUser from "./pages/ManageUser/CreateUser";
 import EditUser from "./pages/ManageUser/EditUser";
 
 const App: React.FC = () => {

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
 import Swal from 'sweetalert2';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import Button from '../../components/Forms/Button';
 import { roles } from '../../authentication/Role';
 import { createUserAdmin } from '../../api/Action/Admin/manage-specific-user';
@@ -75,7 +75,6 @@ const AddUser = () => {
 
   return (
     <>
-      <ToastContainer position="top-right" />
       <Breadcrumb pageName="Add User" />
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark" z->
         <form onSubmit={handleSubmit} className="max-w-[1024px] mx-auto">
