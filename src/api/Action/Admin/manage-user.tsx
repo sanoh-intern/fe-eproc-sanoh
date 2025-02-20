@@ -1,82 +1,79 @@
 import { toast } from 'react-toastify';
-import { API_Create_User_Admin, API_Update_User_Admin } from '../../route-api';
+import { API_List_User_Admin, API_Update_Status_Admin } from '../../route-api';
+import { getRoleName } from '../../../authentication/Role';
 
-export async function createUserAdmin(payload: any, resetForm: () => void) {
+export async function fetchUserListAdmin() {
+    const token = localStorage.getItem('access_token');
     try {
-        const token = localStorage.getItem('access_token');
-        const response = await fetch(API_Create_User_Admin(), {
-            method: 'POST',
+        const response = await fetch(API_List_User_Admin(), {
+            method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(payload),
         });
 
-        const result = await response.json();
+        if (!response.ok) throw new Error('Network response was not ok');
 
-        if (response.ok && result.status) {
-            toast.success('User successfully created!');
-            resetForm();
-        } else {
-            const errorMessage = result.error?.email
-                ? result.error.email.join(', ')
-                : result.message;
-            toast.error(`Failed to create user: ${errorMessage}`);
-        }
+        const result = await response.json();
+        // Map the API data to your expected user object structure
+        const users = result.data.map((user: any) => ({
+            UserID: user.user_id,
+            SupplierCode: user.bp_code,
+            Username: user.username,
+            Name: user.name,
+            Role: getRoleName(user.role),
+            RoleCode: user.role,
+            Status: user.status === 1 ? 'Active' : 'Deactive',
+        }));
+
+        return users;
     } catch (error) {
-        console.error('Error during user creation:', error);
-        toast.error('An error occurred while creating the user.');
+        console.error('Error fetching user list:', error);
+        toast.error(`Fetch error: ${error}`);
+        throw error;
     }
 }
 
-export async function editUserAdmin(payload: any, userId: string, navigate: any) {
+export async function updateUserStatusAdmin(userId: string, status: number, username: string) {
+    const token = localStorage.getItem('access_token');
     try {
-        const token = localStorage.getItem('access_token');
-        const response = await fetch(`${API_Update_User_Admin()}${userId}`, {
-            method: "PUT",
+        const response = await toast.promise(
+        fetch(`${API_Update_Status_Admin()}${userId}`, {
+            method: 'PUT',
             headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
             },
-            body: JSON.stringify(payload),
-        });
-        const result = await response.json();
-        if (response.ok && result.status) {
-            toast.success("User successfully updated!");
-            setTimeout(() => {
-                navigate("/list-user");
-            }, 1000);
-        } else {
-            toast.error(result.message || "Failed to update user");
+            body: JSON.stringify({ status: status.toString() }),
+        }),
+        {
+            pending: {
+                render: `Updating status for "${username}"...`,
+                autoClose: 3000,
+            },
+            success: {
+                render: `Status for "${username}" Successfully Updated to ${status === 1 ? 'Active' : 'Deactive'}`,
+                autoClose: 3000,
+            },
+            error: {
+                render({ data }) {
+                    return `Failed to update status for "${username}": ${data}`;
+            },
+                autoClose: 3000,
+            },
         }
-    } catch (error) {
-        console.error("Error during user update:", error);
-        toast.error("An error occurred while updating the user.");
-    }
-}
-
-export const fetchUserDataAdmin = async (userId: string) => {
-    const token = localStorage.getItem("access_token");
-    try {
-        const response = await fetch(`${API_Update_User_Admin()}${userId}`, {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-        });
+        );
 
         if (!response.ok) {
-            throw new Error("Failed to fetch user data");
+            throw new Error(`${response.status} ${response.statusText}`);
         }
 
-        const dataResponse = await response.json();
-        return dataResponse.data;
-
-    } catch (error: any) {
-        console.error("Error fetching user data:", error);
-        toast.error(`Error fetching user data: ${error.message}`);
-        return null;
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        console.error('Error updating user status:', error);
+        toast.error(`Error updating status: ${error}`);
+        throw error;
     }
-};
+}

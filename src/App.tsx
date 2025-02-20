@@ -26,7 +26,7 @@ import SupplierNegotiation from "./pages/Offers/Supplier/OffersFollowed/Supplier
 import OffersDetailsPage from "./pages/Offers/OffersDetailsPage";
 import IndexCompanyData from "./pages/CompanyData/IndexCompanyData";
 import CompanyDetails from "./pages/CompanyData/CompanyDetails";
-import ManageUser from "./pages/ManageUser/ManageUser";
+import ManageUser from "./pages/ManageUser/ListUser";
 import AddUser from "./pages/ManageUser/AddUser";
 import EditUser from "./pages/ManageUser/EditUser";
 

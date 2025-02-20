@@ -5,10 +5,10 @@ import Pagination from '../../components/Table/Pagination';
 import SearchBar from '../../components/Table/SearchBar';
 import { FaSortDown, FaSortUp, FaToggleOff, FaToggleOn, FaUserEdit, FaUserPlus } from 'react-icons/fa';
 import MultiSelect from '../../components/Forms/MultiSelect';
-import { toast, ToastContainer } from 'react-toastify';
-import { API_List_User_Admin, API_Update_Status_Admin } from '../../api/route-api';
+import { ToastContainer } from 'react-toastify';
 import Button from '../../components/Forms/Button';
 import { getRoleName } from '../../authentication/Role';
+import { fetchUserListAdmin, updateUserStatusAdmin } from '../../api/Action/Admin/manage-user';
 
 interface User {
     UserID: string;
@@ -39,101 +39,65 @@ const ManageUser: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchListUser();
+        fetchUserListAdmin()
+            .then((users) => {
+                setData(users);
+            setFilteredData(users);
+            setLoading(false);
+            const uniqueRoles = Array.from(new Set(users.map((user: any) => user.RoleCode)))
+                .map((role) => ({
+                    value: role as string,
+                    text: getRoleName(role as string),
+                }));
+            setRoleOptions(uniqueRoles);
+        })
         const savedPage = localStorage.getItem('list_user_current_page');
         if (savedPage) {
             setCurrentPage(parseInt(savedPage));
         }
     }, []);
+    // handleStatusChange = async (userId: string, status: number, username: string) => {
+    //     const token = localStorage.getItem('access_token');
 
+    //     try {
+    //         const response = await toast.promise(
+    //             fetch(`${API_Update_Status_Admin()}${userId}`, {
+    //                 method: 'PUT',
+    //                 headers: {
+    //                     'Authorization': `Bearer ${token}`,
+    //                     'Content-Type': 'application/json',
+    //                 },
+    //                 body: JSON.stringify({ status: status.toString() }),
+    //             }),
+    //             {
+    //                 pending: {
+    //                     render: `Updating status for "${username}"...`,
+    //                     autoClose: 3000
+    //                 },
+    //                 success: {
+    //                     render: `Status for "${username}" Successfully Updated to ${status === 1 ? 'Active' : 'Deactive'}`,
+    //                     autoClose: 3000
+    //                 },
+    //                 error: {
+    //                     render({data}) {
+    //                         return `Failed to update status for "${username}": ${data}`;
+    //                     },
+    //                     autoClose: 3000
+    //                 }
+    //             }
+    //         );
 
-    const fetchListUser = async () => {
-        const token = localStorage.getItem('access_token');
-        setLoading(true);
+    //         if (!response.ok) {
+    //             throw new Error(`${response.status} ${response.statusText}`);
+    //         }
 
-        try {
-            const response = await fetch(API_List_User_Admin(), {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) throw new Error('Network response was not ok');
-
-            const result = await response.json();
-            const users = result.data.map((user: any) => ({
-                UserID: user.user_id,
-                SupplierCode: user.bp_code,
-                Username: user.username,
-                Name: user.name,
-                Role: getRoleName(user.role),
-                RoleCode: user.role,
-                Status: user.status === 1 ? 'Active' : 'Deactive',
-            }));
-
-            setData(users);
-            setFilteredData(users);
-            setLoading(false);
-            
-            // Extract unique roles for MultiSelect options
-            const uniqueRoles = Array.from(new Set(result.data.map((user: any) => user.role)))
-            .map((role) => ({
-                value: role as string,
-                text: getRoleName(role as string),
-            }));
-            
-            setRoleOptions(uniqueRoles);
-        } catch (error) {
-            console.error('Error fetching data:', error);
-            toast.error(`Fetch error: ${error}`);
-            setLoading(false);
-        }
-    };
-
-    const handleStatusChange = async (userId: string, status: number, username: string) => {
-        const token = localStorage.getItem('access_token');
-
-        try {
-            const response = await toast.promise(
-                fetch(`${API_Update_Status_Admin()}${userId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ status: status.toString() }),
-                }),
-                {
-                    pending: {
-                        render: `Updating status for "${username}"...`,
-                        autoClose: 3000
-                    },
-                    success: {
-                        render: `Status for "${username}" Successfully Updated to ${status === 1 ? 'Active' : 'Deactive'}`,
-                        autoClose: 3000
-                    },
-                    error: {
-                        render({data}) {
-                            return `Failed to update status for "${username}": ${data}`;
-                        },
-                        autoClose: 3000
-                    }
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error(`${response.status} ${response.statusText}`);
-            }
-
-            await response.json();
-            // await fetchListUser();
-            setData(data.map((item) => item.UserID === userId ? { ...item, Status: status === 1 ? 'Active' : 'Deactive', isLoading: false } : item));
-        } catch (error) {
-            throw error;
-        }
-    };
+    //         await response.json();
+    //         // await fetchListUser();
+    //         setData(data.map((item) => item.UserID === userId ? { ...item, Status: status === 1 ? 'Active' : 'Deactive', isLoading: false } : item));
+    //     } catch (error) {
+    //         throw error;
+    //     }
+    // };
 
     useEffect(() => {
         let filtered = [...data];
@@ -206,13 +170,6 @@ const ManageUser: React.FC = () => {
                     {/* Header Section */}
                     <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
                         <div className='flex flex-col sm:flex-row gap-4 w-full lg:w-1/2'>
-                            {/* <button
-                                onClick={() => navigate('/add-user')}
-                                className="bg-primary text-white px-4 py-2 rounded-md hover:bg-blue-800 transition-colors whitespace-nowrap flex items-center justify-center"
-                            >
-                                <FaUserPlus className="mr-2" />
-                                Add User
-                            </button> */}
                             <Button
                                 title="Add User"
                                 onClick={() => navigate('/add-user')}
@@ -324,7 +281,7 @@ const ManageUser: React.FC = () => {
                                                                     item.UserID === row.UserID ? { ...item, isLoading: true } : item
                                                                 );
                                                                 setData(updatedData);
-                                                                await handleStatusChange(row.UserID, row.Status === 'Active' ? 0 : 1, row.Username);
+                                                                await updateUserStatusAdmin(row.UserID, row.Status === 'Active' ? 0 : 1, row.Username);
                                                             }}
                                                             className="hover:opacity-80 transition-opacity"
                                                         >

@@ -6,7 +6,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { toast, ToastContainer } from 'react-toastify';
 import Button from "../../components/Forms/Button";
 import { roles } from "../../authentication/Role";
-import { editUserAdmin, fetchUserDataAdmin } from "../../api/Action/Admin/manage-user";
+import { editUserAdmin, fetchUserDataAdmin } from "../../api/Action/Admin/manage-specific-user";
 
 
 const EditUser = () => {
