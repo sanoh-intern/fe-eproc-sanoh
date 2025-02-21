@@ -5,7 +5,6 @@ import Breadcrumb from "../../../../components/Breadcrumbs/Breadcrumb"
 import Button from "../../../../components/Forms/Button"
 import Select from "react-select"
 import Swal from "sweetalert2"
-import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { postCreateOffers } from "../../../../api/Action/Admin/post-create-offers"
 
@@ -16,7 +15,7 @@ interface Option {
 
 const offerTypeOptions: Option[] = [
     { value: "Public", label: "Public" },
-    { value: "Invited", label: "Invited" },
+    { value: "Private", label: "Private" },
 ]
 
 const AdminCreateOffers: React.FC = () => {
@@ -30,7 +29,7 @@ const AdminCreateOffers: React.FC = () => {
     // Handle file upload
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
-        setAttachment(e.target.files[0])
+            setAttachment(e.target.files[0])
         }
     }
 
@@ -49,13 +48,25 @@ const AdminCreateOffers: React.FC = () => {
         }
 
         const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-            const value = e.target.value
-            setInputValue(value)
-            if (value.includes(";") || (value.includes("@") &&
-                (value.endsWith(".")))
+            let value = e.target.value;
+            // If the value contains a newline from pressing Enter, remove it.
+            value = value.replace("\n", "");
+            setInputValue(value);
+            if (
+            value.includes(";") ||
+            value.endsWith("\n") ||
+            (value.includes("@") &&
+                (value.endsWith(".com") ||
+                value.endsWith(".co.id") ||
+                value.endsWith(".net") ||
+                value.endsWith(".org") ||
+                value.endsWith(".edu") ||
+                value.endsWith(".gov") ||
+                value.endsWith(".io") ||
+                value.endsWith(".tech")))
             ) {
             addEmail(value.replace(";", ""));
-            setInputValue("")
+            setInputValue("");
             }
         }
 
@@ -144,7 +155,7 @@ const AdminCreateOffers: React.FC = () => {
         }
 
         // Confirm submission
-        const result = await Swal.fire({
+        const data = await Swal.fire({
             title: "Create Offer",
             text: "Are you sure you want to create this offer?",
             icon: "question",
@@ -153,37 +164,35 @@ const AdminCreateOffers: React.FC = () => {
             confirmButtonColor: "#2F4F4F",
             cancelButtonColor: "#dc2626",
         })
-
-        if (!result.isConfirmed) return
+        if (!data.isConfirmed) return
 
         // Build payload (file upload would normally be handled differently)
-        const payload = {
-            projectName,
-            registrationDueDate,
-            overview,
-            offerType: offerType.value,
-            // If attachment is provided, you might want to send it as FormData
-            attachment: attachment ? attachment.name : null,
-            emails,
+        const formData = new FormData();
+        formData.append("project_name", projectName);
+        formData.append("registration_due_at", registrationDueDate);
+        formData.append("project_description", overview);
+        formData.append("project_type", offerType.value);
+        if (attachment) {
+            // Append the file object rather than its name
+            formData.append("project_attach", attachment);
         }
+        // If your API expects an array, you may need to append each email
+        emails.forEach(email => formData.append("invite_email[]", email));
 
-        // Simulate API call
-        console.log("Payload sent", payload)
-        await postCreateOffers(payload)
-        toast.success("Offer created successfully!")
+        const result = await postCreateOffers(formData);
 
-        // Reset form fields
-        setProjectName("")
-        setRegistrationDueDate("")
-        setOverview("")
-        setAttachment(null)
-        setOfferType(null)
-        setEmails([])
+        if (result) {
+            setProjectName("")
+            setRegistrationDueDate("")
+            setOverview("")
+            setAttachment(null)
+            setOfferType(null)
+            setEmails([])
+        }
     }
 
     return (
         <>
-            <ToastContainer position="top-right" />
             <Breadcrumb pageName="Create Offer" isSubMenu parentMenu={{ name: "Manage Offers", link: "/offers/manage" }} />
             <div className="rounded-sm border border-stroke bg-white shadow-default p-4 md:p-6.5  mx-auto">
                 <form onSubmit={handleSubmit}>

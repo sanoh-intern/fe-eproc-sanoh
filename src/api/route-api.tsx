@@ -20,20 +20,9 @@ export const API_Dashboard = () => API + getRolePath() + `/dashboard`;
 export const API_PO_DN_Year_Data = () => API + getRolePath() + `/yearData`;
 export const API_Event = () => API + getRolePath() + `/event`;
 
-export const API_Print_PO = () => API + getRolePath() + `/po/print/`;
-export const API_Print_DN = () => API + getRolePath() + `/dn/print/`;
-export const API_Print_DN_Confirm = () => API + getRolePath() + `/dn/print/qty-confirm/`;
-export const API_Print_DN_Outstanding = () => API + getRolePath() + `/dn/print/outstanding/`;
-export const API_Print_Label = () => API + getRolePath() + `/dn-label/print/`;
-export const API_Print_Label_Confirm = () => API + getRolePath() + `/dn-label/print/qty-confirm/`;
-export const API_Print_Label_Outstanding = () => API + getRolePath() + `/dn-label/print/outstanding/`;
-
-export const API_Download_Performance_Report = () => API + getRolePath() + `/performance-report/file/`;
-export const API_Download_Forecast_Report = () => API + getRolePath() + `/forecast/file/`;
-
 // Global Admin API
-export const API_List_Partner_Admin = () => API + getRolePath() + `/partner/list`;
-export const API_Sync_Admin = () => API + getRolePath() + `/sync`;
+export const API_CreateOffer = () => API + getRolePath() + `/project-header/create`;
+export const API_UpdateOffer = () => API + getRolePath() + `/update-offer`;
 
 // Manage User Admin
 export const API_User_Online_Admin = () => API + getRolePath() + `/user/online`;

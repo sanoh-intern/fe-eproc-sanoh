@@ -1,9 +1,15 @@
+import { toast } from "react-toastify";
+import { API_CreateOffer } from "../../route-api";
+
 export const postCreateOffers = async (payload: any) => {
+    const token = localStorage.getItem("access_token");
     try {
-        const response = await fetch("/api/offers/update", {
+        const response = await fetch(API_CreateOffer(), {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            body: payload,
         });
 
         if (!response.ok) {
@@ -11,9 +17,21 @@ export const postCreateOffers = async (payload: any) => {
         }
 
         const data = await response.json();
-        return data;
+        if (data.status) {
+            toast.success("Offer created successfully!");
+            return true;
+        } else {
+            if (data.error) {
+                const errors = Object.values(data.error).flat().join(" ");
+                toast.error(errors);
+            } else {
+                toast.error(data.message);
+            }
+            return false;
+        }
     } catch (error) {
         console.error("Error updating offers:", error);
+        toast.error("Error updating offers");
         throw error;
     }
 };

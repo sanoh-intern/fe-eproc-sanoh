@@ -4,6 +4,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import { API_Login } from '../api/route-api';
 import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { RoleValue } from './Role';
 
 type Role = '1' | '2' | '3' | '4' | '5' | null;
 
@@ -19,7 +20,7 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userRole, setUserRole] = useState<Role>(null);
+  const [userRole, setUserRole] = useState<RoleValue>(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
@@ -27,7 +28,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // On mount, check for token and role in localStorage
   useEffect(() => {
     const token = localStorage.getItem('access_token');
-    const role = localStorage.getItem('role');
+    const roleId = localStorage.getItem('role_id');
     const loginError = sessionStorage.getItem('login_error');
 
     if (loginError) {
@@ -37,20 +38,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }, 100);
     }
 
-    if (token && role) {
-      const roleValue =
-        role === 'super-admin'
-          ? '1'
-          : role === 'presdir'
-          ? '2'
-          : role === 'purchasing'
-          ? '3'
-          : role === 'review'
-          ? '4'
-          : role === 'supplier'
-          ? '5'
-          : null;
-      setUserRole(roleValue);
+    if (token && roleId) {
+      setUserRole(roleId as RoleValue);
       setIsAuthenticated(true);
     } else {
       setUserRole(null);
