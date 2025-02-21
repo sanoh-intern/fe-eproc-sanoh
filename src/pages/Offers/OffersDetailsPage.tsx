@@ -7,24 +7,25 @@ import OffersDetails from "../../components/OffersDetail"
 import { useEffect, useState } from "react"
 import Loader from "../../common/Loader"
 import fetchOfferDetails, { TypeOfferDetails } from "../../api/Data/offers-detail"
-
 const OffersDetailsPage: React.FC = () => {
   const [offerDetails, setOfferDetails] = useState<TypeOfferDetails | null>(null);
+  const offerId = window.location.hash.split('/').pop();
 
+  const loadData = async () => {
+    console.log("offerId", offerId)
+    try {
+        const [details] = await Promise.all([
+          fetchOfferDetails(offerId!),
+        ])
+        setOfferDetails(details)
+    } catch (error) {
+        console.error("Failed to fetch data:", error)
+      toast.error("Failed to load negotiation details")
+    } 
+  }
   useEffect(() => {
-    const loadData = async () => {
-      try {
-          const [details] = await Promise.all([
-            fetchOfferDetails("1"),
-          ])
-          setOfferDetails(details)
-      } catch (error) {
-          console.error("Failed to fetch data:", error)
-        toast.error("Failed to load negotiation details")
-      } 
-    }
-
     loadData()
+    console.log("offerId", offerDetails )
   }, [])
 
   if (!offerDetails) return <Loader />

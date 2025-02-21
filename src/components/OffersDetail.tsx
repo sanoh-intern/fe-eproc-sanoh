@@ -11,16 +11,16 @@ interface OffersDetailsProps {
 }
 
 interface OfferDetails {
-    id: string
-    projectName: string
-    createdDate: string
-    closeRegistrationDate: string
-    overview: string
-    attachmentUrl: string
-    offerType: string
-    registrationStatus: string
-    offerStatus: string
-    winningSupplier?: string | null
+    id: string;
+    projectName: string;
+    created_at: string;
+    registration_due_at: string;
+    project_description: string;
+    project_attach: string | null;
+    project_type: string;
+    registration_status: string;
+    project_status: string;
+    project_winner?: string | null;
 }
 
 const OffersDetails: React.FC<OffersDetailsProps> = ({ offerDetails }) => {
@@ -56,40 +56,40 @@ const OffersDetails: React.FC<OffersDetailsProps> = ({ offerDetails }) => {
                 <div className="flex flex-wrap mb-4">
                     <div className="w-full md:w-1/2 flex items-center mb-2">
                         <FiCalendar className="text-secondary mr-2" />
-                        <span className="text-gray-600">Created: {offerDetails.createdDate}</span>
+                        <span className="text-gray-600">Created: {offerDetails.created_at}</span>
                     </div>
                     <div className="w-full md:w-1/2 flex items-center mb-2">
                         <FiClock className="text-secondary mr-2" />
-                        <span className="text-gray-600">Close Registration: {offerDetails.closeRegistrationDate}</span>
+                        <span className="text-gray-600">Close Registration: {offerDetails.registration_due_at}</span>
                     </div>
                     <div className="w-full md:w-1/2 flex items-center mb-2">
                         <FiTarget className="text-secondary mr-2" />
-                        <span className="text-gray-600">Offer Type: {offerDetails.offerType}</span>
+                        <span className="text-gray-600">Offer Type: {offerDetails.project_type}</span>
                     </div>
                     <div className="w-full md:w-1/2 flex items-center mb-2">
                         <FiUserCheck className="text-secondary mr-2" />
-                        <span className="text-gray-600">Registration Status: {offerDetails.registrationStatus}</span>
+                        <span className="text-gray-600">Registration Status: {offerDetails.registration_status}</span>
                     </div>
                     <div className="w-full md:w-1/2 flex items-center mb-2">
                         <FiFlag className="text-secondary mr-2" />
-                        <span className="text-gray-600">Offer Status: {offerDetails.offerStatus}</span>
+                        <span className="text-gray-600">Offer Status: {offerDetails.project_status}</span>
                     </div>
-                    {offerDetails.offerStatus === "Supplier Selected" && offerDetails.winningSupplier && (
+                    {offerDetails.project_status === "Supplier Selected" && offerDetails.project_winner && (
                         <div className="w-full md:w-1/2 flex items-center mb-2">
                             <FiAward className="text-secondary mr-2" />
-                            <span className="text-gray-600">Winning Supplier: {offerDetails.winningSupplier}</span>
+                            <span className="text-gray-600">Winning Supplier: {offerDetails.project_winner}</span>
                         </div>
                     )}
                 </div>
                 
                 <div className="mb-6">
                     <h2 className="text-xl font-semibold text-gray-700 mb-2">Project Overview</h2>
-                    <p className="text-gray-600">{offerDetails.overview}</p>
+                    <p className="text-gray-600">{offerDetails.project_description}</p>
                 </div>
                 <div className="mb-6">
                     <h2 className="text-xl font-semibold text-gray-700 mb-2">Project Details</h2>
                     <Button
-                        onClick={() => window.open(offerDetails.attachmentUrl, "_blank")}
+                        onClick={() => offerDetails.project_attach && window.open(offerDetails.project_attach, "_blank")}
                         className=" "
                         title="Download PDF"
                         icon={FiDownload}

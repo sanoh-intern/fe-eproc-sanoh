@@ -1,43 +1,40 @@
+import { API_Detail_Project_Supplier } from "../route-api";
+
 export type TypeOfferDetails = {
     id: string;
     projectName: string;
-    createdDate: string;
-    closeRegistrationDate: string;
-    overview: string;
-    attachmentUrl: string;
-    offerType: string;
-    registrationStatus: string;
-    offerStatus: string;
-    winningSupplier?: string | null
+    created_at: string;
+    registration_due_at: string;
+    project_description: string;
+    project_attach: string | null;
+    project_type: string;
+    registration_status: string;
+    project_status: string;
+    project_winner?: string | null;
 };
 
-interface OfferDetails {
-    id: string
-    projectName: string
-    createdDate: string
-    closeRegistrationDate: string
-    overview: string
-    attachmentUrl: string
-    offerType: string
-    registrationStatus: string
-    offerStatus: string
-    winningSupplier?: string | null
-  }
 
-const fetchOfferDetails = async (offersId: string): Promise<OfferDetails> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    return {
-        id: "id-1",
-        projectName: "Smart City Infrastructure Development",
-        createdDate: "2023-06-15",
-        closeRegistrationDate: "2023-07-15",
-        overview:
-        "This project aims to develop a comprehensive smart city infrastructure, including IoT sensors, data analytics platforms, and integrated city management systems. The goal is to enhance urban living through technology-driven solutions for traffic management, waste management, and energy efficiency.",
-        attachmentUrl: "/path/to/project-details.pdf",
-        offerType: "Public",  
-        registrationStatus: "Close",
-        offerStatus: "Open",
-        winningSupplier: null 
+const fetchOfferDetails = async (offersId: string) => {
+    const token = localStorage.getItem("access_token");
+    try {
+        const response = await fetch((API_Detail_Project_Supplier()) + offersId, {
+            method: "GET",
+            headers: { 
+                Authorization: `Bearer ${token}`
+            },
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message);
+        }
+
+        if (data.status) {
+            return data.data;
+        }
+    } catch (error) {
+        console.error("Error fetch offers details:", error);
+        throw error;
     }
 }
 
