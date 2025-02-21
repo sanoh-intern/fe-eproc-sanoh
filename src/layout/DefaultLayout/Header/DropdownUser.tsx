@@ -7,22 +7,28 @@ import { FaCheckCircle, FaChevronDown, FaUserCog } from 'react-icons/fa';
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [name, setName] = useState('');
-  const [supplierName, setSupplierName] = useState('');
-  const [supplierImage, setSupplierImage] = useState('');
+  const [bpCode, setBpCode] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [companyImages, setCompanyImages] = useState('');
 
   // Ambil data dari localStorage pada saat komponen dimuat
   useEffect(() => {
-    const storedName = localStorage.getItem('name');
-    const storedSupplierName = localStorage.getItem('supplier_name');
+    const bp_code = localStorage.getItem('bp_code');
+    const company_name = localStorage.getItem('company_name');
+    const company_images = localStorage.getItem('company_images'); 
 
-    if (storedName) {
-      setName(storedName);
+    if (bp_code) {
+      setBpCode(bp_code);
     }
 
-    if (storedSupplierName) {
-      setSupplierName(storedSupplierName);
-      setSupplierImage(`https://picsum.photos/seed/${storedSupplierName}/200`);
+    if (company_name) {
+      setCompanyName(company_name);
+      // setSupplierImage(`https://picsum.photos/seed/${company_name}/200`);
+    }
+
+    if (company_images) {
+      setCompanyImages(company_images);
+      console.log(company_images);
     }
   }, []);
 
@@ -37,24 +43,24 @@ const DropdownUser = () => {
       >
         <div className='flex items-center gap-4'>
           <span className="hidden text-right lg:block">
-            <span className="block text-sm font-medium text-black dark:text-white">
-              {name || 'User Testing'}
+            <span className="block text-base font-medium text-black dark:text-white">
+              {companyName || 'Test Company'}
             </span>
             <span className="block text-sm text-black">
-              {supplierName || 'Non Verified'} 
+              {bpCode || 'Non Verified'} 
             </span>
           </span>
 
           <div className="h-12 w-12 rounded-full relative bg-white border-2 border-primary p-0.5">
             <img
-              src={supplierImage || UserLogo}
+              src={companyImages || UserLogo}
               alt="User"
               onError={(e) => {
               e.currentTarget.src = UserLogo;
               }}
               className="rounded-full"
             />
-            {localStorage.getItem('verified') === 'true' && (
+            {localStorage.getItem('isVerified') === 'true' && (
               <FaCheckCircle 
               className="absolute -top-1 -right-1 text-green-600 dark:text-emerald-300 bg-white rounded-full shadow-lg border-2 border-white" 
               size={20}

@@ -52,14 +52,7 @@ const AdminCreateOffers: React.FC = () => {
             const value = e.target.value
             setInputValue(value)
             if (value.includes(";") || (value.includes("@") &&
-                (value.endsWith(".com") ||
-                value.endsWith(".co.id") ||
-                value.endsWith(".net") ||
-                value.endsWith(".org") ||
-                value.endsWith(".edu") ||
-                value.endsWith(".gov") ||
-                value.endsWith(".io") ||
-                value.endsWith(".tech")))
+                (value.endsWith(".")))
             ) {
             addEmail(value.replace(";", ""));
             setInputValue("")

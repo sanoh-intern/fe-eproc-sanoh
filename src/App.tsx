@@ -191,7 +191,7 @@ const App: React.FC = () => {
             <Route
               path="/offers/create"
               element={
-                <ProtectedRoute allowedRoles={['3']}>
+                <ProtectedRoute allowedRoles={['2']}>
                   <PageTitle title="Offers Create | PT SANOH INDONESIA" />
                   <AdminCreateOffers />
                 </ProtectedRoute>
@@ -200,7 +200,7 @@ const App: React.FC = () => {
             <Route
               path="/offers/edit/:id"
               element={
-                <ProtectedRoute allowedRoles={['3']}>
+                <ProtectedRoute allowedRoles={['2']}>
                   <PageTitle title="Offers Edit | PT SANOH INDONESIA" />
                   <AdminEditOffers />
                 </ProtectedRoute>
