@@ -1,4 +1,4 @@
-import { API_Detail_Project_Supplier } from "../route-api";
+import { API_Detail_Offer } from "../route-api";
 
 export type TypeOfferDetails = {
     id: string;
@@ -17,7 +17,7 @@ export type TypeOfferDetails = {
 const fetchOfferDetails = async (offersId: string) => {
     const token = localStorage.getItem("access_token");
     try {
-        const response = await fetch((API_Detail_Project_Supplier()) + offersId, {
+        const response = await fetch((API_Detail_Offer()) + offersId, {
             method: "GET",
             headers: { 
                 Authorization: `Bearer ${token}`

@@ -1,12 +1,17 @@
+import { API_Delete_Offer_Admin } from "../../../route-api";
+
 interface DeleteOffersProps {
     offersId: string;
 }
 
 export const deleteOffers = async ({ offersId }: DeleteOffersProps ) => {
+    const token = localStorage.getItem("access_token");
     try {
-        const response = await fetch("/api/proposals/last-viewed", {
+        const response = await fetch(API_Delete_Offer_Admin() + offersId, {
             method: "DELETE",
-            headers: { "Content-Type": "application/json" },
+            headers: { 
+                Authorization: `Bearer ${token}`,
+            },
             body: JSON.stringify({ offersId }),
         });
 
@@ -17,7 +22,7 @@ export const deleteOffers = async ({ offersId }: DeleteOffersProps ) => {
         const data = await response.json();
         return data;
     } catch (error) {
-        console.error("Failed to update last viewed:", error);
+        console.error("Failed to delete offer:", error);
         throw error;
     }
 };

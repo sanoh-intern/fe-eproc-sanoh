@@ -12,8 +12,8 @@ import Select from "react-select"
 import Button from "../../../../components/Forms/Button"
 import { FiEdit, FiXCircle, FiTrash2 } from "react-icons/fi"
 import Swal from "sweetalert2"
-import { deleteOffers } from "../../../../api/Action/Admin/delete-offers"
-import { PatchStatusOffer } from "../../../../api/Action/Admin/patch-status-offer"
+import { deleteOffers } from "../../../../api/Action/Admin/Offers/delete-offers"
+import { PatchStatusOffer } from "../../../../api/Action/Admin/Offers/patch-status-offer"
 
 interface AdminOffer {
     id: string

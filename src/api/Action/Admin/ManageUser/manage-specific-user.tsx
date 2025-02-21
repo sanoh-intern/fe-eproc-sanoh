@@ -1,5 +1,5 @@
 import { toast } from 'react-toastify';
-import { API_Create_User_Admin, API_Update_User_Admin } from '../../route-api';
+import { API_Create_User_Admin, API_Update_User_Admin } from '../../../route-api';
 
 export async function createUserAdmin(payload: any, resetForm: () => void) {
     try {

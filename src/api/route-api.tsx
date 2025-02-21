@@ -7,20 +7,23 @@ const getRolePath = () => {
     return userRole ? `/${userRole}` : '';
 };
 
-// login API endpoint
+// AUTH API endpoint
 export const API_Login = () => API + '/login';
-
-// logout API endpoint
 export const API_Logout = () => API + getRolePath() + `/logout`;
 
 export const API_Email = () => API + `/email`;
 
-// Global Supplier API
+// Global API
 export const API_Dashboard = () => API + getRolePath() + `/dashboard`;
+export const API_Detail_Offer = () => API + getRolePath() + `/project-header/get/`;
 
 // Global Admin API
-export const API_CreateOffer = () => API + getRolePath() + `/project-header/create`;
-export const API_UpdateOffer = () => API + getRolePath() + `/update-offer`;
+export const API_Create_Offer_Admin = () => API + getRolePath() + `/project-header/create`;
+export const API_Update_Offer_Admin = () => API + getRolePath() + `/project-header/update/`;
+export const API_Update_Status_Offer_Admin = () => API + getRolePath() + `/project-header/update/regis-status/`;
+export const API_Delete_Offer_Admin = () => API + getRolePath() + `/project-header/delete/`;
+export const API_List_Offer_Admin = () => API + getRolePath() + `/project-header/index`;
+export const API_Select_Winner_Offer_Admin = () => API + getRolePath() + `/project-header/winner`;
 
 // Manage User Admin
 export const API_User_Online_Admin = () => API + getRolePath() + `/user/online`;
@@ -37,7 +40,6 @@ export const API_Update_Status_Admin = () => API + getRolePath() + `/user/update
 // Supplier API
 export const API_Project_Public_Supplier = () => API + getRolePath() + '/project-header/list-public/get';
 export const API_Project_Private_Supplier = () => API + getRolePath() + '/project-header/list-invited/get';
-export const API_Detail_Project_Supplier = () => API + getRolePath() + '/project-header/get/';
 export const API_Register_Project_Supplier = () => API + getRolePath() + '/project-header/join/';
 
 // // Purchase Order Admin

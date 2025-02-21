@@ -1,13 +1,17 @@
+import { API_Update_Status_Offer_Admin } from "../../../route-api";
+
 interface PatchStatusOfferProps {
     offersId: string;
 }
 
 export const PatchStatusOffer = async ({ offersId }: PatchStatusOfferProps ) => {
+    const token = localStorage.getItem("access_token");
     try {
-        const response = await fetch("/api/proposals/last-viewed", {
+        const response = await fetch(API_Update_Status_Offer_Admin() + offersId, {
             method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ offersId }),
+            headers: { 
+                Authorization: `Bearer ${token}`
+            }
         });
 
         if (!response.ok) {

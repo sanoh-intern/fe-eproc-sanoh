@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
-import { API_List_User_Admin, API_Update_Status_Admin } from '../../route-api';
-import { getRoleName } from '../../../authentication/Role';
+import { API_List_User_Admin, API_Update_Status_Admin } from '../../../route-api';
+import { getRoleName } from '../../../../authentication/Role';
 
 export async function fetchUserListAdmin() {
     const token = localStorage.getItem('access_token');

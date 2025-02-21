@@ -8,7 +8,7 @@ import Swal from "sweetalert2"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import Loader from "../../../../common/Loader"
-import { putEditOffers } from "../../../../api/Action/Admin/put-edit-offers"
+import { putEditOffers } from "../../../../api/Action/Admin/Offers/put-update-offers"
 
 interface Option {
     value: string

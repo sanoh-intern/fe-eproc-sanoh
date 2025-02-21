@@ -6,7 +6,7 @@ import Button from "../../../../components/Forms/Button"
 import Select from "react-select"
 import Swal from "sweetalert2"
 import "react-toastify/dist/ReactToastify.css"
-import { postCreateOffers } from "../../../../api/Action/Admin/post-create-offers"
+import { postCreateOffers } from "../../../../api/Action/Admin/Offers/post-create-offers"
 
 interface Option {
     value: string

@@ -16,8 +16,8 @@ import fetchOfferDetails, { TypeOfferDetails } from "../../../../api/Data/offers
 import fetchSupplierProposals, { TypeSupplierProposal } from "../../../../api/Data/Admin/Offers/supplier-proposal"
 import fetchListSupplierRegistered, { TypeListSupplierRegistered } from "../../../../api/Data/Admin/Offers/list-supplier-registered"
 import { FaLock, FaEye, FaEyeSlash } from "react-icons/fa"
-import { postOffersAccepted, postOffersDeclined } from "../../../../api/Action/Admin/post-final-winner"
-import { updateLastViewed } from "../../../../api/Action/Admin/put-view-amount"
+import { postOffersAccepted, postOffersDeclined } from "../../../../api/Action/Admin/Offers/post-final-winner"
+import { updateLastViewed } from "../../../../api/Action/Admin/Offers/put-view-amount"
 
 
 const AdminRegisteredDetail: React.FC = () => {

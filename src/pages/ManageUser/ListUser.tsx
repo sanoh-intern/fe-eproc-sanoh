@@ -7,7 +7,7 @@ import { FaSortDown, FaSortUp, FaToggleOff, FaToggleOn, FaUserEdit, FaUserPlus }
 import MultiSelect from '../../components/Forms/MultiSelect';
 import Button from '../../components/Forms/Button';
 import { getRoleName } from '../../authentication/Role';
-import { fetchUserListAdmin, updateUserStatusAdmin } from '../../api/Action/Admin/manage-user';
+import { fetchUserListAdmin, updateUserStatusAdmin } from '../../api/Action/Admin/ManageUser/manage-user';
 
 interface User {
     UserID: string;

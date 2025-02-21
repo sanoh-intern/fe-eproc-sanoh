@@ -1,10 +1,9 @@
 import { toast } from "react-toastify";
-import { API_CreateOffer } from "../../route-api";
-
+import { API_Create_Offer_Admin } from "../../../route-api";
 export const postCreateOffers = async (payload: any) => {
     const token = localStorage.getItem("access_token");
     try {
-        const response = await fetch(API_CreateOffer(), {
+        const response = await fetch(API_Create_Offer_Admin(), {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${token}`,
