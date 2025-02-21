@@ -1,34 +1,71 @@
+import { toast } from "react-toastify"
+import { API_Project_Private_Supplier, API_Project_Public_Supplier } from "../../route-api"
+
 export type TypeOffers = {
     id: string
-    projectName: string
-    createdDate: string
-    offerType: "Invited" | "Public"
-    registrationDueDate: string
-    status: "Open" | "Closed"
-    isRegistered?: boolean
-}
-interface Offers {
-    id: string
-    projectName: string
-    createdDate: string
-    offerType: "Invited" | "Public"
-    registrationDueDate: string
-    status: "Open" | "Closed"
+    project_name: string
+    created_at: string
+    project_type: string
+    registration_due_at: string
+    registration_status: string
     isRegistered?: boolean
 }
 
-// Simulated API functions
-const fetchListOffers = async (): Promise<Offers[]> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    return Array.from({ length: 25 }, (_, i) => ({
-        id: `invited-${i + 1}`,
-        projectName: `Invited Project ${i + 1}`,
-        createdDate: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString().split("T")[0],
-        offerType: "Invited",
-        registrationDueDate: new Date(Date.now() + Math.floor(Math.random() * 10000000000)).toISOString().split("T")[0],
-        status: Math.random() > 0.3 ? "Open" : "Closed",
-        isRegistered: true,
-    }))
+export const fetchPublicOffers = async () => {
+    const token = localStorage.getItem("access_token");
+    try {
+        const response = await fetch(API_Project_Public_Supplier(), {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (data.status) {
+            return data.data;
+        } else {
+            if (data.error) {
+                const errors = Object.values(data.error).flat().join(" ");
+                toast.error(errors);
+            } else {
+                toast.error(data.message);
+            }
+            return false;
+        }
+    } catch (error) {
+        console.error("Error fetching offers:", error);
+        return [];
+    }
 }
-
-export default fetchListOffers;
+export const fetchPrivateOffers = async () => {
+    const token = localStorage.getItem("access_token");
+    try {
+        const response = await fetch(API_Project_Private_Supplier(), {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (data.status) {
+            return data.data;
+        } else {
+            if (data.error) {
+                const errors = Object.values(data.error).flat().join(" ");
+                toast.error(errors);
+            } else {
+                toast.error(data.message);
+            }
+            return false;
+        }
+    } catch (error) {
+        console.error("Error fetching offers:", error);
+        return [];
+    }
+}

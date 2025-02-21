@@ -8,12 +8,12 @@ import { Dialog, Transition } from "@headlessui/react"
 import { Fragment } from "react"
 import Breadcrumb from "../../../../components/Breadcrumbs/Breadcrumb"
 import { Link } from "react-router-dom"
-import { ToastContainer, toast } from "react-toastify"
+import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import SearchBar from "../../../../components/Table/SearchBar"
 import Button from "../../../../components/Forms/Button"
 import Pagination from "../../../../components/Table/Pagination"
-import fetchListOffers, { TypeOffers } from "../../../../api/Data/Supplier/list-offers"
+import { fetchPrivateOffers, fetchPublicOffers, TypeOffers } from "../../../../api/Data/Supplier/list-offers"
 import { getRegisterOffers } from "../../../../api/Action/Supplier/get-register-offers"
 
 const SupplierOffersAvailable: React.FC = () => {
@@ -32,11 +32,10 @@ const SupplierOffersAvailable: React.FC = () => {
     useEffect(() => {
         const fetchOffersData = async () => {
             setLoading(true)
-            const offers = await fetchListOffers();
-            const invited = offers.filter((offer) => offer.offerType === "Invited");
-            const public_ = offers.filter((offer) => offer.offerType === "Public");
-            setInvitedOffers(invited);
-            setPublicOffers(public_);
+            const offersPublic = await fetchPublicOffers();
+            const offersPrivate = await fetchPrivateOffers();
+            setInvitedOffers(offersPrivate);
+            setPublicOffers(offersPublic);
             setLoading(false);
         };
 
@@ -53,11 +52,11 @@ const SupplierOffersAvailable: React.FC = () => {
 
     const filteredData = (selectedTab === 0 ? invitedOffers : publicOffers)
         .filter((offer) => {
-            return offer.projectName.toLowerCase().includes(searchQuery.toLowerCase())
+            return offer.project_name.toLowerCase().includes(searchQuery.toLowerCase())
         })
         .sort((a, b) => {
             if (sortConfig.key === "status") {
-                return sortConfig.direction === "asc" ? a.status.localeCompare(b.status) : b.status.localeCompare(a.status)
+                return sortConfig.direction === "asc" ? a.registration_status.localeCompare(b.registration_status) : b.registration_status.localeCompare(a.registration_status)
             }
             return 0
         })
@@ -71,22 +70,19 @@ const SupplierOffersAvailable: React.FC = () => {
         if (agreementChecked && selectedOffer) {
             try {
                 const result = await getRegisterOffers(selectedOffer.id)
-                if (result.success) {
+                if (result.status === true) {
                     toast.success("Registration submitted successfully")
                     setIsModalOpen(false)
                     setAgreementChecked(false)
-                } else {
-                    toast.error(result.message)
                 }
             } catch (error) {
-                toast.error("An error occurred while submitting the agreement")
+                toast.error(error instanceof Error ? error.message : "An error occurred")
             }
         }
     }
 
     return (
         <>
-            <ToastContainer position="top-right" />
             <Breadcrumb pageName="Available Offers" />
             <div className="bg-white">
                 <div className="p-4 md:p-4 lg:p-6 space-y-6">
@@ -192,23 +188,23 @@ const SupplierOffersAvailable: React.FC = () => {
                                                     <tr key={index} className="hover:bg-gray-50">
                                                         <td className="px-3 py-3 text-center whitespace-nowrap underline font-medium">
                                                             <Link to={`/offers/details/${offer.id}`} className="text-blue-600 hover:underline">
-                                                            {offer.projectName}
+                                                            {offer.project_name}
                                                             </Link>
                                                         </td>
-                                                        <td className="px-3 py-3 text-center whitespace-nowrap">{offer.createdDate}</td>
-                                                        <td className="px-3 py-3 text-center whitespace-nowrap">{offer.offerType}</td>
+                                                        <td className="px-3 py-3 text-center whitespace-nowrap">{offer.created_at}</td>
+                                                        <td className="px-3 py-3 text-center whitespace-nowrap">{offer.project_type}</td>
                                                         <td className="px-3 py-3 text-center whitespace-nowrap">
-                                                            {offer.registrationDueDate}
+                                                            {offer.registration_due_at}
                                                         </td>
                                                         <td className="px-3 py-3 text-center whitespace-nowrap">
                                                             <span
                                                             className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                                                                offer.status === "Open"
+                                                                offer.registration_status === "Open"
                                                                 ? "bg-green-200 text-green-900"
                                                                 : "bg-red-200 text-red-900"
                                                             }`}
                                                             >
-                                                            {offer.status}
+                                                            {offer.registration_status}
                                                             </span>
                                                         </td>
                                                         <td className="px-3 py-3 text-center whitespace-nowrap">
@@ -216,7 +212,7 @@ const SupplierOffersAvailable: React.FC = () => {
                                                                 <Button
                                                                     title={offer.isRegistered ? "Registered" : "Register"}
                                                                     onClick={() => handleRegister(offer)}
-                                                                    disabled={offer.status === "Closed" || offer.isRegistered}
+                                                                    disabled={offer.registration_status === "Closed" || offer.isRegistered}
                                                                 />
                                                             </div>
                                                         </td>
@@ -280,7 +276,7 @@ const SupplierOffersAvailable: React.FC = () => {
                         <div className="mt-2">
                             <p className="text-sm text-gray-500">
                             By agreeing to this MoU, you confirm that you will participate in the entire procurement offer
-                            process for {selectedOffer?.projectName}.
+                            process for {selectedOffer?.project_name}.
                             </p>
                         </div>
 
