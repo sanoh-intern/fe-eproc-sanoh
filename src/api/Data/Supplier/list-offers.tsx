@@ -8,7 +8,7 @@ export type TypeOffers = {
     project_type: string
     registration_due_at: string
     registration_status: string
-    isRegistered?: boolean
+    is_regis?: boolean
 }
 
 export const fetchPublicOffers = async () => {

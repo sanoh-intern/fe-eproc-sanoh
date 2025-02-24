@@ -2,8 +2,8 @@ import { API_Update_Offer_Admin } from "../../../route-api";
 
 export const putEditOffers = async (payload: any) => {
     try {
-        const response = await fetch(API_Update_Offer_Admin(), {
-            method: "PUT",
+        const response = await fetch(`${API_Update_Offer_Admin()}?_method=PUT`, {
+            method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
         });

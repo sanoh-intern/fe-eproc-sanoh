@@ -49,11 +49,11 @@ const SupplierOffersFollowed: React.FC = () => {
     let filtered = [...offers]
 
     if (searchQuery) {
-      filtered = filtered.filter((row) => row.projectName.toLowerCase().includes(searchQuery.toLowerCase()))
+      filtered = filtered.filter((row) => row.project_name.toLowerCase().includes(searchQuery.toLowerCase()))
     }
 
     if (statusFilter && statusFilter !== "all") {
-      filtered = filtered.filter((row) => row.status === statusFilter)
+      filtered = filtered.filter((row) => row.porposal_status === statusFilter)
     }
 
     if (sortConfig.key) {
@@ -92,7 +92,7 @@ const SupplierOffersFollowed: React.FC = () => {
   }
 
   const handleNegotiate = (offerid: TypeOfferFollowed) => {
-    navigate(`/offers/followed/negotiation/details/id?offerid=${offerid.offerid}`)
+    navigate(`/offers/followed/negotiation/details/id?offerid=${offerid.id}`)
   };
 
   return (
@@ -123,7 +123,7 @@ const SupplierOffersFollowed: React.FC = () => {
                   <Select
                     options={[
                       { value: 'all', label: 'All Statuses' },
-                      ...Array.from(new Set(offers.map(offer => offer.status))).map(status => ({
+                      ...Array.from(new Set(offers.map(offer => offer.porposal_status))).map(status => ({
                       value: status,
                       label: status,
                       })),
@@ -160,7 +160,7 @@ const SupplierOffersFollowed: React.FC = () => {
                         </th>
                         <th
                           className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer"
-                          onClick={() => handleSort("registrationDate")}
+                          onClick={() => handleSort("register_date")}
                         >
                           <span className="flex items-center justify-center">
                           {sortConfig.key === "registrationDate" ? (
@@ -191,7 +191,7 @@ const SupplierOffersFollowed: React.FC = () => {
                         </th>
                         <th
                           className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer"
-                          onClick={() => handleSort("updatedDate")}
+                          onClick={() => handleSort("proposal_last_update")}
                         >
                           <span className="flex items-center justify-center">
                           {sortConfig.key === "updatedDate" ? (
@@ -249,40 +249,42 @@ const SupplierOffersFollowed: React.FC = () => {
                         ))
                       ) : paginatedOffers.length > 0 ? (
                         paginatedOffers.map((offer) => (
-                          <tr key={offer.offerid} className="hover:bg-gray-50">
+                          <tr key={offer.id} className="hover:bg-gray-50">
                             <td className="px-3 py-3 text-center font-semibold whitespace-nowrap">
-                              {offer.projectName}                              
+                              {offer.project_name}                              
                             </td>
-                            <td className="px-3 py-3 text-center whitespace-nowrap">{offer.offerType}</td>
-                            <td className="px-3 py-3 text-center whitespace-nowrap">{offer.registrationDate}</td>
+                            <td className="px-3 py-3 text-center whitespace-nowrap">{offer.project_type}</td>
+                            <td className="px-3 py-3 text-center whitespace-nowrap">{offer.register_date}</td>
                             <td className="px-3 py-3 text-center whitespace-nowrap flex items-center justify-center">
                                 <span className="mr-2 border rounded-sm border-gray-300 px-1">IDR</span>
-                                <span>{Number(offer.totalAmount).toLocaleString('id-ID')}</span>
+                                <span>{Number(offer.proposal_last_amount).toLocaleString('id-ID')}</span>
                             </td>
-                            <td className="px-3 py-3 text-center whitespace-nowrap">{offer.revisionNo}</td>
-                            <td className="px-3 py-3 text-center whitespace-nowrap">{offer.updatedDate}</td>
+                            <td className="px-3 py-3 text-center whitespace-nowrap">
+                              {offer.proposal_revision_no} {offer.isFinal && <span className="ml-2 text-xs font-medium bg-primary px-3 py-1 rounded-full text-white">Final</span>}
+                            </td>
+                            <td className="px-3 py-3 text-center whitespace-nowrap">{offer.proposal_last_update}</td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">
                               <span
                                 className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                 ${
-                                  offer.status === "Accepted"
+                                  offer.porposal_status === "Accepted"
                                     ? "bg-green-100 text-green-800"
-                                    : offer.status === "Declined"
+                                    : offer.porposal_status === "Declined"
                                       ? "bg-red-100 text-red-800"
-                                      : offer.status === "On Review"
+                                      : offer.porposal_status === "On Review"
                                         ? "bg-yellow-100 text-yellow-800"
-                                        : offer.status === "Need revision" 
+                                        : offer.porposal_status === "Need revision" 
                                         ? "bg-blue-100 text-blue-800"
                                         : "bg-gray-100 text-gray-800"
                                 }`}
                               >
-                                {offer.status}
+                                {offer.porposal_status}
                               </span>
                             </td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">
-                                {offer.offerStatus}
+                                {offer.project_status}
                             </td>
-                            <td className="px-3 py-3 text-center whitespace-nowrap">{offer.winningCompany || "-"}</td>
+                            <td className="px-3 py-3 text-center whitespace-nowrap">{offer.project_winner || "-"}</td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">
                               <Button
                                 onClick={() => handleNegotiate(offer)}

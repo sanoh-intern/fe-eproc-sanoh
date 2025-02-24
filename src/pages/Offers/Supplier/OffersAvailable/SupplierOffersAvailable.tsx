@@ -72,8 +72,22 @@ const SupplierOffersAvailable: React.FC = () => {
                 const result = await getRegisterOffers(selectedOffer.id)
                 if (result.status === true) {
                     toast.success("Registration submitted successfully")
+                    setSelectedOffer(null)
                     setIsModalOpen(false)
                     setAgreementChecked(false)
+                    if (selectedTab === 0) {
+                        setInvitedOffers((prevOffers) =>
+                            prevOffers.map((offer) =>
+                                offer.id === selectedOffer.id ? { ...offer, is_regis: true } : offer
+                            )
+                        );
+                    } else {
+                        setPublicOffers((prevOffers) =>
+                            prevOffers.map((offer) =>
+                                offer.id === selectedOffer.id ? { ...offer, is_regis: true } : offer
+                            )
+                        );
+                    }
                 }
             } catch (error) {
                 toast.error(error instanceof Error ? error.message : "An error occurred")
@@ -210,9 +224,9 @@ const SupplierOffersAvailable: React.FC = () => {
                                                         <td className="px-3 py-3 text-center whitespace-nowrap">
                                                             <div className="flex justify-center items-center">
                                                                 <Button
-                                                                    title={offer.isRegistered ? "Registered" : "Register"}
+                                                                    title={offer.is_regis ? "Registered" : "Register"}
                                                                     onClick={() => handleRegister(offer)}
-                                                                    disabled={offer.registration_status === "Closed" || offer.isRegistered}
+                                                                    disabled={offer.registration_status === "Closed" || offer.is_regis}
                                                                 />
                                                             </div>
                                                         </td>

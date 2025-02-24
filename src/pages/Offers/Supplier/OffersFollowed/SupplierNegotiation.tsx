@@ -130,7 +130,7 @@ const SupplierNegotiation: React.FC = () => {
                     </div>
                 )}
 
-                {(offerDetails.project_status !== "Supplier Selected" || !offerDetails.project_winner) && !negotiationHistory.some(entry => entry.final) && (
+                {(offerDetails.project_status !== "Supplier Selected" || !offerDetails.project_winner) && !negotiationHistory.some(entry => entry.isFinal) && (
                     <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-8">
                         <div className="p-4 md:p-4 lg:p-6 space-y-6">
                             <h2 className="text-2xl font-bold text-primary mb-4">Submit Proposal</h2>
@@ -179,7 +179,7 @@ const SupplierNegotiation: React.FC = () => {
                             <Button
                                 onClick={handleSubmit}
                                 title="Submit Proposal"
-                                disabled={offerDetails.project_status === "Supplier Selected" && (!!offerDetails.project_winner || negotiationHistory.length >= 5 || negotiationHistory.some(entry => entry.final))}
+                                disabled={offerDetails.project_status === "Supplier Selected" && (!!offerDetails.project_winner || negotiationHistory.length >= 5 || negotiationHistory.some(entry => entry.isFinal))}
                             />
                             {negotiationHistory.length >= 5 && (
                                 <p className="text-red-500 text-sm">Maximum number of submissions reached.</p>
@@ -215,7 +215,7 @@ const SupplierNegotiation: React.FC = () => {
                                 <tbody className="divide-y divide-gray-200 bg-white">
                                     {paginatedHistory.map((entry) => (
                                         <tr key={entry.id} className="hover:bg-gray-50">
-                                            <td className="px-3 py-3 text-center whitespace-nowrap">{entry.submitDate}</td>
+                                            <td className="px-3 py-3 text-center whitespace-nowrap">{entry.proposal_submit_date}</td>
                                             {/* <td className="px-3 py-3 text-center whitespace-nowrap">
                                                 {entry.attachmentUrl ? (
                                                     <a
@@ -232,23 +232,23 @@ const SupplierNegotiation: React.FC = () => {
                                             </td> */}
                                             <td className="px-3 py-3 text-center whitespace-nowrap flex items-center justify-center">
                                                 <span className="mr-2 border rounded-sm border-gray-300 px-1">IDR</span>
-                                                <span>{Number(entry.totalAmount).toLocaleString('id-ID')}</span>
+                                                <span>{Number(entry.poposal_total_amount).toLocaleString('id-ID')}</span>
                                             </td>
                                             <td className="px-3 py-3 text-center whitespace-nowrap">
-                                                {entry.revisionNo} {entry.final && <span className="ml-2 text-xs font-medium bg-primary px-3 py-1 rounded-full text-white">Final</span>}
+                                                {entry.proposal_revision_no} {entry.isFinal && <span className="ml-2 text-xs font-medium bg-primary px-3 py-1 rounded-full text-white">Final</span>}
                                             </td>
                                             <td className="px-3 py-3 text-center whitespace-nowrap">
                                                 <span
-                                                    className={`px-2 py-1 rounded ${entry.status === "Accepted"
+                                                    className={`px-2 py-1 rounded ${entry.proposal_status === "Accepted"
                                                         ? "bg-green-200 text-green-800"
-                                                        : entry.status === "Declined"
+                                                        : entry.proposal_status === "Declined"
                                                             ? "bg-red-200 text-red-800"
-                                                            : entry.status === "On Review"
+                                                            : entry.proposal_status === "On Review"
                                                                 ? "bg-yellow-200 text-yellow-800"
                                                                 : "bg-blue-200 text-blue-800"
                                                         }`}
                                                 >
-                                                    {entry.status}
+                                                    {entry.proposal_status}
                                                 </span>
                                             </td>
                                         </tr>

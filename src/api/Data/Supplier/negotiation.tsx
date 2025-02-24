@@ -1,18 +1,18 @@
 export type TypeNegotiationSupplier = {
     id: string
-    submitDate: string
-    totalAmount: number | null
-    revisionNo: number | null
-    status: string | null
-    final: boolean 
+    proposal_submit_date: string
+    poposal_total_amount: number | null
+    proposal_revision_no: number | null
+    proposal_status: string | null
+    isFinal: boolean
 }
 interface NegotiationSupplier {
     id: string
-    submitDate: string
-    totalAmount: number | null
-    revisionNo: number | null
-    status: string | null
-    final: boolean
+    proposal_submit_date: string
+    poposal_total_amount: number | null
+    proposal_revision_no: number | null
+    proposal_status: string | null
+    isFinal: boolean
 }
 
 const fetchNegotiationSupplier = async (offerid: string): Promise<NegotiationSupplier[]> => {
@@ -20,27 +20,27 @@ const fetchNegotiationSupplier = async (offerid: string): Promise<NegotiationSup
     return [
         {
             id: "nego-1",
-            submitDate: "2024-01-20",
-            totalAmount: 600000,
-            revisionNo: 1,
-            status: "On Review",
-            final: false,
+            proposal_submit_date: "2024-01-20",
+            poposal_total_amount: 600000,
+            proposal_revision_no: 1,
+            proposal_status: "On Review",
+            isFinal: false,
         },
         {
             id: "nego-2",
-            submitDate: "2024-01-25",
-            totalAmount: 650000,
-            revisionNo: 2,
-            status: "Revision",
-            final: false,
+            proposal_submit_date: "2024-01-25",
+            poposal_total_amount: 650000,
+            proposal_revision_no: 2,
+            proposal_status: "Revision",
+            isFinal: false,
         },
         {
             id: "nego-3",
-            submitDate: "2024-01-30",
-            totalAmount: 700000,
-            revisionNo: 3,
-            status: "Revision",
-            final: true,
+            proposal_submit_date: "2024-01-30",
+            poposal_total_amount: 700000,
+            proposal_revision_no: 3,
+            proposal_status: "Revision",
+            isFinal: true,
         },
     ]
 }

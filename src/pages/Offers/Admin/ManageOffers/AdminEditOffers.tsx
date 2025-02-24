@@ -9,6 +9,7 @@ import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import Loader from "../../../../common/Loader"
 import { putEditOffers } from "../../../../api/Action/Admin/Offers/put-update-offers"
+import fetchEditOfferDetails, { TypeEditOfferDetails } from "../../../../api/Data/Admin/ManageOffers/edit-offers-details"
 
 interface Option {
     value: string
@@ -22,34 +23,34 @@ const offerTypeOptions: Option[] = [
 
 const AdminEditOffers: React.FC = () => {
     // Simulated initial offer data fetched from an API
-    const [projectName, setProjectName] = useState("")
-    const [registrationDueDate, setRegistrationDueDate] = useState("")
-    const [overview, setOverview] = useState("")
+    const [projectName, setProjectName] = useState<string>("")
+    const [registrationDueDate, setRegistrationDueDate] = useState<string>("")
+    const [overview, setOverview] = useState<string>("")
     const [attachment, setAttachment] = useState<File | null>(null)
-    const [existingAttachmentLink, setExistingAttachmentLink] = useState<string | null>(null)
-    const [offerType, setOfferType] = useState<Option | null>(null)
+    const [existingAttachmentLink, setExistingAttachmentLink] = useState<TypeEditOfferDetails>()
+    const [projectType, setProjectType] = useState<Option | undefined>()
     const [emails, setEmails] = useState<string[]>([])
+    const offerId = window.location.hash.split('/').pop();
 
     // Simulate fetching offer data (e.g. by an offer ID)
     useEffect(() => {
-        // Dummy data for the offer to be edited
-        const dummyOffer = {
-            projectName: "Dummy Project",
-            registrationDueDate: "2025-03-01",
-            overview: "This is a dummy overview for the offer.",
-            offerType: "Invited", // or "Public"
-            emails: ["test@example.com", "info@example.com"],
-            attachment: "https://example.com/dummyAttachment.pdf",
-        }
+        async function fetchData() {
+            // Dummy data for the offer to be edited
+            const [details] = await Promise.all([
+                fetchEditOfferDetails(offerId!),
+            ])
 
-        setProjectName(dummyOffer.projectName)
-        setRegistrationDueDate(dummyOffer.registrationDueDate)
-        setOverview(dummyOffer.overview)
-        setOfferType(
-            offerTypeOptions.find((o) => o.value === dummyOffer.offerType) || null
-        )
-        setEmails(dummyOffer.emails)
-        setExistingAttachmentLink(dummyOffer.attachment)
+            setProjectName(details.project_name)
+            setRegistrationDueDate(details.registration_due_at)
+            setOverview(details.project_description)
+            setProjectType(
+                offerTypeOptions.find((o) => o.value === details.project_type) || undefined
+            )
+            setEmails((details as any).emails || [])
+            setExistingAttachmentLink(details.project_attach ? details.project_attach as unknown as TypeEditOfferDetails : undefined)
+        }
+        
+        fetchData();
     }, [])
 
     // Handle file upload
@@ -168,12 +169,12 @@ const AdminEditOffers: React.FC = () => {
             Swal.fire("Error", "Please fill all required fields", "error")
             return
         }
-        if (!offerType) {
-            Swal.fire("Error", "Please select an offer type", "error")
+        if (!projectType) {
+            Swal.fire("Error", "Please select an project type", "error")
             return
         }
-        if (offerType.value === "Invited" && emails.length === 0) {
-            Swal.fire("Error", "For invited offers, please add at least one email", "error")
+        if (projectType.value === "Invited" && emails.length === 0) {
+            Swal.fire("Error", "For invited projects, please add at least one email", "error")
             return
         }
 
@@ -195,7 +196,7 @@ const AdminEditOffers: React.FC = () => {
             projectName,
             registrationDueDate,
             overview,
-            offerType: offerType.value,
+            projectType: projectType.value,
             attachment: attachment ? attachment.name : null,
             emails,
         }
@@ -206,7 +207,7 @@ const AdminEditOffers: React.FC = () => {
         toast.success("Offer updated successfully!")
     }
 
-    if (!projectName) return <Loader />
+    // if (!projectName) return <Loader />
 
     return (
         <>
@@ -272,7 +273,7 @@ const AdminEditOffers: React.FC = () => {
                                 <div className="mt-2">
                                     <span className="text-sm text-gray-700">Current Attachment: </span>
                                     <a
-                                        href={existingAttachmentLink}
+                                        href={String(existingAttachmentLink)}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-blue-600 hover:underline"
@@ -289,8 +290,8 @@ const AdminEditOffers: React.FC = () => {
                             </label>
                             <Select
                                 options={offerTypeOptions}
-                                value={offerType}
-                                onChange={(option) => setOfferType(option)}
+                                value={projectType}
+                                onChange={(option) => setProjectType(option ? option : undefined)}
                                 placeholder="Select offer type"
                                 isClearable
                                 className="w-full rounded border border-secondary py-3 px-5 text-black focus:border-primary"
@@ -300,7 +301,7 @@ const AdminEditOffers: React.FC = () => {
                         <div>
                             <label className="block mb-2 text-black">
                                 Invite Email{" "}
-                                {offerType?.value === "Invited" ? (
+                                {projectType?.value === "Invited" ? (
                                 <span className="text-red-500">*</span>
                                 ) : (
                                 "(optional)"

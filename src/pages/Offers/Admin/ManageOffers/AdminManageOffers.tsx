@@ -13,15 +13,15 @@ import Button from "../../../../components/Forms/Button"
 import { FiEdit, FiXCircle, FiTrash2 } from "react-icons/fi"
 import Swal from "sweetalert2"
 import { deleteOffers } from "../../../../api/Action/Admin/Offers/delete-offers"
-import { PatchStatusOffer } from "../../../../api/Action/Admin/Offers/patch-status-offer"
+import { PatchStatusOffer } from "../../../../api/Action/Admin/Offers/patch-update-status-offer"
 
 interface AdminOffer {
     id: string
     projectName: string
-    offerType: "Public" | "Private"
+    offerType: string
     createdDate: string
     registrationDueDate: string
-    status: "Open" | "Closed"
+    status: string
     totalSuppliers: number
     winningCompany: string | null
 }
@@ -30,7 +30,7 @@ interface AdminOffer {
 const fetchAdminManageOffers = async (): Promise<AdminOffer[]> => {
     await new Promise((resolve) => setTimeout(resolve, 1000))
     return Array.from({ length: 10 }, (_, i) => ({
-        id: `offer-${i + 1}`,
+        id: `${i + 1}`,
         projectName: `Project ${i + 1}`,
         offerType: Math.random() > 0.5 ? "Public" : "Private",
         createdDate: new Date(
