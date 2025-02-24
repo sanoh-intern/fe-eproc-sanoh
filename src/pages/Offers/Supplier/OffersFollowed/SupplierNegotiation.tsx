@@ -11,11 +11,9 @@ import Swal from "sweetalert2"
 import Loader from "../../../../common/Loader"
 import OffersDetails from "../../../../components/OffersDetail"
 import fetchOfferDetails, { TypeOfferDetails } from "../../../../api/Data/offers-detail"
-import { useParams } from "react-router-dom"
 import fetchNegotiationSupplier, { TypeNegotiationSupplier } from "../../../../api/Data/Supplier/negotiation"
 import { postNegotiation } from "../../../../api/Action/Supplier/post-negotiation"
-
-
+import { useSearchParams } from "react-router-dom";
 
 const SupplierNegotiation: React.FC = () => {
     const [offerDetails, setOfferDetails] = useState<TypeOfferDetails | null>(null)
@@ -26,7 +24,8 @@ const SupplierNegotiation: React.FC = () => {
     const [isFinal, setIsFinal] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
     const [rowsPerPage, setRowsPerPage] = useState(10)
-    const { offersid } = useParams();
+    const [searchParams] = useSearchParams();
+    const offersid = searchParams.get("offerid");
     
 
     useEffect(() => {
@@ -124,14 +123,14 @@ const SupplierNegotiation: React.FC = () => {
                     </div>
                 </div>
 
-                {offerDetails.offerStatus === "Supplier Selected" && offerDetails.winningSupplier && (
+                {offerDetails.project_status === "Supplier Selected" && offerDetails.project_winner && (
                     <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-8" role="alert">
                         <p className="font-bold">Tender Closed</p>
-                        <p>The winning supplier for this tender is: {offerDetails.winningSupplier}</p>
+                        <p>The winning supplier for this tender is: {offerDetails.project_winner}</p>
                     </div>
                 )}
 
-                {(offerDetails.offerStatus !== "Supplier Selected" || !offerDetails.winningSupplier) && !negotiationHistory.some(entry => entry.final) && (
+                {(offerDetails.project_status !== "Supplier Selected" || !offerDetails.project_winner) && !negotiationHistory.some(entry => entry.final) && (
                     <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-8">
                         <div className="p-4 md:p-4 lg:p-6 space-y-6">
                             <h2 className="text-2xl font-bold text-primary mb-4">Submit Proposal</h2>
@@ -180,7 +179,7 @@ const SupplierNegotiation: React.FC = () => {
                             <Button
                                 onClick={handleSubmit}
                                 title="Submit Proposal"
-                                disabled={offerDetails.offerStatus === "Supplier Selected" && (!!offerDetails.winningSupplier || negotiationHistory.length >= 5 || negotiationHistory.some(entry => entry.final))}
+                                disabled={offerDetails.project_status === "Supplier Selected" && (!!offerDetails.project_winner || negotiationHistory.length >= 5 || negotiationHistory.some(entry => entry.final))}
                             />
                             {negotiationHistory.length >= 5 && (
                                 <p className="text-red-500 text-sm">Maximum number of submissions reached.</p>
@@ -231,11 +230,9 @@ const SupplierNegotiation: React.FC = () => {
                                                     "N/A"
                                                 )}
                                             </td> */}
-                                            <td className="px-3 py-3 text-center whitespace-nowrap">
-                                                <td className="px-3 py-3 text-center whitespace-nowrap flex items-center justify-center">
-                                                    <span className="mr-2 border rounded-sm border-gray-300 px-1">IDR</span>
-                                                    <span>{Number(entry.totalAmount).toLocaleString('id-ID')}</span>
-                                                </td>
+                                            <td className="px-3 py-3 text-center whitespace-nowrap flex items-center justify-center">
+                                                <span className="mr-2 border rounded-sm border-gray-300 px-1">IDR</span>
+                                                <span>{Number(entry.totalAmount).toLocaleString('id-ID')}</span>
                                             </td>
                                             <td className="px-3 py-3 text-center whitespace-nowrap">
                                                 {entry.revisionNo} {entry.final && <span className="ml-2 text-xs font-medium bg-primary px-3 py-1 rounded-full text-white">Final</span>}

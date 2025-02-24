@@ -92,7 +92,7 @@ const SupplierOffersFollowed: React.FC = () => {
   }
 
   const handleNegotiate = (offerid: TypeOfferFollowed) => {
-    navigate(`/offers/followed/negotiation/details/${offerid.offerid}`)
+    navigate(`/offers/followed/negotiation/details/id?offerid=${offerid.offerid}`)
   };
 
   return (
