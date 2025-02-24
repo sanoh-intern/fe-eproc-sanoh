@@ -1,7 +1,13 @@
+import { API_Post_Proposal_Supplier } from "../../route-api"
+
 export const postNegotiation = async (formData: any) => {
+    const token = localStorage.getItem("access_token")
     try {
-        const response = await fetch("/api/negotiations", {
+        const response = await fetch(API_Post_Proposal_Supplier(), {
             method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
             body: formData,
         })
 

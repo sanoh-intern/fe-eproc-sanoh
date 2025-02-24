@@ -36,7 +36,7 @@ const SupplierNegotiation: React.FC = () => {
                     fetchNegotiationSupplier(offersid!),
                 ])
                 setOfferDetails(details)
-                setNegotiationHistory(history)
+                setNegotiationHistory(Array.isArray(history) ? history : [])
             } catch (error) {
                 console.error("Failed to fetch data:", error)
                 toast.error("Failed to load negotiation details")
@@ -65,7 +65,7 @@ const SupplierNegotiation: React.FC = () => {
             text: "Are you sure you want to submit this proposal?",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: "#3085d6",
+            confirmButtonColor: "#2F4F4F",
             cancelButtonColor: "#d33",
             confirmButtonText: "Yes, submit it!",
         })
@@ -73,11 +73,11 @@ const SupplierNegotiation: React.FC = () => {
         if (result.isConfirmed) {
             try {
                 const formData = new FormData()
-                formData.append("offersId", offersid!)
-                formData.append("totalAmount", totalAmount)
-                formData.append("isFinal", String(isFinal))
+                formData.append("project_header_id", offersid!)
+                formData.append("proposal_total_amount", totalAmount)
+                formData.append("proposal_status", String(isFinal))
                 if (file) {
-                    formData.append("file", file)
+                    formData.append("proposal_attach", file)
                 }
 
                 const response = await postNegotiation(formData)
@@ -149,12 +149,15 @@ const SupplierNegotiation: React.FC = () => {
                                 </div> */}
                                 <div>
                                     <label className="block text-sm font-medium text-primary">Total Amount</label>
-                                    <input
-                                        type="number"
-                                        value={totalAmount}
-                                        onChange={(e) => setTotalAmount(e.target.value)}
-                                        className="mt-2 block w-full text-sm text-primary border border-secondary rounded-md p-2"
-                                    />
+                                    <div className="relative mt-2">
+                                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 select-none">IDR</span>
+                                        <input
+                                            type="number"
+                                            value={totalAmount}
+                                            onChange={(e) => setTotalAmount(e.target.value)}
+                                            className="pl-12 block w-full text-sm text-primary border border-secondary rounded-md p-2"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                             <div className="flex items-center">

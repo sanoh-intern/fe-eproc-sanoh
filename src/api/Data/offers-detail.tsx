@@ -1,7 +1,7 @@
 import { API_Detail_Offer } from "../route-api";
 
 export type TypeOfferDetails = {
-    projectName: string;
+    project_name: string;
     created_at: string;
     registration_due_at: string;
     project_description: string;

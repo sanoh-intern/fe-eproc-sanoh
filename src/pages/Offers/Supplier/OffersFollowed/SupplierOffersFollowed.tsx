@@ -11,7 +11,7 @@ import Pagination from "../../../../components/Table/Pagination"
 import { Link, useNavigate } from "react-router-dom"
 import Select from 'react-select';
 import Button from "../../../../components/Forms/Button"
-import fetchFollowedOffers, { TypeOfferFollowed } from "../../../../api/Data/Supplier/list-registered-offers"
+import { fetchFollowedOffers, TypeOfferFollowed } from "../../../../api/Data/Supplier/list-registered-offers"
 
 const SupplierOffersFollowed: React.FC = () => {
   const [offers, setOffers] = useState<TypeOfferFollowed[]>([])
@@ -260,7 +260,7 @@ const SupplierOffersFollowed: React.FC = () => {
                                 <span>{Number(offer.proposal_last_amount).toLocaleString('id-ID')}</span>
                             </td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">
-                              {offer.proposal_revision_no} {offer.isFinal && <span className="ml-2 text-xs font-medium bg-primary px-3 py-1 rounded-full text-white">Final</span>}
+                              {offer.proposal_revision_no} {offer.is_final && <span className="ml-2 text-xs font-medium bg-primary px-3 py-1 rounded-full text-white">Final</span>}
                             </td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">{offer.proposal_last_update}</td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">

@@ -11,8 +11,7 @@ interface OffersDetailsProps {
 }
 
 interface OfferDetails {
-    id: string;
-    projectName: string;
+    project_name: string;
     created_at: string;
     registration_due_at: string;
     project_description: string;
@@ -52,7 +51,7 @@ const OffersDetails: React.FC<OffersDetailsProps> = ({ offerDetails }) => {
     return (
         <>
             <div className="space-y-6">
-                <h1 className="text-3xl font-bold text-gray-800 mb-4">{offerDetails.projectName}</h1>
+                <h1 className="text-3xl font-bold text-gray-800 mb-4">{offerDetails.project_name}</h1>
                 <div className="flex flex-wrap mb-4">
                     <div className="w-full md:w-1/2 flex items-center mb-2">
                         <FiCalendar className="text-secondary mr-2" />

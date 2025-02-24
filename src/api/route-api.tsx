@@ -41,7 +41,10 @@ export const API_Update_Status_Admin = () => API + getRolePath() + `/user/update
 // Supplier API
 export const API_Project_Public_Supplier = () => API + getRolePath() + '/project-header/list-public/get';
 export const API_Project_Private_Supplier = () => API + getRolePath() + '/project-header/list-invited/get';
+export const API_Project_Followed_Supplier = () => API + getRolePath() + '/project-header/followed/get';
 export const API_Register_Project_Supplier = () => API + getRolePath() + '/project-header/join/';
+export const API_Negotiation_Supplier = () => API + getRolePath() + '/project-detail/list-offer/get/';
+export const API_Post_Proposal_Supplier = () => API + getRolePath() + '/project-detail/create';
 
 // // Purchase Order Admin
 // export const API_PO_Admin = () => API + getRolePath() + `/po/index/`;
