@@ -53,7 +53,7 @@ const SupplierOffersFollowed: React.FC = () => {
     }
 
     if (statusFilter && statusFilter !== "all") {
-      filtered = filtered.filter((row) => row.porposal_status === statusFilter)
+      filtered = filtered.filter((row) => row.proposal_status === statusFilter)
     }
 
     if (sortConfig.key) {
@@ -123,7 +123,7 @@ const SupplierOffersFollowed: React.FC = () => {
                   <Select
                     options={[
                       { value: 'all', label: 'All Statuses' },
-                      ...Array.from(new Set(offers.map(offer => offer.porposal_status))).map(status => ({
+                      ...Array.from(new Set(offers.map(offer => offer.proposal_status))).map(status => ({
                       value: status,
                       label: status,
                       })),
@@ -253,8 +253,8 @@ const SupplierOffersFollowed: React.FC = () => {
                             <td className="px-3 py-3 text-center font-semibold whitespace-nowrap">
                               {offer.project_name}                              
                             </td>
-                            <td className="px-3 py-3 text-center whitespace-nowrap">{offer.project_type}</td>
-                            <td className="px-3 py-3 text-center whitespace-nowrap">{offer.register_date}</td>
+                            <td className="px-3 py-3 text-center whitespace-nowrap">{offer.project_type || "-"}</td>
+                            <td className="px-3 py-3 text-center whitespace-nowrap">{offer.register_date || "-"}</td>
                             <td className="px-3 py-3 text-center whitespace-nowrap flex items-center justify-center">
                                 <span className="mr-2 border rounded-sm border-gray-300 px-1">IDR</span>
                                 <span>{Number(offer.proposal_last_amount).toLocaleString('id-ID')}</span>
@@ -262,27 +262,27 @@ const SupplierOffersFollowed: React.FC = () => {
                             <td className="px-3 py-3 text-center whitespace-nowrap">
                               {offer.proposal_revision_no} {offer.is_final && <span className="ml-2 text-xs font-medium bg-primary px-3 py-1 rounded-full text-white">Final</span>}
                             </td>
-                            <td className="px-3 py-3 text-center whitespace-nowrap">{offer.proposal_last_update}</td>
+                            <td className="px-3 py-3 text-center whitespace-nowrap">{offer.proposal_last_update || "-"}</td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">
                               <span
                                 className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                 ${
-                                  offer.porposal_status === "Accepted"
+                                  offer.proposal_status === "Accepted"
                                     ? "bg-green-100 text-green-800"
-                                    : offer.porposal_status === "Declined"
+                                    : offer.proposal_status === "Declined"
                                       ? "bg-red-100 text-red-800"
-                                      : offer.porposal_status === "On Review"
+                                      : offer.proposal_status === "On Review"
                                         ? "bg-yellow-100 text-yellow-800"
-                                        : offer.porposal_status === "Need revision" 
+                                        : offer.proposal_status === "Need revision" 
                                         ? "bg-blue-100 text-blue-800"
                                         : "bg-gray-100 text-gray-800"
                                 }`}
                               >
-                                {offer.porposal_status}
+                                {offer.proposal_status || "-"}
                               </span>
                             </td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">
-                                {offer.project_status}
+                                {offer.project_status || "-"}
                             </td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">{offer.project_winner || "-"}</td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">

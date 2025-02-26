@@ -3,10 +3,10 @@ import { API_Negotiation_Supplier } from "../../route-api"
 export type TypeNegotiationSupplier = {
     id: string
     proposal_submit_date: string
-    poposal_total_amount: number | null
+    proposal_total_amount: number | null
     proposal_revision_no: number | null
     proposal_status: string | null
-    isFinal: boolean
+    is_final: boolean
 }
 
 const fetchNegotiationSupplier = async (offerid: string) => {

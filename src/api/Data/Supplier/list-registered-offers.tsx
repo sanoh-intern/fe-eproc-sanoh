@@ -11,7 +11,7 @@ export type TypeOfferFollowed = {
   proposal_last_amount: string | number | null
   proposal_revision_no: string
   proposal_last_update: string
-  porposal_status: string
+  proposal_status: string
   is_final: boolean
 }
 

@@ -22,7 +22,7 @@ export const API_Create_Offer_Admin = () => API + getRolePath() + `/project-head
 export const API_Update_Offer_Admin = () => API + getRolePath() + `/project-header/update/`;
 export const API_Update_Status_Offer_Admin = () => API + getRolePath() + `/project-header/update/regis-status/`;
 export const API_Delete_Offer_Admin = () => API + getRolePath() + `/project-header/delete/`;
-export const API_List_Offer_Admin = () => API + getRolePath() + `/project-header/index`;
+export const API_List_Offer_Admin = () => API + getRolePath() + `/project-header/manage-offer/get/all`;
 export const API_Edit_Detail_Offer_Admin = () => API + getRolePath() + `/project-header/edit/`;
 export const API_Select_Winner_Offer_Admin = () => API + getRolePath() + `/project-header/winner`;
 

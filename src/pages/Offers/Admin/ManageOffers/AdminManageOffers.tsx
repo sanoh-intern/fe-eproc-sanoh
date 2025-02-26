@@ -14,41 +14,7 @@ import { FiEdit, FiXCircle, FiTrash2 } from "react-icons/fi"
 import Swal from "sweetalert2"
 import { deleteOffers } from "../../../../api/Action/Admin/Offers/delete-offers"
 import { PatchStatusOffer } from "../../../../api/Action/Admin/Offers/patch-update-status-offer"
-
-interface AdminOffer {
-    id: string
-    projectName: string
-    offerType: string
-    createdDate: string
-    registrationDueDate: string
-    status: string
-    totalSuppliers: number
-    winningCompany: string | null
-}
-
-// Simulated API function for admin offers
-const fetchAdminManageOffers = async (): Promise<AdminOffer[]> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    return Array.from({ length: 10 }, (_, i) => ({
-        id: `${i + 1}`,
-        projectName: `Project ${i + 1}`,
-        offerType: Math.random() > 0.5 ? "Public" : "Private",
-        createdDate: new Date(
-            Date.now() - Math.floor(Math.random() * 10000000000)
-        )
-        .toISOString()
-        .split("T")[0],
-        registrationDueDate: new Date(
-            Date.now() + Math.floor(Math.random() * 10000000000)
-        )
-        .toISOString()
-        .split("T")[0],
-        status: Math.random() > 0.3 ? "Open" : "Closed",
-        totalSuppliers: Math.floor(Math.random() * 100) + 1,
-        winningCompany:
-        Math.random() > 0.7 ? `Company ${Math.floor(Math.random() * 100)}` : null,
-    }))
-}
+import { AdminOffer, fetchAdminManageOffers } from "../../../../api/Data/Admin/ManageOffers/list-all-offers"
 
 const AdminManageOffers: React.FC = () => {
     const [offers, setOffers] = useState<AdminOffer[]>([])
@@ -87,18 +53,18 @@ const AdminManageOffers: React.FC = () => {
         let filtered = [...offers]
         if (searchQuery) {
             filtered = filtered.filter((o) =>
-                o.projectName.toLowerCase().includes(searchQuery.toLowerCase())
+                o.project_name.toLowerCase().includes(searchQuery.toLowerCase())
             )
         }
         if (statusFilter && statusFilter !== "all") {
-            filtered = filtered.filter((o) => o.status === statusFilter)
+            filtered = filtered.filter((o) => o.project_type === statusFilter)
         }
         if (sortConfig.key) {
             filtered.sort((a, b) => {
                 let aValue: any = a[sortConfig.key as keyof AdminOffer]
                 let bValue: any = b[sortConfig.key as keyof AdminOffer]
 
-                if (sortConfig.key === "createdDate" || sortConfig.key === "registrationDueDate") {
+                if (sortConfig.key === "project_created_at" || sortConfig.key === "project_registration_due_at") {
                 aValue = new Date(aValue).toISOString()
                 bValue = new Date(bValue).toISOString()
                 }
@@ -151,7 +117,7 @@ const AdminManageOffers: React.FC = () => {
                     await PatchStatusOffer({ offersId: offerId})
                     setOffers((prev) =>
                         prev.map((offer) =>
-                            offer.id === offerId ? { ...offer, status: "Closed" } : offer
+                            String(offer.id) === offerId ? { ...offer, status: "Closed" } : offer
                         )
                     )
                     toast.success("Offer closed successfully")
@@ -177,7 +143,7 @@ const AdminManageOffers: React.FC = () => {
                 try {
                     await deleteOffers({ offersId: offerId })
 
-                    setOffers((prev) => prev.filter((offer) => offer.id !== offerId))
+                    setOffers((prev) => prev.filter((offer) => String(offer.id) !== offerId))
                     toast.success("Offer removed successfully")
                 } catch (error) {
                     toast.error("Failed to remove offer")
@@ -237,14 +203,14 @@ const AdminManageOffers: React.FC = () => {
                                                 <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
                                                     Project Name
                                                 </th>
-                                                <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer" onClick={() => handleSort("offerType")}>
+                                                <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer" onClick={() => handleSort("project_type")}>
                                                     <span className="flex items-center justify-center">
                                                         Offer Type
                                                     </span>
                                                 </th>
-                                                <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer" onClick={() => handleSort("createdDate")}>
+                                                <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer" onClick={() => handleSort("project_created_at")}>
                                                     <span className="flex items-center justify-center">
-                                                        {sortConfig.key === "createdDate" ? (
+                                                        {sortConfig.key === "project_created_at" ? (
                                                         sortConfig.direction === "asc" ? (
                                                             <FaSortUp className="mr-1" />
                                                         ) : (
@@ -256,7 +222,7 @@ const AdminManageOffers: React.FC = () => {
                                                             Created Date
                                                     </span>
                                                 </th>
-                                                <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer" onClick={() => handleSort("registrationDueDate")}>
+                                                <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer" onClick={() => handleSort("project_registration_due_at")}>
                                                 <span className="flex items-center justify-center">
                                                     {sortConfig.key === "registrationDueDate" ? (
                                                     sortConfig.direction === "asc" ? (
@@ -306,26 +272,26 @@ const AdminManageOffers: React.FC = () => {
                                                         to={`/offers/details/${offer.id}`}
                                                         className="text-blue-600 underline font-medium hover:text-blue-800"
                                                     >
-                                                        {offer.projectName}
+                                                        {offer.project_name}
                                                     </Link>
                                                 </td>
                                                 <td className="px-3 py-3 text-center whitespace-nowrap">
-                                                    {offer.offerType}
+                                                    {offer.project_type}
                                                 </td>
                                                 <td className="px-3 py-3 text-center whitespace-nowrap">
-                                                    {offer.createdDate}
+                                                    {offer.project_created_at}
                                                 </td>
                                                 <td className="px-3 py-3 text-center whitespace-nowrap">
-                                                    {offer.registrationDueDate}
+                                                    {offer.project_registration_due_at}
                                                 </td>
                                                 <td className="px-3 py-3 text-center whitespace-nowrap">
-                                                    {offer.status}
+                                                    {offer.project_status}
                                                 </td>
                                                 <td className="px-3 py-3 text-center whitespace-nowrap">
-                                                    {offer.totalSuppliers}
+                                                    {offer.project_registered_supplier || "-"}
                                                 </td>
                                                 <td className="px-3 py-3 text-center whitespace-nowrap">
-                                                    {offer.winningCompany || "-"}
+                                                    {offer.project_winner || "-"}
                                                 </td>
                                                 <td className="px-3 py-3 text-center whitespace-nowrap">
                                                     <Button
@@ -338,14 +304,14 @@ const AdminManageOffers: React.FC = () => {
                                                 <td className="px-3 py-3 text-center whitespace-nowrap">
                                                     <div className="flex justify-center gap-2">
                                                         <Button
-                                                            onClick={() => handleClose(offer.id)}
+                                                            onClick={() => handleClose(String(offer.id))}
                                                             title="Close"
                                                             icon={FiXCircle}
                                                             className="px-2 py-1"
-                                                            disabled={offer.status === "Closed"}
+                                                            disabled={offer.project_registration_status === "Closed"}
                                                         />
                                                         <Button
-                                                            onClick={() => handleRemove(offer.id)}
+                                                            onClick={() => handleRemove(String(offer.id))}
                                                             title="Remove"
                                                             icon={FiTrash2}
                                                             color="bg-red-600"

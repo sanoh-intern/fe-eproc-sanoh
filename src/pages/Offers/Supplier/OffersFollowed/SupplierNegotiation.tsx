@@ -80,6 +80,8 @@ const SupplierNegotiation: React.FC = () => {
                     formData.append("proposal_attach", file)
                 }
 
+                console.log("formData", formData)
+
                 const response = await postNegotiation(formData)
                 console.log(response)
 
@@ -130,7 +132,7 @@ const SupplierNegotiation: React.FC = () => {
                     </div>
                 )}
 
-                {(offerDetails.project_status !== "Supplier Selected" || !offerDetails.project_winner) && !negotiationHistory.some(entry => entry.isFinal) && (
+                {(offerDetails.project_status !== "Supplier Selected" || !offerDetails.project_winner) && !negotiationHistory.some(entry => entry.is_final) && (
                     <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-8">
                         <div className="p-4 md:p-4 lg:p-6 space-y-6">
                             <h2 className="text-2xl font-bold text-primary mb-4">Submit Proposal</h2>
@@ -182,7 +184,7 @@ const SupplierNegotiation: React.FC = () => {
                             <Button
                                 onClick={handleSubmit}
                                 title="Submit Proposal"
-                                disabled={offerDetails.project_status === "Supplier Selected" && (!!offerDetails.project_winner || negotiationHistory.length >= 5 || negotiationHistory.some(entry => entry.isFinal))}
+                                disabled={offerDetails.project_status === "Supplier Selected" && (!!offerDetails.project_winner || negotiationHistory.length >= 5 || negotiationHistory.some(entry => entry.is_final))}
                             />
                             {negotiationHistory.length >= 5 && (
                                 <p className="text-red-500 text-sm">Maximum number of submissions reached.</p>
@@ -235,10 +237,10 @@ const SupplierNegotiation: React.FC = () => {
                                             </td> */}
                                             <td className="px-3 py-3 text-center whitespace-nowrap flex items-center justify-center">
                                                 <span className="mr-2 border rounded-sm border-gray-300 px-1">IDR</span>
-                                                <span>{Number(entry.poposal_total_amount).toLocaleString('id-ID')}</span>
+                                                <span>{Number(entry.proposal_total_amount).toLocaleString('id-ID')}</span>
                                             </td>
                                             <td className="px-3 py-3 text-center whitespace-nowrap">
-                                                {entry.proposal_revision_no} {entry.isFinal && <span className="ml-2 text-xs font-medium bg-primary px-3 py-1 rounded-full text-white">Final</span>}
+                                                {entry.proposal_revision_no} {entry.is_final && <span className="ml-2 text-xs font-medium bg-primary px-3 py-1 rounded-full text-white">Final</span>}
                                             </td>
                                             <td className="px-3 py-3 text-center whitespace-nowrap">
                                                 <span
