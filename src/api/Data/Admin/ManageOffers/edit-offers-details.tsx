@@ -7,6 +7,7 @@ export type TypeEditOfferDetails = {
     project_description: string;
     project_attach: string | null;
     project_type: string;
+    registration_status: string;
     emails: string[];
 };
 

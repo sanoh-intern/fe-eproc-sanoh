@@ -83,8 +83,10 @@ const SupplierNegotiation: React.FC = () => {
                 console.log("formData", formData)
 
                 const response = await postNegotiation(formData)
-                console.log(response)
 
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`)
+                }
                 toast.success("Proposal submitted successfully!")
                 const newHistory = await fetchNegotiationSupplier(offersid!)
                 setNegotiationHistory(newHistory)

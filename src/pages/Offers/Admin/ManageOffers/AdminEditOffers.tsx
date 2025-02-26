@@ -18,7 +18,7 @@ interface Option {
 
 const offerTypeOptions: Option[] = [
     { value: "Public", label: "Public" },
-    { value: "Invited", label: "Invited" },
+    { value: "Private", label: "Private" },
 ]
 
 const AdminEditOffers: React.FC = () => {
@@ -173,8 +173,8 @@ const AdminEditOffers: React.FC = () => {
             Swal.fire("Error", "Please select an project type", "error")
             return
         }
-        if (projectType.value === "Invited" && emails.length === 0) {
-            Swal.fire("Error", "For invited projects, please add at least one email", "error")
+        if (projectType.value === "Private" && emails.length === 0) {
+            Swal.fire("Error", "For Private projects, please add at least one email", "error")
             return
         }
 
@@ -192,22 +192,30 @@ const AdminEditOffers: React.FC = () => {
         if (!result.isConfirmed) return
 
         // Build payload (handle file upload as needed)
-        const payload = {
-            projectName,
-            registrationDueDate,
-            overview,
-            projectType: projectType.value,
-            attachment: attachment ? attachment.name : null,
-            emails,
+        const formData = new FormData()
+        formData.append("project_name", projectName)
+        formData.append("project_description", overview)
+        formData.append("registration_due_at", registrationDueDate)
+        formData.append("project_type", projectType.value)
+        if (attachment) {
+            formData.append("project_attach", attachment)
         }
+        emails.forEach((email, index) => {
+            formData.append(`emails[${index}]`, email)
+        })
+        formData.append("_method", "PUT")
 
         // Simulate API call for updating the offer
-        console.log("Payload sent", payload)
-        await putEditOffers(payload)
+        console.log("Payload sent", formData)
+        const response = await putEditOffers(formData , offerId)
+        if (!response) {
+            toast.error("Failed to update offer")
+            return
+        }
         toast.success("Offer updated successfully!")
     }
 
-    // if (!projectName) return <Loader />
+    if (!projectName) return <Loader />
 
     return (
         <>
@@ -301,7 +309,7 @@ const AdminEditOffers: React.FC = () => {
                         <div>
                             <label className="block mb-2 text-black">
                                 Invite Email{" "}
-                                {projectType?.value === "Invited" ? (
+                                {projectType?.value === "Private" ? (
                                 <span className="text-red-500">*</span>
                                 ) : (
                                 "(optional)"

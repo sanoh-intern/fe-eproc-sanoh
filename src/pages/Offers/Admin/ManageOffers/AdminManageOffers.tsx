@@ -117,7 +117,7 @@ const AdminManageOffers: React.FC = () => {
                     await PatchStatusOffer({ offersId: offerId})
                     setOffers((prev) =>
                         prev.map((offer) =>
-                            String(offer.id) === offerId ? { ...offer, status: "Closed" } : offer
+                            String(offer.id) === offerId ? { ...offer, project_registration_status: "Closed" } : offer
                         )
                     )
                     toast.success("Offer closed successfully")
