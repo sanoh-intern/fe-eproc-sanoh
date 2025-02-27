@@ -285,7 +285,7 @@ const AdminManageOffers: React.FC = () => {
                                                     {offer.project_registration_due_at}
                                                 </td>
                                                 <td className="px-3 py-3 text-center whitespace-nowrap">
-                                                    {offer.project_status}
+                                                    {offer.project_registration_status}
                                                 </td>
                                                 <td className="px-3 py-3 text-center whitespace-nowrap">
                                                     {offer.project_registered_supplier || "-"}

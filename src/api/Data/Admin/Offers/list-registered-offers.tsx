@@ -1,38 +1,38 @@
+import { API_List_Registered_Offer_Admin } from "../../../route-api"
+
 export type TypeListRegisteredOffer = {
-    id: string
-    projectName: string
-    offerType: "Public" | "Private"
-    createdDate: string
-    offerStatus: "Open" | "Supplier Selected"
-    totalSuppliers: number
-    winningSupplier: string | null
+    id: number
+    project_name: string
+    project_type: string
+    project_created_at: string
+    project_registration_status: string
+    project_registered_supplier: number | null | undefined | string
+    project_winner: string | null
+    project_registration_due_at: string
+    project_status: string
 }
 
-interface ListRegisteredOffer {
-    id: string
-    projectName: string
-    offerType: "Public" | "Private"
-    createdDate: string
-    offerStatus: "Open" | "Supplier Selected"
-    totalSuppliers: number
-    winningSupplier: string | null
-}
 
-const fetchListRegisteredOffers = async (): Promise<ListRegisteredOffer[]> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    return Array.from({ length: 10 }, (_, i) => ({
-        id: (i + 1).toString(),
-        projectName: `Project ${i + 1}`,
-        offerType: Math.random() > 0.5 ? "Public" : "Private",
-        createdDate: new Date(
-            Date.now() - Math.floor(Math.random() * 10000000000)
-        )
-        .toISOString()
-        .split("T")[0],
-        offerStatus: Math.random() > 0.5 ? "Open" : "Supplier Selected",
-        totalSuppliers: Math.floor(Math.random() * 50) + 1,
-        winningSupplier: Math.random() > 0.7 ? `Supplier ${Math.floor(Math.random() * 100)}` : null,
-    }))
+const fetchListRegisteredOffers = async () => {
+    const token = localStorage.getItem("access_token")
+    try {
+        const response = await fetch(API_List_Registered_Offer_Admin(), {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+        }
+
+        const data = await response.json()
+        return data
+    } catch (error) {
+        console.error("Error fetching list registered offers:", error)
+        throw error
+    }
 }
 
 export default fetchListRegisteredOffers;

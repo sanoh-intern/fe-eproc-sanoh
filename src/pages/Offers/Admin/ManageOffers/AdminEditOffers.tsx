@@ -201,7 +201,7 @@ const AdminEditOffers: React.FC = () => {
             formData.append("project_attach", attachment)
         }
         emails.forEach((email, index) => {
-            formData.append(`emails[${index}]`, email)
+            formData.append(`invite_email[${index}]`, email)
         })
         formData.append("_method", "PUT")
 

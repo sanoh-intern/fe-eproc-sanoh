@@ -31,7 +31,7 @@ const AdminRegisteredDetail: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const navigate = useNavigate()
-  const { offersId } = useParams<{ offersId?: string }>();
+  const { offersId } = useParams<{ offersId: string }>();
   const [lastViewed, setLastViewed] = useState<string | null>(null)
 
   useEffect(() => {
@@ -41,11 +41,11 @@ const AdminRegisteredDetail: React.FC = () => {
         setOfferDetails(offerdata)
 
         const supplierdata = await fetchSupplierProposals(offersId!)
-
-        const lastViewedFromApi = supplierdata.length > 0 ? supplierdata[0].lastViewed : null
+        
+        const lastViewedFromApi = supplierdata.length > 0 ? supplierdata[0].last_viewed : null
         setLastViewed(lastViewedFromApi)
-
-        const flattenedData = supplierdata.flatMap((item) => item.data)
+        
+        const flattenedData = supplierdata.flatMap(item => item.data)
         setProposals(flattenedData)
         setFilteredProposals(flattenedData)
 
@@ -66,11 +66,11 @@ const AdminRegisteredDetail: React.FC = () => {
     let updated = [...proposals]
     if (searchQuery) {
       updated = updated.filter((p) =>
-        p.companyName.toLowerCase().includes(searchQuery.toLowerCase())
+        p.company_name.toLowerCase().includes(searchQuery.toLowerCase())
       )
     }
     if (statusFilter !== "all") {
-      updated = updated.filter((p) => p.lastStatus === statusFilter)
+      updated = updated.filter((p) => p.proposal_status === statusFilter)
     }
     setFilteredProposals(updated)
     setCurrentPage(1)
@@ -90,7 +90,7 @@ const AdminRegisteredDetail: React.FC = () => {
       await updateLastViewed({ offersId: offersId! })
 
       const updatedData = await fetchSupplierProposals(offersId!)
-      const newLastViewed = updatedData.length > 0 ? updatedData[0].lastViewed : null
+      const newLastViewed = updatedData.length > 0 ? updatedData[0].last_viewed : null
       setLastViewed(newLastViewed)
 
       // Update the proposals with any new changes
@@ -187,7 +187,7 @@ const AdminRegisteredDetail: React.FC = () => {
               <Select
                 options={[
                 { value: "all", label: "All Statuses" },
-                  ...Array.from(new Set(proposals.map((p) => p.lastStatus))).map(
+                  ...Array.from(new Set(proposals.map((p) => p.proposal_status))).map(
                     (status) => ({
                       value: status,
                       label: status,
@@ -242,67 +242,67 @@ const AdminRegisteredDetail: React.FC = () => {
                     </thead>
                     <tbody className="divide-y divide-gray-200 bg-white">
                       {paginatedProposals.map((proposal) => (
-                        <tr key={proposal.bpcode} className="hover:bg-gray-50">
-                          <td className="px-3 py-3 text-center whitespace-nowrap">{proposal.bpcode}</td>
+                        <tr key={proposal.bp_code} className="hover:bg-gray-50">
+                          <td className="px-3 py-3 text-center whitespace-nowrap">{proposal.bp_code}</td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
-                            {proposal.companyName}
+                            {proposal.company_name}
                           </td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
                             {lastViewed
                               ? <>
                                 <span className="mr-2 border rounded-sm border-gray-300 px-1">IDR</span>
-                                {Number(proposal.totalAmount).toLocaleString("id-ID")}
+                                {Number(proposal.proposal_last_amount).toLocaleString("id-ID")}
                               </>
                               : "XXX.XXX"
                             }
                           </td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
-                            {proposal.revisionNo}
-                            {proposal.isFinal && (
+                            {proposal.proposal_revision_no}
+                            {proposal.is_final && (
                                 <span className="ml-2 px-2 py-1 text-blue-800 rounded border border-blue-500">
                                     Final
                                 </span>
                             )}
                           </td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
-                            {proposal.lastStatus}
+                            {proposal.proposal_status}
                           </td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
-                            {proposal.lastUploadAt}
+                            {proposal.proposal_last_updated}
                           </td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
                             <div className="flex justify-center">
                               <Button
                               title="View"
-                              onClick={() => navigate(`/offers/negotiation/details/${offersId}/${proposal.id}`)}
+                              onClick={() => navigate(`/offers/negotiation/details/?negotiationid=${proposal.id_negotiation}&supplierid=${proposal.id_supplier}`)}
                               color="bg-gray-600"
                               />
                             </div>
                           </td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">
                             {localStorage.getItem("role") === "presdir" ? (
-                              proposal.lastStatus === "Accepted" ? (
+                              proposal.proposal_status === "Accepted" ? (
                               <span className="text-white font-semibold bg-green-600 px-3 py-2 rounded-full">Accepted</span>
-                              ) : proposal.lastStatus === "Declined" ? (
+                              ) : proposal.proposal_status === "Declined" ? (
                               <span className="text-white font-semibold bg-red-600 px-3 py-2 rounded-full">Declined</span>
                               ) : (
                               <div className="flex justify-center space-x-2">
                                 <Button
                                 title="Accept"
                                 color="bg-green-600"
-                                onClick={() => handleProposalAction(proposal.id, proposal.bpcode, "Accepted")}
+                                onClick={() => handleProposalAction(proposal.id_negotiation, proposal.company_name, "Accepted")}
                                 />
                                 <Button
                                 title="Decline"
-                                onClick={() => handleProposalAction(proposal.id, proposal.bpcode, "Declined")}
+                                onClick={() => handleProposalAction(proposal.id_negotiation, proposal.company_name, "Declined")}
                                 color="bg-red-600"
                                 />
                               </div>
                               )
                             ) : (
-                              (proposal.lastStatus === "Accepted" ) ? (
+                              (proposal.proposal_status === "Accepted" ) ? (
                                 <span className="text-white font-semibold bg-green-600 px-3 py-2 rounded-full">Accepted</span>
-                              ) : proposal.lastStatus === "Declined" ? (
+                              ) : proposal.proposal_status === "Declined" ? (
                                 <span className="text-white font-semibold bg-red-600 px-3 py-2 rounded-full">Declined</span>
                               ) : (
                                 <div className="flex justify-center">
@@ -356,13 +356,13 @@ const AdminRegisteredDetail: React.FC = () => {
                   </thead>
                   <tbody className="divide-y divide-gray-200 bg-white">
                     {allSuppliers.map((supplier) => (
-                      <tr key={supplier.bpcode} className="hover:bg-gray-50">
-                        <td className="px-3 py-3 text-center whitespace-nowrap">{supplier.bpcode}</td>
+                      <tr key={supplier.bp_code} className="hover:bg-gray-50">
+                        <td className="px-3 py-3 text-center whitespace-nowrap">{supplier.bp_code}</td>
                         <td className="px-3 py-3 text-center whitespace-nowrap">
-                          {supplier.companyName}
+                          {supplier.company_name}
                         </td>
                         <td className="px-3 py-3 text-center whitespace-nowrap">
-                          {supplier.registrationDate}
+                          {supplier.registration_date}
                         </td>
                       </tr>
                     ))}

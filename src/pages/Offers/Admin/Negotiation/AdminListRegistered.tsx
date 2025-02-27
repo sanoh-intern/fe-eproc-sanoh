@@ -29,10 +29,17 @@ const AdminRegistered: React.FC = () => {
     useEffect(() => {
         const loadData = async () => {
             try {
-                const data = await fetchRegisteredOffers()
-                setOffers(data)
-                setFilteredOffers(data)
+                const response = await fetchRegisteredOffers()
+                
+                // Check if response is an object with a data property
+                const offersArray = Array.isArray(response) ? response : 
+                (response && response.data && Array.isArray(response.data)) ? 
+                response.data : []
+                
+                setOffers(offersArray)
+                setFilteredOffers(offersArray)
             } catch (error) {
+                console.error("Error loading offers:", error)
                 toast.error("Failed to load offers")
             } finally {
                 setLoading(false)
@@ -46,16 +53,16 @@ const AdminRegistered: React.FC = () => {
         // Search
         if (searchQuery) {
             updated = updated.filter((o) =>
-                o.projectName.toLowerCase().includes(searchQuery.toLowerCase())
+                o.project_name.toLowerCase().includes(searchQuery.toLowerCase())
         )
         }
         // Filter by type
         if (typeFilter !== "all") {
-            updated = updated.filter((o) => o.offerType === typeFilter)
+            updated = updated.filter((o) => o.project_type === typeFilter)
         }
         // Filter by status
         if (statusFilter !== "all") {
-            updated = updated.filter((o) => o.offerStatus === statusFilter)
+            updated = updated.filter((o) => o.project_status === statusFilter)
         }
         // Sort
         if (sortConfig.key) {
@@ -106,7 +113,7 @@ const AdminRegistered: React.FC = () => {
                             <Select
                                 options={[
                                     { value: "all", label: "All Types" },
-                                    ...([...new Set(offers.map((offer) => offer.offerType))].map(
+                                    ...([...new Set(offers.map((offer) => offer.project_type))].map(
                                         (type) => ({
                                             value: type,
                                             label: type,
@@ -123,7 +130,7 @@ const AdminRegistered: React.FC = () => {
                             <Select
                                 options={[
                                     { value: "all", label: "All Statuses" },
-                                    ...([...new Set(offers.map((offer) => offer.offerStatus))].map(
+                                    ...([...new Set(offers.map((offer) => offer.project_status))].map(
                                         (status) => ({
                                             value: status,
                                             label: status,
@@ -156,13 +163,13 @@ const AdminRegistered: React.FC = () => {
                                                     </th>
                                                     <th
                                                         className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer"
-                                                        onClick={() => handleSort("offerType")}
+                                                        onClick={() => handleSort("project_type")}
                                                     >
                                                     Offer Type
                                                     </th>
                                                     <th
                                                         className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer"
-                                                        onClick={() => handleSort("createdDate")}
+                                                        onClick={() => handleSort("project_created_at")}
                                                     >
                                                         <span className="flex items-center justify-center">
                                                             {sortConfig.key === "createdDate" ? (
@@ -204,26 +211,26 @@ const AdminRegistered: React.FC = () => {
                                                         <tr key={offer.id} className="hover:bg-gray-50">
                                                             <td className="px-3 py-3 text-center whitespace-nowrap">
                                                                 <Link
-                                                                    to={`/offers/registered/details/offersId=${offer.id}`}
+                                                                    to={`/offers/registered/details/${offer.id}`}
                                                                     className="text-blue-600 underline font-medium hover:text-blue-800"
                                                                 >
-                                                                    {offer.projectName}
+                                                                    {offer.project_name}
                                                                 </Link>
                                                             </td>
                                                             <td className="px-3 py-3 text-center whitespace-nowrap">
-                                                                {offer.offerType}
+                                                                {offer.project_type}
                                                             </td>
                                                             <td className="px-3 py-3 text-center whitespace-nowrap">
-                                                                {offer.createdDate}
+                                                                {offer.project_created_at}
                                                             </td>
                                                             <td className="px-3 py-3 text-center whitespace-nowrap">
-                                                                {offer.offerStatus}
+                                                                {offer.project_status}
                                                             </td>
                                                             <td className="px-3 py-3 text-center whitespace-nowrap">
-                                                                {offer.totalSuppliers}
+                                                                {offer.project_registered_supplier || "-"}
                                                             </td>
                                                             <td className="px-3 py-3 text-center whitespace-nowrap">
-                                                                {offer.winningSupplier || "-"}
+                                                                {offer.project_winner || "-"}
                                                             </td>
                                                         </tr>
                                                         ))
