@@ -11,14 +11,27 @@ export const postNegotiation = async (formData: any) => {
             body: formData,
         })
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`)
-        }
-
         const data = await response.json()
-        return data
-    } catch (error) {
+
+        if (response.ok && data.status === true) {
+            return {
+                status: true,
+                message: "Add Negotiation Successful",
+                data: data.data
+            };
+        } else {
+            return {
+                status: false,
+                message: "Error Add Negotiation",
+                error: data.error || "Error"
+            };
+        }
+    } catch (error: any) {
         console.error("Error updating offers:", error)
-        throw error
+        return {
+            status: false,
+            message: "Error Add Negotiation",
+            error: error.message || "Error"
+        };
     }
 }

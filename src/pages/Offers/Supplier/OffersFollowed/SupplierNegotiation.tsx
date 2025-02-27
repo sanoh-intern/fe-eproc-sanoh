@@ -75,7 +75,8 @@ const SupplierNegotiation: React.FC = () => {
                 const formData = new FormData()
                 formData.append("project_header_id", offersid!)
                 formData.append("proposal_total_amount", totalAmount)
-                formData.append("proposal_status", String(isFinal))
+                const isFinalSubmission = isFinal || negotiationHistory.length >= 4
+                formData.append("proposal_status", String(isFinalSubmission))
                 if (file) {
                     formData.append("proposal_attach", file)
                 }
@@ -83,9 +84,8 @@ const SupplierNegotiation: React.FC = () => {
                 console.log("formData", formData)
 
                 const response = await postNegotiation(formData)
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`)
+                if (!response.status) {
+                    throw new Error(response.message)
                 }
                 toast.success("Proposal submitted successfully!")
                 const newHistory = await fetchNegotiationSupplier(offersid!)
