@@ -1,22 +1,17 @@
+import { toast } from "react-toastify"
 import { API_History_Proposal_Admin } from "../../../route-api"
 
 export type TypeNegotiationData = {
     id: string
-    submitDate: string
-    totalAmount: number
-    revisionNo: number
-    status: string | null
-    isFinal?: boolean
+    proposal_submit_date: string
+    proposal_total_amount: number
+    proposal_revision_no: number
+    proposal_status: string | null
+    is_final?: boolean
+    message?: string
 }
 
-type TypeNegotiation = {
-    data?: TypeNegotiationData,
-    status?: boolean,
-    message?: string,
-    error?: string
-}
-
-const fetchNegotiationData = async (negotiationId: string, supplierId: string  ): Promise<TypeNegotiation > => {
+const fetchNegotiationData = async (negotiationId: string, supplierId: string  ) => {
     const token = localStorage.getItem("access_token")
 
     try {
@@ -30,26 +25,20 @@ const fetchNegotiationData = async (negotiationId: string, supplierId: string  )
         const data = await response.json()
 
         if (response.ok && data.status === true) {
-            return {
-                status: true,
-                message: data.message,
-                data: data.data
+            if (!data.data) {
+                toast.error(data.message || "Error")
+                return
             }
+            return data.data
         } else {
-            return {
-                status: false,
-                message: data.massage,
-                error: data.error || "Error"
-            }
+            toast.error(data.message || "Error")
+            return 
         }
-        } catch (error : any) {
-            console.error("Error fetching supplier registered:", error)
-            return {
-                status: false,
-                message: "Error",
-                error: error.message || "Error"
-            }
-        }
+    } catch (error : any) {
+        console.error("Server error plase try again later:", error)
+        toast.error("Server error plase try again later")
+        return
+    }
 }
 
 export default fetchNegotiationData;

@@ -9,6 +9,7 @@ const OffersRegistered = () => {
         '/offers/registered', 
         '/offers/registered/:id',
         '/offers/registered/:id/:id',
+        '/offers/negotiation/details',
     ];
 
     const isOffersRegistered = offersRegisteredPaths.some(path => currentPath.includes(path));

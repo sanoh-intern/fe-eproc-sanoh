@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import { ToastContainer, toast } from "react-toastify"
+import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import Breadcrumb from "../../../../components/Breadcrumbs/Breadcrumb"
 import Button from "../../../../components/Forms/Button"
@@ -12,11 +12,10 @@ import fetchOfferDetails, { TypeOfferDetails } from "../../../../api/Data/offers
 import FetchCompanyData, { TypeCompanyData } from "../../../../api/Data/company-data"
 import CompanyDetails from "../../../../components/CompanyDetails"
 import fetchNegotiationData, { TypeNegotiationData } from "../../../../api/Data/Admin/Offers/history-supplier-proposal"
-import { useParams } from "react-router-dom"
-import fetchSupplierDataOffers, { TypeSupplierDataOffers } from "../../../../api/Data/Admin/Offers/data-supplier-proposal"
+import { useLocation } from "react-router-dom"
+
 
 const AdminNegotiation: React.FC = () => {
-    const [supplierDataOffers, setSupplierDataOffers] = useState<TypeSupplierDataOffers[]>([])
     const [proposals, setProposals] = useState<TypeNegotiationData[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [currentPage, setCurrentPage] = useState(1)
@@ -25,7 +24,19 @@ const AdminNegotiation: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [companyData, setCompanyData] = useState<TypeCompanyData | null>(null);
 
-    const { offersId, negotiationId } = useParams();
+    const { search } = useLocation();
+    const searchParams = new URLSearchParams(search);
+    const offersId = searchParams.get("offersId");
+    const supplierId = searchParams.get("supplierId");
+    const bpCode = searchParams.get("bpCode");
+    const companyName = searchParams.get("companyName");
+    const registrationDate = searchParams.get("registrationDate");
+
+    if (!offersId || !supplierId) {
+        toast.error("Missing required parameters.");
+        return null;
+    }
+
 
     useEffect(() => {
         const loadData = async () => {
@@ -33,12 +44,14 @@ const AdminNegotiation: React.FC = () => {
                 const offerdata = await (fetchOfferDetails(offersId!))
                 setOfferDetails(offerdata)
 
-                const suppliers = await fetchSupplierDataOffers(negotiationId!)
-                setSupplierDataOffers(suppliers)
-
-                const proposalData = await fetchNegotiationData(negotiationId! , )
-                setProposals(proposalData)
+                const proposalData = await fetchNegotiationData(offersId!,supplierId!)
+                if (Array.isArray(proposalData)) {
+                    setProposals(proposalData as TypeNegotiationData[])
+                } else {
+                    setProposals([])
+                }
             } catch (error) {
+                console.error("Failed to load negotiation details:", error)
                 toast.error("Failed to load negotiation details.")
             } finally {
                 setIsLoading(false)
@@ -46,7 +59,7 @@ const AdminNegotiation: React.FC = () => {
         }
 
         loadData()
-    }, [offersId, negotiationId])
+    }, [offersId, supplierId])
 
     // const handleProposalAction = async (
     //     proposalId: string,
@@ -109,7 +122,7 @@ const AdminNegotiation: React.FC = () => {
     const handeclick = async () => {
         setIsModalOpen(true)
         try {
-            const data = await FetchCompanyData(supplierDataOffers[0].bpcode)
+            const data = await FetchCompanyData(supplierId)
             setCompanyData(data)
         } catch (error) {
             console.error(error)
@@ -119,8 +132,6 @@ const AdminNegotiation: React.FC = () => {
     return (
         <>
             <Breadcrumb pageName="Negotiation Detail" isSubMenu={true} parentMenu={{name: "Registered Offers", link: "/offers/registered"}}/>
-            <ToastContainer position="top-right" />
-
             <div >
                 <div className="bg-white shadow-lg rounded-lg p-4 md:p-6 mb-8">
                     <OffersDetails offerDetails={offerDetails} />
@@ -134,30 +145,29 @@ const AdminNegotiation: React.FC = () => {
                         <>
                             <div className="overflow-x-auto">
                                 <div className="mb-6">
-                                    {supplierDataOffers.map((supplier) => (
-                                        <div key={supplier.bpcode} className="bg-gray-50 p-4 rounded-lg">
-                                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                                                <div>
-                                                    <p className="text-sm text-gray-600">Company Name</p>
-                                                    <p className="font-medium">{supplier.companyName}</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm text-gray-600">BP Code</p>
-                                                    <p className="font-medium">{supplier.bpcode}</p>
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm text-gray-600">Registration Date</p>
-                                                    <p className="font-medium">{supplier.registrationDate}</p>
-                                                </div>
-                                                <div className="flex items-center">
-                                                    <Button
-                                                        title="View Details"
-                                                        onClick={handeclick}
-                                                    />
-                                                </div>
+                                    
+                                    <div className="bg-gray-50 p-4 rounded-lg">
+                                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                            <div>
+                                                <p className="text-sm text-gray-600">Company Name</p>
+                                                <p className="font-medium">{companyName}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-sm text-gray-600">BP Code</p>
+                                                <p className="font-medium">{bpCode}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-sm text-gray-600">Registration Date</p>
+                                                <p className="font-medium">{registrationDate}</p>
+                                            </div>
+                                            <div className="flex items-center">
+                                                <Button
+                                                    title="View Details"
+                                                    onClick={handeclick}
+                                                />
                                             </div>
                                         </div>
-                                    ))}
+                                    </div>
                                     {isModalOpen && (
                                         <div className="fixed inset-0 flex items-center justify-center z-999 overflow-y-auto">
                                             <div className="absolute inset-0 bg-black opacity-50" onClick={() => setIsModalOpen(false)}></div>
@@ -194,13 +204,13 @@ const AdminNegotiation: React.FC = () => {
                                     <tbody className="divide-y divide-gray-200 bg-white">
                                         {paginatedProposals.map((proposal) => (
                                             <tr key={proposal.id} className="hover:bg-gray-50">
-                                                <td className="px-3 py-3 text-center">{proposal.submitDate}</td>
+                                                <td className="px-3 py-3 text-center">{proposal.proposal_submit_date}</td>
                                                 <td className="px-3 py-3 text-center">
                                                     <span className="mr-2 border rounded-sm border-gray-300 px-1">IDR</span>
-                                                    <span>{Number(proposal.totalAmount).toLocaleString('id-ID')}</span>
+                                                    <span>{Number(proposal.proposal_total_amount).toLocaleString('id-ID')}</span>
                                                 </td>
-                                                <td className="px-3 py-3 text-center">{proposal.revisionNo}
-                                                {proposal.isFinal && (
+                                                <td className="px-3 py-3 text-center">{proposal.proposal_revision_no}
+                                                {proposal.is_final && (
                                                         <span className="ml-2 px-2 py-1 text-blue-800 rounded border border-blue-500">
                                                             Final
                                                         </span>
@@ -209,14 +219,14 @@ const AdminNegotiation: React.FC = () => {
                                                 <td className="px-3 py-3 text-center">
                                                     <span
                                                         className={`px-2 py-1 rounded-full ${
-                                                        proposal.status === "On Review" || proposal.status === "On Review Final"
+                                                        proposal.proposal_status === "On Review" || proposal.proposal_status === "On Review Final"
                                                             ? "bg-yellow-200 text-yellow-800"
-                                                            : proposal.status === "Accepted"
+                                                            : proposal.proposal_status === "Accepted"
                                                             ? "bg-green-200 text-green-800"
                                                             : "bg-red-200 text-red-800"
                                                         }`}
                                                     >
-                                                        {proposal.status}
+                                                        {proposal.proposal_status}
                                                     </span>
                                                     
                                                 </td>

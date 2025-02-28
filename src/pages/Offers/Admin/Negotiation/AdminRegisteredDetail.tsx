@@ -272,9 +272,16 @@ const AdminRegisteredDetail: React.FC = () => {
                           <td className="px-3 py-3 text-center whitespace-nowrap">
                             <div className="flex justify-center">
                               <Button
-                                title="View"
-                                onClick={() => navigate(`/offers/negotiation/details/?negotiationid=${proposal.id_negotiation}&supplierid=${proposal.id_supplier}`)}
-                                color="bg-gray-600"
+                              title="View"
+                              onClick={() => {
+                                const supplier = allSuppliers.find(
+                                (s) => s.company_name === proposal.company_name
+                                );
+                                navigate(
+                                `/offers/negotiation/details?offersId=${offersId}&supplierId=${proposal.id_supplier}&bpCode=${proposal.bp_code}&companyName=${proposal.company_name}&registrationDate=${supplier?.registered_at}`
+                                );
+                              }}
+                              color="bg-gray-600"
                               />
                             </div>
                           </td>

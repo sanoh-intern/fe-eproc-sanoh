@@ -225,7 +225,7 @@ const App: React.FC = () => {
               }
             />
             <Route
-              path="/offers/negotiation/details/:offersId/:bpcode"
+              path="/offers/negotiation/details"
               element={
                 <ProtectedRoute allowedRoles={['2','3','4']}>
                   <PageTitle title="Offers Negotiation | PT SANOH INDONESIA" />

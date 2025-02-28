@@ -30,7 +30,7 @@ export const API_List_Registered_Offer_Admin = () => API + getRolePath() + `/pro
 export const API_List_Supplier_Proposal_Admin = () => API + getRolePath() + `/project-header/list-proposal/`;
 export const API_List_Supplier_Registered_Admin = () => API + getRolePath() + `/project-header/registered/`;
 
-export const API_History_Proposal_Admin = () => API + getRolePath() + `project-detail/list-offer/get/`;
+export const API_History_Proposal_Admin = () => API + getRolePath() + `/project-detail/list-offer/get/`;
 
 export const API_Accepted_Proposal_Admin = () => API + getRolePath() + `/project-header/accepted`;
 export const API_Declined_Proposal_Admin = () => API + getRolePath() + `/project-header/declined/`;

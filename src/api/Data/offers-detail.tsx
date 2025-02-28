@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import { API_Detail_Offer } from "../route-api";
 
 export type TypeOfferDetails = {
@@ -24,16 +25,21 @@ const fetchOfferDetails = async (offersId: string) => {
         });
 
         const data = await response.json();
-        if (!response.ok) {
-            throw new Error(data.message);
-        }
 
-        if (data.status) {
-            return data.data;
+        if (response.ok && data.status === true) {
+            if (!data.data) {
+                toast.error(data.message || "Error")
+                return
+            }
+            return data.data
+        } else {
+            toast.error(data.error || "Error")
+            return 
         }
     } catch (error) {
-        console.error("Error fetch offers details:", error);
-        throw error;
+        console.error("Server error plase try again later:", error)
+        toast.error("Server error plase try again later")
+        return
     }
 }
 
