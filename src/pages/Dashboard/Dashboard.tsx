@@ -22,6 +22,7 @@ const Dashboard: React.FC = () => {
   } else if (userRole === 'purchasing') {
     return <DashboardPurchasing />;
   } else if (userRole === 'supplier') {
+    // return "Dashboard Supplier";
     return <DashboardSupplier />;
   } else {
     return <div>No dashboard available for your role.</div>;

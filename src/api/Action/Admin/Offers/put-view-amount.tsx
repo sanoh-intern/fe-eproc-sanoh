@@ -1,23 +1,32 @@
+import { toast } from "react-toastify";
+import { API_Last_Seen_Admin } from "../../../route-api";
+
 interface UpdateLastViewedProps {
     offersId: string;
 }
 
 export const updateLastViewed = async ({ offersId }: UpdateLastViewedProps) => {
+    const token = localStorage.getItem("access_token");
     try {
-        const response = await fetch("/api/proposals/last-viewed", {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ offersId }),
+        const response = await fetch(API_Last_Seen_Admin() + offersId, {
+            method: "PATCH",
+            headers: { 
+                Authorization : `Bearer ${token}`,
+            },
         });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
         const data = await response.json();
-        return data;
+
+        if (response.ok && data.status === true) {
+            toast.success(data.message || "Success")
+            return
+        } else {
+            toast.error(data.message || "Error")
+            return 
+        }
     } catch (error) {
-        console.error("Failed to update last viewed:", error);
-        throw error;
+        console.error("Server error plase try again later:", error)
+        toast.error("Server error plase try again later")
+        return
     }
 };

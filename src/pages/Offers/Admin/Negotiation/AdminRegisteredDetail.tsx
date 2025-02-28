@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { ToastContainer, toast } from "react-toastify"
+import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { useNavigate, useParams } from "react-router-dom"
 import Breadcrumb from "../../../../components/Breadcrumbs/Breadcrumb"
@@ -92,11 +92,9 @@ const AdminRegisteredDetail: React.FC = () => {
       const newLastViewed = updatedData.final_view_at || null
       setLastViewed(newLastViewed)
 
-      // Update the proposals with any new changes
       const flattened = updatedData.data
       setProposals(flattened)
       setFilteredProposals(flattened)
-      toast.success("Last viewed updated!")
     } catch {
       toast.error("Failed to update last viewed")
     }
@@ -155,7 +153,6 @@ const AdminRegisteredDetail: React.FC = () => {
   return (
     <>
       <Breadcrumb pageName="Registered Detail" isSubMenu={true} parentMenu={{name: "Registered Offers", link: "/offers/registered"}}/>
-      <ToastContainer position="top-right" />
       <div className="bg-white p-2 md:p-4 lg:p-6 space-y-8 text-primary">
         <OffersDetails offerDetails={offerDetails} />
 
@@ -167,9 +164,9 @@ const AdminRegisteredDetail: React.FC = () => {
               <div>
               {lastViewed ? (
                 <Button
-                title={lastViewed}
-                onClick={handleLastViewed}
-                icon={FaEye}
+                  title={lastViewed}
+                  onClick={handleLastViewed}
+                  icon={FaEye}
                 />
               ) : (
                 <Button
@@ -250,7 +247,7 @@ const AdminRegisteredDetail: React.FC = () => {
                             {lastViewed && localStorage.getItem("role") === "presdir"
                               ? <>
                                 <span className="mr-2 border rounded-sm border-gray-300 px-1">IDR</span>
-                                {Number(proposal.proposal_last_amount).toLocaleString("id-ID")}
+                                {Number(proposal.proposal_total_amount).toLocaleString("id-ID")}
                               </>
                               : "XXX.XXX"
                             }

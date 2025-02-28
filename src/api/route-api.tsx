@@ -35,7 +35,7 @@ export const API_History_Proposal_Admin = () => API + getRolePath() + `/project-
 export const API_Accepted_Proposal_Admin = () => API + getRolePath() + `/project-header/accepted`;
 export const API_Declined_Proposal_Admin = () => API + getRolePath() + `/project-header/declined/`;
 
-export const API_Last_Seen_Admin = () => API + getRolePath() + `/project-header/last-seen/`;
+export const API_Last_Seen_Admin = () => API + getRolePath() + `/project-header/view/`;
 
 // Manage User Admin
 export const API_User_Online_Admin = () => API + getRolePath() + `/user/online`;

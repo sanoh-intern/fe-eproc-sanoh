@@ -5,7 +5,7 @@ export type TypeSupplierProposal = {
     id_supplier: string,
     bp_code: string | null | number,
     company_name: string,
-    proposal_last_amount: number | string | null,
+    proposal_total_amount: number | string | null,
     proposal_revision_no?: number | string | null,
     proposal_status?: string | null,
     proposal_last_updated?: string | null,
