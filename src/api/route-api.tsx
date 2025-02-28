@@ -16,19 +16,26 @@ export const API_Email = () => API + `/email`;
 // Global API
 export const API_Dashboard = () => API + getRolePath() + `/dashboard`;
 export const API_Detail_Offer = () => API + getRolePath() + `/project-header/get/`;
+export const API_Download_Dokumen = () => API + `/download/project/attachment/`;
 
 // Global Admin API
+export const API_List_Offer_Admin = () => API + getRolePath() + `/project-header/manage-offer/get/all`;
 export const API_Create_Offer_Admin = () => API + getRolePath() + `/project-header/create`;
 export const API_Update_Status_Offer_Admin = () => API + getRolePath() + `/project-header/update/regis-status/`;
 export const API_Delete_Offer_Admin = () => API + getRolePath() + `/project-header/delete/`;
-export const API_List_Offer_Admin = () => API + getRolePath() + `/project-header/manage-offer/get/all`;
-
 export const API_Update_Offer_Admin = () => API + getRolePath() + `/project-header/update/`;
 export const API_Get_Edit_Detail_Offer_Admin = () => API + getRolePath() + `/project-header/edit/`;
 
 export const API_List_Registered_Offer_Admin = () => API + getRolePath() + `/project-header/registered-offer/get/all`;
+export const API_List_Supplier_Proposal_Admin = () => API + getRolePath() + `/project-header/list-proposal/`;
+export const API_List_Supplier_Registered_Admin = () => API + getRolePath() + `/project-header/registered/`;
 
-export const API_Select_Winner_Offer_Admin = () => API + getRolePath() + `/project-header/winner`;
+export const API_History_Proposal_Admin = () => API + getRolePath() + `project-detail/list-offer/get/`;
+
+export const API_Accepted_Proposal_Admin = () => API + getRolePath() + `/project-header/accepted`;
+export const API_Declined_Proposal_Admin = () => API + getRolePath() + `/project-header/declined/`;
+
+export const API_Last_Seen_Admin = () => API + getRolePath() + `/project-header/last-seen/`;
 
 // Manage User Admin
 export const API_User_Online_Admin = () => API + getRolePath() + `/user/online`;
@@ -37,7 +44,7 @@ export const API_User_Login_Performance__Admin = () => API + getRolePath() + `/u
 
 export const API_Create_User_Admin = () => API + getRolePath() + '/user/create';
 export const API_Edit_User_Admin = () => API + getRolePath() + '/user/edit/';
-export const API_Get_Email_Admin = () => API + getRolePath() + '/user/email/';
+// export const API_Get_Email_Admin = () => API + getRolePath() + '/user/email/';
 export const API_Update_User_Admin = () => API + getRolePath() + '/user/update/';
 export const API_List_User_Admin = () => API + getRolePath() + '/user/index';
 export const API_Update_Status_Admin = () => API + getRolePath() + `/user/update/status/`;

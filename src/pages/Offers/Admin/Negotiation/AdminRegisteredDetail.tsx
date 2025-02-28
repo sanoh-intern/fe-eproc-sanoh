@@ -13,7 +13,7 @@ import SearchBar from "../../../../components/Table/SearchBar"
 import OffersDetails from "../../../../components/OffersDetail"
 import Button from "../../../../components/Forms/Button"
 import fetchOfferDetails, { TypeOfferDetails } from "../../../../api/Data/offers-detail"
-import fetchSupplierProposals, { TypeSupplierProposal } from "../../../../api/Data/Admin/Offers/supplier-proposal"
+import fetchSupplierProposals, { TypeFinalReview, TypeSupplierProposal } from "../../../../api/Data/Admin/Offers/supplier-proposal"
 import fetchListSupplierRegistered, { TypeListSupplierRegistered } from "../../../../api/Data/Admin/Offers/list-supplier-registered"
 import { FaLock, FaEye, FaEyeSlash } from "react-icons/fa"
 import { postOffersAccepted, postOffersDeclined } from "../../../../api/Action/Admin/Offers/post-final-winner"
@@ -21,8 +21,8 @@ import { updateLastViewed } from "../../../../api/Action/Admin/Offers/put-view-a
 
 
 const AdminRegisteredDetail: React.FC = () => {
-  const [proposals, setProposals] = useState<TypeSupplierProposal["data"]>([])
-  const [filteredProposals, setFilteredProposals] = useState<TypeSupplierProposal["data"]>([])
+  const [proposals, setProposals] = useState<TypeSupplierProposal[]>([])
+  const [filteredProposals, setFilteredProposals] = useState<TypeSupplierProposal[]>([])
   const [allSuppliers, setAllSuppliers] = useState<TypeListSupplierRegistered[]>([])
   const [loading, setLoading] = useState(true)
   const [offerDetails, setOfferDetails] = useState<TypeOfferDetails | null>(null);
@@ -32,7 +32,7 @@ const AdminRegisteredDetail: React.FC = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const navigate = useNavigate()
   const { offersId } = useParams<{ offersId: string }>();
-  const [lastViewed, setLastViewed] = useState<string | null>(null)
+  const [lastViewed, setLastViewed] = useState<TypeFinalReview["final_view_at"] | null>(null)
 
   useEffect(() => {
     const loadData = async () => {
@@ -41,16 +41,15 @@ const AdminRegisteredDetail: React.FC = () => {
         setOfferDetails(offerdata)
 
         const supplierdata = await fetchSupplierProposals(offersId!)
-        
-        const lastViewedFromApi = supplierdata.length > 0 ? supplierdata[0].last_viewed : null
-        setLastViewed(lastViewedFromApi)
-        
-        const flattenedData = supplierdata.flatMap(item => item.data)
+
+        setLastViewed(supplierdata.final_view_at || null)
+
+        const flattenedData = supplierdata.data
         setProposals(flattenedData)
         setFilteredProposals(flattenedData)
 
         const registered = await fetchListSupplierRegistered(offersId!)
-        setAllSuppliers(registered)
+        setAllSuppliers(Array.isArray(registered) ? registered : [])
 
       } catch (error) {
         toast.error("Failed to load data")
@@ -90,11 +89,11 @@ const AdminRegisteredDetail: React.FC = () => {
       await updateLastViewed({ offersId: offersId! })
 
       const updatedData = await fetchSupplierProposals(offersId!)
-      const newLastViewed = updatedData.length > 0 ? updatedData[0].last_viewed : null
+      const newLastViewed = updatedData.final_view_at || null
       setLastViewed(newLastViewed)
 
       // Update the proposals with any new changes
-      const flattened = updatedData.flatMap((item) => item.data)
+      const flattened = updatedData.data
       setProposals(flattened)
       setFilteredProposals(flattened)
       toast.success("Last viewed updated!")
@@ -125,7 +124,7 @@ const AdminRegisteredDetail: React.FC = () => {
             
             // Refresh the proposals data
             const updatedProposals = await fetchSupplierProposals(offersId!);
-            const flattenedData = updatedProposals.flatMap((item) => item.data)
+            const flattenedData = updatedProposals.data
             setProposals(flattenedData);
             setFilteredProposals(flattenedData);
           } catch (error) {
@@ -138,7 +137,7 @@ const AdminRegisteredDetail: React.FC = () => {
             
             // Refresh the proposals data
             const updatedProposals = await fetchSupplierProposals(offersId!);
-            const flattenedData = updatedProposals.flatMap((item) => item.data)
+            const flattenedData = updatedProposals.data
             setProposals(flattenedData);
             setFilteredProposals(flattenedData);
           } catch (error) {
@@ -243,12 +242,12 @@ const AdminRegisteredDetail: React.FC = () => {
                     <tbody className="divide-y divide-gray-200 bg-white">
                       {paginatedProposals.map((proposal) => (
                         <tr key={proposal.bp_code} className="hover:bg-gray-50">
-                          <td className="px-3 py-3 text-center whitespace-nowrap">{proposal.bp_code}</td>
+                          <td className="px-3 py-3 text-center whitespace-nowrap">{proposal.bp_code || "-"}</td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
-                            {proposal.company_name}
+                            {proposal.company_name || "-"}
                           </td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
-                            {lastViewed
+                            {lastViewed && localStorage.getItem("role") === "presdir"
                               ? <>
                                 <span className="mr-2 border rounded-sm border-gray-300 px-1">IDR</span>
                                 {Number(proposal.proposal_last_amount).toLocaleString("id-ID")}
@@ -257,7 +256,7 @@ const AdminRegisteredDetail: React.FC = () => {
                             }
                           </td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
-                            {proposal.proposal_revision_no}
+                            {proposal.proposal_revision_no || "N/A"}
                             {proposal.is_final && (
                                 <span className="ml-2 px-2 py-1 text-blue-800 rounded border border-blue-500">
                                     Final
@@ -265,17 +264,17 @@ const AdminRegisteredDetail: React.FC = () => {
                             )}
                           </td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
-                            {proposal.proposal_status}
+                            {proposal.proposal_status || "-"}
                           </td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
-                            {proposal.proposal_last_updated}
+                            {proposal.proposal_last_updated || "-"}
                           </td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
                             <div className="flex justify-center">
                               <Button
-                              title="View"
-                              onClick={() => navigate(`/offers/negotiation/details/?negotiationid=${proposal.id_negotiation}&supplierid=${proposal.id_supplier}`)}
-                              color="bg-gray-600"
+                                title="View"
+                                onClick={() => navigate(`/offers/negotiation/details/?negotiationid=${proposal.id_negotiation}&supplierid=${proposal.id_supplier}`)}
+                                color="bg-gray-600"
                               />
                             </div>
                           </td>
@@ -357,12 +356,12 @@ const AdminRegisteredDetail: React.FC = () => {
                   <tbody className="divide-y divide-gray-200 bg-white">
                     {allSuppliers.map((supplier) => (
                       <tr key={supplier.bp_code} className="hover:bg-gray-50">
-                        <td className="px-3 py-3 text-center whitespace-nowrap">{supplier.bp_code}</td>
+                        <td className="px-3 py-3 text-center whitespace-nowrap">{supplier.bp_code || "-"}</td>
                         <td className="px-3 py-3 text-center whitespace-nowrap">
                           {supplier.company_name}
                         </td>
                         <td className="px-3 py-3 text-center whitespace-nowrap">
-                          {supplier.registration_date}
+                          {supplier.registered_at}
                         </td>
                       </tr>
                     ))}

@@ -1,23 +1,34 @@
+import { API_List_Supplier_Registered_Admin } from "../../../route-api"
+
 export type TypeListSupplierRegistered = {
     id: string
     bp_code: string
     company_name: string
-    registration_date: string
+    registered_at: string
 }
 
+const fetchListSupplierRegistered = async (offersId: string) : Promise<TypeListSupplierRegistered> => {
+    const token = localStorage.getItem("access_token")
+    try {
+        const response = await fetch(API_List_Supplier_Registered_Admin() + offersId, {
+            method: "GET",
+            headers: {
+            Authorization: `Bearer ${token}`,
+            },
+        })
 
-const fetchListSupplierRegistered = async (offersId: string) : Promise<TypeListSupplierRegistered[]> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    return Array.from({ length: 8 }, (_, i) => ({
-        id: `id-${i + 1}`,
-        bp_code: `BP${2000 + i}`,
-        company_name: `Supplier ${i + 1}`,
-        registration_date: new Date(
-            Date.now() - Math.floor(Math.random() * 10000000000)
-        )
-            .toISOString()
-            .split("T")[0],
-    }))
+        const data = await response.json()
+
+        if (response.ok && data.status === true) {
+            return data.data
+        } else {
+            return data.error || "Error"
+            
+        }
+    } catch (error : any) {
+        console.error("Error fetching supplier registered:", error)
+        return error.message || "Error"
+    }
 }
 
 export default fetchListSupplierRegistered;

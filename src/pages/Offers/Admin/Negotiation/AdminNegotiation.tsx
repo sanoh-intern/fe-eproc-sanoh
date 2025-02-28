@@ -11,9 +11,9 @@ import OffersDetails from "../../../../components/OffersDetail"
 import fetchOfferDetails, { TypeOfferDetails } from "../../../../api/Data/offers-detail"
 import FetchCompanyData, { TypeCompanyData } from "../../../../api/Data/company-data"
 import CompanyDetails from "../../../../components/CompanyDetails"
-import fetchNegotiationData, { TypeNegotiationData } from "../../../../api/Data/Admin/Offers/negotiation"
-import fetchSupplierDataOffers, { TypeSupplierDataOffers } from "../../../../api/Data/Admin/Offers/supplier-data-offers"
+import fetchNegotiationData, { TypeNegotiationData } from "../../../../api/Data/Admin/Offers/history-supplier-proposal"
 import { useParams } from "react-router-dom"
+import fetchSupplierDataOffers, { TypeSupplierDataOffers } from "../../../../api/Data/Admin/Offers/data-supplier-proposal"
 
 const AdminNegotiation: React.FC = () => {
     const [supplierDataOffers, setSupplierDataOffers] = useState<TypeSupplierDataOffers[]>([])
@@ -36,7 +36,7 @@ const AdminNegotiation: React.FC = () => {
                 const suppliers = await fetchSupplierDataOffers(negotiationId!)
                 setSupplierDataOffers(suppliers)
 
-                const proposalData = await fetchNegotiationData(negotiationId!)
+                const proposalData = await fetchNegotiationData(negotiationId! , )
                 setProposals(proposalData)
             } catch (error) {
                 toast.error("Failed to load negotiation details.")

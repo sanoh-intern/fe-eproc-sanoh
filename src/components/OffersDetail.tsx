@@ -5,12 +5,14 @@ import { FiDownload, FiCalendar, FiClock, FiTarget, FiUserCheck, FiFlag, FiAward
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import Button from "./Forms/Button"
+import { API_Download_Dokumen } from "../api/route-api"
 
 interface OffersDetailsProps {
     offerDetails: OfferDetails | null;
 }
 
 interface OfferDetails {
+    id?: string;
     project_name: string;
     created_at: string;
     registration_due_at: string;
@@ -23,6 +25,50 @@ interface OfferDetails {
 }
 
 const OffersDetails: React.FC<OffersDetailsProps> = ({ offerDetails }) => {
+
+    const DownloadFile = async () => {
+        if (offerDetails) {
+            let toastId: string | number = 0;
+            try {
+                const token = localStorage.getItem("access_token");
+                toastId = toast.loading("Downloading file...");
+                const response = await fetch(API_Download_Dokumen() + offerDetails.id, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                
+                if (!response.ok) {
+                    throw new Error("Failed to download file");
+                }
+                
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = offerDetails.project_name || "document.pdf";
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+                toast.update(toastId, { 
+                    render: "File downloaded successfully", 
+                    type: "success",
+                    isLoading: false,
+                    autoClose: 2000
+                });
+            } catch (error) {
+                toast.update(toastId, { 
+                    render: "Failed to download file", 
+                    type: "error",
+                    isLoading: false,
+                    autoClose: 2000
+                });
+                console.error("Download error:", error);
+            }
+        }
+    }
 
     if (!offerDetails) {
         toast.error("Failed to load offer details")
@@ -88,7 +134,7 @@ const OffersDetails: React.FC<OffersDetailsProps> = ({ offerDetails }) => {
                 <div className="mb-6">
                     <h2 className="text-xl font-semibold text-gray-700 mb-2">Project Details</h2>
                     <Button
-                        onClick={() => offerDetails.project_attach && window.open(offerDetails.project_attach, "_blank")}
+                        onClick={DownloadFile}
                         className=" "
                         title="Download PDF"
                         icon={FiDownload}

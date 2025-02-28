@@ -1,4 +1,4 @@
-import { API_Select_Winner_Offer_Admin } from "../../../route-api";
+import { API_Accepted_Proposal_Admin, API_Declined_Proposal_Admin } from "../../../route-api";
 
 interface PostFinalWinnerProps {
     negotiationId: string;
@@ -7,44 +7,69 @@ interface PostFinalWinnerProps {
 export const postOffersAccepted = async ({ negotiationId }: PostFinalWinnerProps) => {
     const token = localStorage.getItem("access_token");
     try {
-        const response = await fetch(API_Select_Winner_Offer_Admin(), {
-            method: 'POST',
+        const response = await fetch(API_Accepted_Proposal_Admin(), {
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ "project_detail_id": negotiationId }),
+            body: JSON.stringify({ "project_detail_id": [negotiationId] }),
         });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+
+        if (response.ok && data.status === true) {
+            return {
+                status: true,
+                message: "Final winner posted successfully",
+            };
+        } else {
+            return {
+                status: false,
+                message: "Error posting final winner",
+                error: data.error || "Error",
+            };
         }
 
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error('There was an error posting the final winner:', error);
-        throw error;
+    } catch (error : any) {
+        console.error("Error", error)
+        return {
+            status: false,
+            message: "Error",
+            error: error.message || "Error"
+        }
     }
 };
 export const postOffersDeclined = async ({ negotiationId }: PostFinalWinnerProps) => {
     try {
-        const response = await fetch('/api/proposals/declined', {
-            method: 'POST',
+        const response = await fetch(API_Declined_Proposal_Admin() + negotiationId, {
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ negotiationId }),
+            }
         });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
         const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error('There was an error posting the final winner:', error);
-        throw error;
+        
+        if (response.ok && data.status === true) {
+            return {
+                status: true,
+                message: "Final winner posted successfully",
+            };
+
+        } else {
+            return {
+                status: false,
+                message: "Error posting final winner",
+                error: data.error || "Error",
+            };
+        }
+    } catch (error : any) {
+        console.error("Error", error)
+        return {
+            status: false,
+            message: "Error",
+            error: error.message || "Error"
+        }
     }
 };
