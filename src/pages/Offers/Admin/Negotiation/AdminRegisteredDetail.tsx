@@ -101,7 +101,7 @@ const AdminRegisteredDetail: React.FC = () => {
   }
 
   // Accept / Decline proposal
-  const handleProposalAction = (id: string, bpcode: string, action: "Accepted" | "Declined") => {
+  const handleProposalAction = (id: string, action: "Accepted" | "Declined") => {
     Swal.fire({
       title: `Confirm ${action}`,
       text: `Are you sure you want to mark this proposal as ${action}?`,
@@ -113,8 +113,6 @@ const AdminRegisteredDetail: React.FC = () => {
       cancelButtonColor: "#dc2626",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        // In real usage, you'd send an API request here
-        toast.success(`Proposal from ${bpcode} has been ${action}`)
         if (action === "Accepted") {
           try {
             // Replace this with your actual API endpoint
@@ -126,7 +124,7 @@ const AdminRegisteredDetail: React.FC = () => {
             setProposals(flattenedData);
             setFilteredProposals(flattenedData);
           } catch (error) {
-            toast.error('Failed to accept proposal');
+            toast.error('Server Error: Failed to accept proposal');
           }
         } else {
           try {
@@ -139,7 +137,7 @@ const AdminRegisteredDetail: React.FC = () => {
             setProposals(flattenedData);
             setFilteredProposals(flattenedData);
           } catch (error) {
-            toast.error('Failed to decline proposal');
+            toast.error('Server Error: Failed to decline proposal');
           }
         }
       }
@@ -293,11 +291,11 @@ const AdminRegisteredDetail: React.FC = () => {
                                 <Button
                                 title="Accept"
                                 color="bg-green-600"
-                                onClick={() => handleProposalAction(proposal.id_negotiation, proposal.company_name, "Accepted")}
+                                onClick={() => handleProposalAction(proposal.id_negotiation, "Accepted")}
                                 />
                                 <Button
                                 title="Decline"
-                                onClick={() => handleProposalAction(proposal.id_negotiation, proposal.company_name, "Declined")}
+                                onClick={() => handleProposalAction(proposal.id_negotiation, "Declined")}
                                 color="bg-red-600"
                                 />
                               </div>

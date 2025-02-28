@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import { API_Accepted_Proposal_Admin, API_Declined_Proposal_Admin } from "../../../route-api";
 
 interface PostFinalWinnerProps {
@@ -19,57 +20,42 @@ export const postOffersAccepted = async ({ negotiationId }: PostFinalWinnerProps
         const data = await response.json();
 
         if (response.ok && data.status === true) {
-            return {
-                status: true,
-                message: "Final winner posted successfully",
-            };
+            toast.success(data.message || "Success")
+            return
         } else {
-            return {
-                status: false,
-                message: "Error posting final winner",
-                error: data.error || "Error",
-            };
+            toast.error(data.message || "Error")
+            return 
         }
 
     } catch (error : any) {
-        console.error("Error", error)
-        return {
-            status: false,
-            message: "Error",
-            error: error.message || "Error"
-        }
+        console.error("Server error plase try again later:", error)
+        toast.error("Server error plase try again later")
+        return
     }
 };
 export const postOffersDeclined = async ({ negotiationId }: PostFinalWinnerProps) => {
+    const token = localStorage.getItem("access_token");
     try {
         const response = await fetch(API_Declined_Proposal_Admin() + negotiationId, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
             }
         });
 
         const data = await response.json();
         
         if (response.ok && data.status === true) {
-            return {
-                status: true,
-                message: "Final winner posted successfully",
-            };
-
+            toast.success(data.message || "Success")
+            return data.data
         } else {
-            return {
-                status: false,
-                message: "Error posting final winner",
-                error: data.error || "Error",
-            };
+            toast.error(data.message || "Error")
+            return 
         }
     } catch (error : any) {
-        console.error("Error", error)
-        return {
-            status: false,
-            message: "Error",
-            error: error.message || "Error"
-        }
+        console.error("Server error plase try again later:", error)
+        toast.error("Server error plase try again later")
+        return
     }
 };
