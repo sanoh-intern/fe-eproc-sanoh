@@ -10,6 +10,7 @@ import "react-toastify/dist/ReactToastify.css"
 import Loader from "../../../../common/Loader"
 import { putEditOffers } from "../../../../api/Action/Admin/Offers/put-update-offers"
 import fetchEditOfferDetails, { TypeEditOfferDetails } from "../../../../api/Data/Admin/ManageOffers/edit-offers-details"
+import { API_Download_Dokumen } from "../../../../api/route-api"
 
 interface Option {
     value: string
@@ -215,6 +216,50 @@ const AdminEditOffers: React.FC = () => {
         toast.success("Offer updated successfully!")
     }
 
+    const DownloadFile = async () => {
+        if (offerId) {
+            let toastId: string | number = 0;
+            try {
+                const token = localStorage.getItem("access_token");
+                toastId = toast.loading("Downloading file...");
+                const response = await fetch(API_Download_Dokumen() + offerId, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                
+                if (!response.ok) {
+                    throw new Error("Failed to download file");
+                }
+                
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = projectName || "document.pdf";
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+                toast.update(toastId, { 
+                    render: "File downloaded successfully", 
+                    type: "success",
+                    isLoading: false,
+                    autoClose: 2000
+                });
+            } catch (error) {
+                toast.update(toastId, { 
+                    render: "Failed to download file", 
+                    type: "error",
+                    isLoading: false,
+                    autoClose: 2000
+                });
+                console.error("Download error:", error);
+            }
+        }
+    }
+
     if (!projectName) return <Loader />
 
     return (
@@ -280,14 +325,13 @@ const AdminEditOffers: React.FC = () => {
                             {existingAttachmentLink && !attachment && (
                                 <div className="mt-2">
                                     <span className="text-sm text-gray-700">Current Attachment: </span>
-                                    <a
-                                        href={String(existingAttachmentLink)}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
+                                    <button
+                                        type="button"
+                                        onClick={DownloadFile}
                                         className="text-blue-600 hover:underline"
                                     >
                                         View File
-                                    </a>
+                                    </button>
                                 </div>
                             )}
                         </div>
