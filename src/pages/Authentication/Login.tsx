@@ -4,7 +4,6 @@ import PasswordInput from '../../components/PasswordInput';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../authentication/AuthContext';
-import { ToastContainer } from 'react-toastify';
 import { FaArrowLeft, FaSpinner } from 'react-icons/fa';
 
 const Login: React.FC = () => {
@@ -23,7 +22,6 @@ const Login: React.FC = () => {
 
   return (
     <>
-      <ToastContainer position="top-right" />
       <Link
         to="/"
         className="absolute top-10 left-10 flex items-center justify-center w-10 h-10 rounded-full bg-primarylight shadow hover:bg-primary hover:text-white transition-colors"

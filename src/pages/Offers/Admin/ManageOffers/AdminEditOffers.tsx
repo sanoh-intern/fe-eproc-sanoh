@@ -5,7 +5,7 @@ import Breadcrumb from "../../../../components/Breadcrumbs/Breadcrumb"
 import Button from "../../../../components/Forms/Button"
 import Select from "react-select"
 import Swal from "sweetalert2"
-import { ToastContainer, toast } from "react-toastify"
+import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import Loader from "../../../../common/Loader"
 import { putEditOffers } from "../../../../api/Action/Admin/Offers/put-update-offers"
@@ -264,7 +264,6 @@ const AdminEditOffers: React.FC = () => {
 
     return (
         <>
-            <ToastContainer position="top-right" />
             <Breadcrumb
                 pageName="Edit Offer"
                 isSubMenu

@@ -4,11 +4,11 @@ import { Link } from "react-router-dom"
 import { FaArrowLeft } from "react-icons/fa"
 import Logo from "../../assets/images/logo-sanoh.png"
 import FotoSanoh from "../../assets/images/cover/maskot2.png"
-import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import VerificationCodeInput from "./VerificationPage"
 import Button from "../../components/Forms/Button"
 import PasswordInput from "../../components/PasswordInput"
+import { toast } from "react-toastify"
 
 const ForgotPassword: React.FC = () => {
     const [email, setEmail] = useState("")
@@ -69,7 +69,6 @@ const ForgotPassword: React.FC = () => {
 
     return (
         <>
-            <ToastContainer position="top-right" />
             <Link
                 to="/"
                 className="absolute top-10 left-10 flex items-center justify-center w-10 h-10 rounded-full bg-primarylight shadow hover:bg-primary hover:text-white transition-colors"

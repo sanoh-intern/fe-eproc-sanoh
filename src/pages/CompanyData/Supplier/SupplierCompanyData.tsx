@@ -1,6 +1,6 @@
 import type React from "react"
 import { useState, useEffect } from "react"
-import { toast, ToastContainer } from "react-toastify"
+import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs"
 import "react-tabs/style/react-tabs.css"
@@ -161,7 +161,6 @@ const SupplierCompanyData: React.FC = () => {
   return (
     <>
       <Breadcrumb pageName="Company Details" />
-      <ToastContainer position="top-right" />
       <div className="bg-white shadow-lg rounded-lg overflow-hidden">
         <div className="p-6 sm:p-8">
           {unsavedChanges && (

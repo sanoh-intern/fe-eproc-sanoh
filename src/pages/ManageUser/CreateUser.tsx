@@ -48,7 +48,7 @@ const AddUser = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!companyName || !npwp || !role || !email || !password) {
+    if (!companyName || !role || !email || !password) {
       Swal.fire('Error', 'Please fill all required fields correctly.', 'error');
       return;
     }
@@ -76,7 +76,7 @@ const AddUser = () => {
   return (
     <>
       <Breadcrumb pageName="Add User" />
-      <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark" z->
+      <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <form onSubmit={handleSubmit} className="max-w-[1024px] mx-auto">
           <div className="p-4 md:p-6.5">
             {/* Company Name */}
@@ -105,7 +105,6 @@ const AddUser = () => {
                 value={npwp}
                 onChange={(e) => setNpwp(e.target.value)}
                 placeholder="Enter NPWP"
-                required
                 className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
               />
             </div>

@@ -9,8 +9,8 @@ import Pagination from "../../../../components/Table/Pagination"
 import Loader from "../../../../common/Loader"
 import OffersDetails from "../../../../components/OffersDetail"
 import fetchOfferDetails, { TypeOfferDetails } from "../../../../api/Data/offers-detail"
-import FetchCompanyData, { TypeCompanyData } from "../../../../api/Data/company-data"
-import CompanyDetails from "../../../../components/CompanyDetails"
+// import { TypeCompanyData } from "../../../../api/Data/company-data"
+// import CompanyDetails from "../../../../components/CompanyDetails"
 import fetchNegotiationData, { TypeNegotiationData } from "../../../../api/Data/Admin/Offers/history-supplier-proposal"
 import { useLocation } from "react-router-dom"
 
@@ -22,7 +22,8 @@ const AdminNegotiation: React.FC = () => {
     const [rowsPerPage, setRowsPerPage] = useState(5)
     const [offerDetails, setOfferDetails] = useState<TypeOfferDetails | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [companyData, setCompanyData] = useState<TypeCompanyData | null>(null);
+    // const [companyData, setCompanyData] = useState<TypeCompanyData | null>(null);
+    const [isView, setIsView] = useState(false)
 
     const { search } = useLocation();
     const searchParams = new URLSearchParams(search);
@@ -44,7 +45,13 @@ const AdminNegotiation: React.FC = () => {
                 const offerdata = await (fetchOfferDetails(offersId!))
                 setOfferDetails(offerdata)
 
-                const proposalData = await fetchNegotiationData(offersId!,supplierId!)
+                const data = await fetchNegotiationData(offersId!,supplierId!)
+
+                if (data.final_view_at) {
+                    setIsView(true)
+                }
+
+                const proposalData = data.data
                 if (Array.isArray(proposalData)) {
                     setProposals(proposalData as TypeNegotiationData[])
                 } else {
@@ -119,15 +126,15 @@ const AdminNegotiation: React.FC = () => {
         currentPage * rowsPerPage
     )
 
-    const handeclick = async () => {
-        setIsModalOpen(true)
-        try {
-            const data = await FetchCompanyData(supplierId)
-            setCompanyData(data)
-        } catch (error) {
-            console.error(error)
-        }
-    }
+    // const handeclick = async () => {
+    //     setIsModalOpen(true)
+    //     try {
+    //         const data = await FetchCompanyData(supplierId) as unknown as TypeCompanyData
+    //         setCompanyData(data)
+    //     } catch (error) {
+    //         console.error(error)
+    //     }
+    // }
 
     return (
         <>
@@ -160,12 +167,12 @@ const AdminNegotiation: React.FC = () => {
                                                 <p className="text-sm text-gray-600">Registration Date</p>
                                                 <p className="font-medium">{registrationDate}</p>
                                             </div>
-                                            <div className="flex items-center">
+                                            {/* <div className="flex items-center">
                                                 <Button
                                                     title="View Details"
                                                     onClick={handeclick}
                                                 />
-                                            </div>
+                                            </div> */}
                                         </div>
                                     </div>
                                     {isModalOpen && (
@@ -178,7 +185,7 @@ const AdminNegotiation: React.FC = () => {
                                                     color="bg-red-500 text-white absolute top-2 right-2"
                                                 />
                                                 <div className="overflow-y-auto max-h-[calc(100vh-100px)]">
-                                                    <CompanyDetails companyData={companyData} />
+                                                    {/* <CompanyDetails companyData={companyData} /> */}
                                                 </div>
                                             </div>
                                         </div>
@@ -207,7 +214,7 @@ const AdminNegotiation: React.FC = () => {
                                                 <td className="px-3 py-3 text-center">{proposal.proposal_submit_date}</td>
                                                 <td className="px-3 py-3 text-center">
                                                     <span className="mr-2 border rounded-sm border-gray-300 px-1">IDR</span>
-                                                    <span>{Number(proposal.proposal_total_amount).toLocaleString('id-ID')}</span>
+                                                    <span>{localStorage.getItem('role') === 'presdir' && isView ? Number(proposal.proposal_total_amount).toLocaleString('id-ID') : 'XXX.XXX'}</span>
                                                 </td>
                                                 <td className="px-3 py-3 text-center">{proposal.proposal_revision_no}
                                                 {proposal.is_final && (

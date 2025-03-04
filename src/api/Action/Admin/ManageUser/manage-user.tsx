@@ -1,8 +1,17 @@
 import { toast } from 'react-toastify';
 import { API_List_User_Admin, API_Update_Status_Admin } from '../../../route-api';
-import { getRoleName } from '../../../../authentication/Role';
 
-export async function fetchUserListAdmin() {
+export type TypeUser = {
+    UserID: string;
+    NPWP: string;
+    Email: string;
+    SupplierCode: string;
+    VerificationStatus : string;
+    CompanyName: string;
+    Role: string;
+    Status: string;
+}
+export async function fetchUserListAdmin(): Promise<TypeUser[]> {
     const token = localStorage.getItem('access_token');
     try {
         const response = await fetch(API_List_User_Admin(), {
@@ -18,14 +27,16 @@ export async function fetchUserListAdmin() {
         const result = await response.json();
         // Map the API data to your expected user object structure
         const users = result.data.map((user: any) => ({
-            UserID: user.user_id,
+            UserID: user.id,
+            NPWP: user.id_tax,
             SupplierCode: user.bp_code,
-            Username: user.username,
-            Name: user.name,
-            Role: getRoleName(user.role),
-            RoleCode: user.role,
-            Status: user.status === 1 ? 'Active' : 'Deactive',
+            VerificationStatus : user.verification_status,
+            Email: user.email,
+            CompanyName: user.company_name,
+            Role: user.role,
+            Status: user.account_status,
         }));
+        console.log('User list:', users);
 
         return users;
     } catch (error) {
@@ -35,30 +46,29 @@ export async function fetchUserListAdmin() {
     }
 }
 
-export async function updateUserStatusAdmin(userId: string, status: number, username: string) {
+export async function updateUserStatusAdmin(userId: string, status: string, companyName: string) {
     const token = localStorage.getItem('access_token');
     try {
         const response = await toast.promise(
         fetch(`${API_Update_Status_Admin()}${userId}`, {
-            method: 'PUT',
+            method: 'PATCH',
             headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ status: status.toString() }),
         }),
         {
             pending: {
-                render: `Updating status for "${username}"...`,
+                render: `Updating status for "${companyName}"...`,
                 autoClose: 3000,
             },
             success: {
-                render: `Status for "${username}" Successfully Updated to ${status === 1 ? 'Active' : 'Deactive'}`,
+                render: `Status for "${companyName}" Successfully Updated to ${status === "1" ? 'Active' : 'Deactive'}`,
                 autoClose: 3000,
             },
             error: {
                 render({ data }) {
-                    return `Failed to update status for "${username}": ${data}`;
+                    return `Failed to update status for "${companyName}": ${data}`;
             },
                 autoClose: 3000,
             },

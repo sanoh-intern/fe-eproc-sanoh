@@ -12,7 +12,7 @@ import ContactUs from "./pages/ContactUs";
 import Login from "./pages/Authentication/Login";
 import Register from "./pages/Authentication/Register";
 import ForgotPassword from "./pages/Authentication/ForgotPassword";
-import SettingProfile from "./pages/SettingProfile";
+// import SettingProfile from "./pages/SettingProfile";
 import AdminCreateOffers from "./pages/Offers/Admin/ManageOffers/AdminCreateOffers";
 import AdminEditOffers from "./pages/Offers/Admin/ManageOffers/AdminEditOffers";
 import AdminRegisteredDetail from "./pages/Offers/Admin/Negotiation/AdminRegisteredDetail";
@@ -29,6 +29,7 @@ import CompanyDetails from "./pages/CompanyData/CompanyDetails";
 import ManageUser from "./pages/ManageUser/ListUser";
 import AddUser from "./pages/ManageUser/CreateUser";
 import EditUser from "./pages/ManageUser/EditUser";
+import ComingSoon from "./pages/ComingSoon";
 
 const App: React.FC = () => {
   return (
@@ -111,8 +112,9 @@ const App: React.FC = () => {
               path="/setting-profile"
               element={
                 <ProtectedRoute allowedRoles={['1','2','3','4','5']}>
-                  <PageTitle title="Dashboard | PT SANOH INDONESIA" />
-                  <SettingProfile />
+                  <PageTitle title="Setting Profile | PT SANOH INDONESIA" />
+                  <ComingSoon />
+                  {/* <SettingProfile /> */}
                 </ProtectedRoute>
               }
             />

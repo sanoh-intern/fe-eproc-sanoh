@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import { FaSortUp, FaSortDown, FaEye } from "react-icons/fa"
-import { ToastContainer, toast } from "react-toastify"
+import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import Breadcrumb from "../../../../components/Breadcrumbs/Breadcrumb"
 import SearchBar from "../../../../components/Table/SearchBar"
@@ -27,11 +27,13 @@ const SupplierOffersFollowed: React.FC = () => {
   const loadOffers = async () => {
     try {
       const fetchedOffers = await fetchFollowedOffers()
-      setOffers(fetchedOffers)
-      setFilteredOffers(fetchedOffers)
+      setOffers(fetchedOffers || []); // Ensure fetchedOffers is an array
+      setFilteredOffers(fetchedOffers || []); // Ensure fetchedOffers is an array
     } catch (error) {
       console.error("Failed to fetch followed offers:", error)
       toast.error("Failed to load followed offers")
+      setOffers([]) // Ensure offers is an array even on error
+      setFilteredOffers([]) // Ensure filteredOffers is an array even on error
     } finally {
       setIsLoading(false)
     }
@@ -84,7 +86,9 @@ const SupplierOffersFollowed: React.FC = () => {
     setSortConfig({ key, direction })
   }
 
-  const paginatedOffers = filteredOffers.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
+  const paginatedOffers = Array.isArray(filteredOffers)
+  ? filteredOffers.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
+  : [];
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
@@ -98,7 +102,6 @@ const SupplierOffersFollowed: React.FC = () => {
   return (
     <>
       <Breadcrumb pageName="Offers Followed" />
-      <ToastContainer position="top-right" />
       <div className="bg-white">
         <div className="p-2 md:p-4 lg:p-6 space-y-6">
           {offers.length === 0 && !isLoading ? (
@@ -111,7 +114,7 @@ const SupplierOffersFollowed: React.FC = () => {
                 View Available Offers
               </Link>
             </div>
-          ) : (
+          ) : Array.isArray(offers) ? (
             <>
               <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
                 <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-1/2">
@@ -257,7 +260,7 @@ const SupplierOffersFollowed: React.FC = () => {
                             <td className="px-3 py-3 text-center whitespace-nowrap">{offer.register_date || "-"}</td>
                             <td className="px-3 py-3 text-center whitespace-nowrap flex items-center justify-center">
                                 <span className="mr-2 border rounded-sm border-gray-300 px-1">IDR</span>
-                                <span>{Number(offer.proposal_last_amount).toLocaleString('id-ID')}</span>
+                                <span>{(offer.proposal_last_amount || '-').toLocaleString('id-ID')}</span>
                             </td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">
                               {offer.proposal_revision_no} {offer.is_final && <span className="ml-2 text-xs font-medium bg-primary px-3 py-1 rounded-full text-white">Final</span>}
@@ -314,6 +317,10 @@ const SupplierOffersFollowed: React.FC = () => {
                 onRowsPerPageChange={setRowsPerPage}
               />
             </>
+          ) : (
+            <div className="text-center">
+              <p className="mb-4">Failed to load offers.</p>
+            </div>
           )}
         </div>
       </div>

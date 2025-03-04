@@ -3,11 +3,11 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import { FaCamera, FaEdit, FaSpinner } from "react-icons/fa"
-import { ToastContainer, toast } from "react-toastify"
+import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import Button from "../components/Forms/Button"
 import VerificationCodeInput from "./Authentication/VerificationPage"
-import PasswordInput from "../components/PasswordInput"
+// import PasswordInput from "../components/PasswordInput"
 import Breadcrumb from "../components/Breadcrumbs/Breadcrumb"
 import Loader from "../common/Loader"
 
@@ -150,7 +150,6 @@ const SettingProfile: React.FC = () => {
   return (
     <>
       <Breadcrumb pageName="Profile Settings" />
-      <ToastContainer />
       <div className="bg-white shadow-lg rounded-lg overflow-hidden">
         <div className="p-6 sm:p-8">
           <div className="flex flex-col sm:flex-row items-center sm:items-start mb-6">

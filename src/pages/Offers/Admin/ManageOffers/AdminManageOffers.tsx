@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react"
 import { FaSortUp, FaSortDown, FaPlus } from "react-icons/fa"
-import { ToastContainer, toast } from "react-toastify"
+import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import Breadcrumb from "../../../../components/Breadcrumbs/Breadcrumb"
 import SearchBar from "../../../../components/Table/SearchBar"
@@ -155,7 +155,6 @@ const AdminManageOffers: React.FC = () => {
     return (
         <>
             <Breadcrumb pageName="Manage Offers" />
-            <ToastContainer position="top-right" />
             <div className="bg-white">
                 <div className="p-2 md:p-4 lg:p-6 space-y-6">
                     <Button

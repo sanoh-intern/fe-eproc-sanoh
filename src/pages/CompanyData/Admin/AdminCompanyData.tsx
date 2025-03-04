@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react"
 import { FaSortUp, FaSortDown } from "react-icons/fa"
-import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb"
 import SearchBar from "../../../components/Table/SearchBar"
@@ -10,6 +9,7 @@ import Pagination from "../../../components/Table/Pagination"
 import { useNavigate } from "react-router-dom"
 import Select from "react-select"
 import Button from "../../../components/Forms/Button"
+import { toast } from "react-toastify"
 
 interface AdminSupplier {
   id: string
@@ -105,7 +105,6 @@ const AdminCompanyData: React.FC = () => {
   return (
     <>
       <Breadcrumb pageName="Company Data" />
-      <ToastContainer position="top-right" />
       <div className="bg-white">
         <div className="p-2 md:p-4 lg:p-6 space-y-6">
           <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">

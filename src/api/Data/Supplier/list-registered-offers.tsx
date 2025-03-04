@@ -34,8 +34,7 @@ export const fetchFollowedOffers = async () => {
         return data.data;
     } else {
         if (data.error) {
-            const errors = Object.values(data.error).flat().join(" ");
-            toast.error(errors);
+            toast.error(data.error);
         } else {
             toast.error(data.message);
         }

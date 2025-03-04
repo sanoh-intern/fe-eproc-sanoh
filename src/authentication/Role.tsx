@@ -6,6 +6,15 @@ export const roles = [
     { value: '5', label: 'Supplier' },
 ];
 
+
+export const rolesName = [
+    { value: 'super-admin', label: 'Super Admin' },
+    { value: 'purchasing', label: 'Purchasing' },
+    { value: 'presdir', label: 'Presdir' },
+    { value: 'review', label: 'Review' },
+    { value: 'supplier', label: 'Supplier' },
+];
+
 export const getRoleName = (role: string): string => {
     const foundRole = roles.find(r => r.value === role);
     return foundRole ? foundRole.label : 'Unknown Role';

@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { ToastContainer, toast } from "react-toastify"
+import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import Breadcrumb from "../../../../components/Breadcrumbs/Breadcrumb"
 import Select from "react-select"
@@ -102,7 +102,6 @@ const AdminRegistered: React.FC = () => {
     return (
         <>
             <Breadcrumb pageName="Registered Offers" />
-            <ToastContainer position="top-right" />
             <div className="bg-white">
                 <div className="p-2 md:p-4 lg:p-6 space-y-6">
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 items-center">

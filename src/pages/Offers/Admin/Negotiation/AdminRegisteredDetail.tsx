@@ -236,7 +236,7 @@ const AdminRegisteredDetail: React.FC = () => {
                     </thead>
                     <tbody className="divide-y divide-gray-200 bg-white">
                       {paginatedProposals.map((proposal) => (
-                        <tr key={proposal.bp_code} className="hover:bg-gray-50">
+                        <tr key={proposal.id_negotiation} className="hover:bg-gray-50">
                           <td className="px-3 py-3 text-center whitespace-nowrap">{proposal.bp_code || "-"}</td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
                             {proposal.company_name || "-"}
@@ -357,7 +357,7 @@ const AdminRegisteredDetail: React.FC = () => {
                   </thead>
                   <tbody className="divide-y divide-gray-200 bg-white">
                     {allSuppliers.map((supplier) => (
-                      <tr key={supplier.bp_code} className="hover:bg-gray-50">
+                      <tr key={supplier.id_user} className="hover:bg-gray-50">
                         <td className="px-3 py-3 text-center whitespace-nowrap">{supplier.bp_code || "-"}</td>
                         <td className="px-3 py-3 text-center whitespace-nowrap">
                           {supplier.company_name}

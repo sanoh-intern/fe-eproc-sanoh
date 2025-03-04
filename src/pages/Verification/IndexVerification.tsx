@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import AdminVerification from "./Admin/AdminVerification";
-import SupplierVerification from "./Supplier/SupplierVerification";
+// import AdminVerification from "./Admin/AdminVerification";
+// import SupplierVerification from "./Supplier/SupplierVerification";
+import ComingSoon from "../ComingSoon";
 
 const IndexVerification: React.FC = () => {
     const [userRole, setUserRole] = useState<string>('');
@@ -11,9 +12,11 @@ const IndexVerification: React.FC = () => {
     }, []);
     
     if (userRole === 'purchasing' || userRole === 'presdir' || userRole === 'review') {
-        return <AdminVerification />;
+        // return <AdminVerification />;
+        return <ComingSoon />;
     } else if (userRole === 'supplier') {
-        return <SupplierVerification />;
+        // return <SupplierVerification />;
+        return <ComingSoon />;
     } else {
         return <div>No dashboard available for your role.</div>;
     }

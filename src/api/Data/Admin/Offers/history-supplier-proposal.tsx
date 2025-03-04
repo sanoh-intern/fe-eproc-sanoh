@@ -13,7 +13,6 @@ export type TypeNegotiationData = {
 
 const fetchNegotiationData = async (negotiationId: string, supplierId: string  ) => {
     const token = localStorage.getItem("access_token")
-
     try {
         const response = await fetch(`${API_History_Proposal_Admin()}${negotiationId}/${supplierId}`, {
             method: "GET",
@@ -29,7 +28,7 @@ const fetchNegotiationData = async (negotiationId: string, supplierId: string  )
                 toast.error(data.message || "Error")
                 return
             }
-            return data.data
+            return data
         } else {
             toast.error(data.message || "Error")
             return 

@@ -1,5 +1,5 @@
 import { toast } from 'react-toastify';
-import { API_Create_User_Admin, API_Update_User_Admin } from '../../../route-api';
+import { API_Create_User_Admin, API_Edit_User_Admin, API_Update_User_Admin } from '../../../route-api';
 
 export async function createUserAdmin(payload: any, resetForm: () => void) {
     try {
@@ -59,7 +59,7 @@ export async function editUserAdmin(payload: any, userId: string, navigate: any)
 export const fetchUserDataAdmin = async (userId: string) => {
     const token = localStorage.getItem("access_token");
     try {
-        const response = await fetch(`${API_Update_User_Admin()}${userId}`, {
+        const response = await fetch(`${API_Edit_User_Admin()}${userId}`, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${token}`,

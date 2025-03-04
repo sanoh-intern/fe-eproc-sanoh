@@ -32,11 +32,22 @@ const SupplierOffersAvailable: React.FC = () => {
     useEffect(() => {
         const fetchOffersData = async () => {
             setLoading(true)
-            const offersPublic = await fetchPublicOffers();
-            const offersPrivate = await fetchPrivateOffers();
-            setInvitedOffers(offersPrivate);
-            setPublicOffers(offersPublic);
-            setLoading(false);
+            try {
+                const offersPublic = await fetchPublicOffers();
+                const offersPrivate = await fetchPrivateOffers();
+    
+                // Check if the data is an array before setting the state
+                setInvitedOffers(Array.isArray(offersPrivate) ? offersPrivate : []);
+                setPublicOffers(Array.isArray(offersPublic) ? offersPublic : []);
+            } catch (error) {
+                console.error("Failed to fetch offers:", error);
+                toast.error("Failed to load offers. Please try again.");
+                // If there's an error, set the state to an empty array
+                setInvitedOffers([]);
+                setPublicOffers([]);
+            } finally {
+                setLoading(false);
+            }
         };
 
         fetchOffersData();
@@ -50,7 +61,7 @@ const SupplierOffersAvailable: React.FC = () => {
         setSortConfig({ key, direction })
     }
 
-    const filteredData = (selectedTab === 0 ? invitedOffers : publicOffers)
+    const filteredData = (selectedTab === 0 ? (Array.isArray(invitedOffers) ? invitedOffers : []) : (Array.isArray(publicOffers) ? publicOffers : []))
         .filter((offer) => {
             return offer.project_name.toLowerCase().includes(searchQuery.toLowerCase())
         })

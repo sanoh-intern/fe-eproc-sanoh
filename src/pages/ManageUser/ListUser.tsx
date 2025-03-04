@@ -6,49 +6,25 @@ import SearchBar from '../../components/Table/SearchBar';
 import { FaSortDown, FaSortUp, FaToggleOff, FaToggleOn, FaUserEdit, FaUserPlus } from 'react-icons/fa';
 import MultiSelect from '../../components/Forms/MultiSelect';
 import Button from '../../components/Forms/Button';
-import { getRoleName } from '../../authentication/Role';
-import { fetchUserListAdmin, updateUserStatusAdmin } from '../../api/Action/Admin/ManageUser/manage-user';
-
-interface User {
-    UserID: string;
-    SupplierCode: string;
-    Username: string;
-    Name: string;
-    Role: string;
-    Status: string;
-    RoleCode: string;
-    isLoading?: boolean;
-}
-
-interface Option {
-    value: string;
-    text: string;
-}
+import { fetchUserListAdmin, TypeUser, updateUserStatusAdmin } from '../../api/Action/Admin/ManageUser/manage-user';
 
 const ManageUser: React.FC = () => {
-    const [data, setData] = useState<User[]>([]);
-    const [filteredData, setFilteredData] = useState<User[]>([]);
+    const [data, setData] = useState<TypeUser[]>([]);
+    const [filteredData, setFilteredData] = useState<TypeUser[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10)
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
     const [sortConfig, setSortConfig] = useState({ key: '', direction: '' });
-    const [roleOptions, setRoleOptions] = useState<Option[]>([]);
     const navigate = useNavigate();
 
     useEffect(() => {
         fetchUserListAdmin()
-            .then((users) => {
-                setData(users);
-            setFilteredData(users);
-            setLoading(false);
-            const uniqueRoles = Array.from(new Set(users.map((user: any) => user.RoleCode)))
-                .map((role) => ({
-                    value: role as string,
-                    text: getRoleName(role as string),
-                }));
-            setRoleOptions(uniqueRoles);
+        .then((users) => {
+            setData(users);
+        setFilteredData(users);
+        setLoading(false);
         })
         const savedPage = localStorage.getItem('list_user_current_page');
         if (savedPage) {
@@ -102,23 +78,23 @@ const ManageUser: React.FC = () => {
         let filtered = [...data];
     
         if (selectedRoles.length > 0) {
-            filtered = filtered.filter((row) => selectedRoles.includes(row.RoleCode));
+            filtered = filtered.filter((row) => selectedRoles.includes(row.Role));
         }
         
     
         // Filter by search query
         if (searchQuery) {
             filtered = filtered.filter((row) =>
-            row.Username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            row.Name.toLowerCase().includes(searchQuery.toLowerCase())
+                (row.Email?.toLowerCase()?.includes(searchQuery.toLowerCase()) || false) ||
+                (row.CompanyName?.toLowerCase()?.includes(searchQuery.toLowerCase()) || false)
             );
         }
     
         // Apply sorting
         if (sortConfig.key) {
             filtered.sort((a, b) => {
-                const aValue = a[sortConfig.key as keyof User];
-                const bValue = b[sortConfig.key as keyof User];
+                const aValue = a[sortConfig.key as keyof TypeUser];
+                const bValue = b[sortConfig.key as keyof TypeUser];
                 
                 if (!aValue || !bValue) return 0;
                 
@@ -147,7 +123,7 @@ const ManageUser: React.FC = () => {
         localStorage.setItem('list_user_current_page', page.toString());
     };
 
-    const handleSort = (key: keyof User) => {
+    const handleSort = (key: keyof TypeUser) => {
         let direction = 'asc';
         if (sortConfig.key === key && sortConfig.direction === 'asc') {
             direction = 'desc';
@@ -189,7 +165,7 @@ const ManageUser: React.FC = () => {
                             <MultiSelect
                                 id="roleSelect"
                                 label="Filter by Role"
-                                options={roleOptions}
+                                options={Array.from(new Set(data.map(item => item.Role))).map(role => ({ value: role, text: role }))}
                                 selectedOptions={selectedRoles}
                                 onChange={setSelectedRoles}
                             />
@@ -261,34 +237,37 @@ const ManageUser: React.FC = () => {
                                     ) : paginatedData.length > 0 ? (
                                         paginatedData.map((row, index) => (
                                             <tr key={index} className="hover:bg-gray-50">
-                                                <td className="px-3 py-3 text-center whitespace-nowrap">{row.Username}</td>
-                                                <td className="px-3 py-3 text-center whitespace-nowrap">{row.SupplierCode}</td>
-                                                <td className="px-3 py-3 text-center whitespace-nowrap">{row.Name}</td>
-                                                <td className="px-3 py-3 text-center whitespace-nowrap">{row.Name}</td>
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">{row.Email || '-'}</td>
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">{row.SupplierCode || '-'}</td>
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">{row.CompanyName || '-'}</td>
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">{row.VerificationStatus || '-'}</td>
                                                 <td className="px-3 py-3 text-center whitespace-nowrap">{row.Role}</td>
                                                 <td className="px-3 py-3 text-center whitespace-nowrap">{row.Status}</td>
                                                 <td className="px-3 py-3 text-center whitespace-nowrap">
-                                                    {row.isLoading ? (
-                                                        <div className="flex justify-center">
-                                                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                                                        </div>
-                                                    ) : (
-                                                        <button
-                                                            onClick={async () => {
-                                                                const updatedData = data.map(item =>
-                                                                    item.UserID === row.UserID ? { ...item, isLoading: true } : item
+                                                    <button
+                                                        onClick={async () => {
+                                                            const updatedData = data.map(item =>
+                                                                item.UserID === row.UserID ? { ...item, isLoading: true } : item
+                                                            );
+                                                            setData(updatedData);
+                                                            const updateResult = await updateUserStatusAdmin(row.UserID, (row.Status === "1" ? "0" : "1"), row.CompanyName);
+                                                            if (updateResult.status) {
+                                                                setData(prevData =>
+                                                                    prevData.map(item =>
+                                                                        item.UserID === row.UserID
+                                                                            ? { ...item, Status: row.Status === "1" ? "0" : "1", isLoading: false }
+                                                                            : item
+                                                                    )
                                                                 );
-                                                                setData(updatedData);
-                                                                await updateUserStatusAdmin(row.UserID, row.Status === 'Active' ? 0 : 1, row.Username);
-                                                            }}
-                                                            className="hover:opacity-80 transition-opacity"
-                                                        >
-                                                            {row.Status === 'Active' ?
-                                                                <FaToggleOn className="text-3xl text-primary" /> :
-                                                                <FaToggleOff className="text-3xl text-gray-400" />
                                                             }
-                                                        </button>
-                                                    )}
+                                                        }}
+                                                        className="hover:opacity-80 transition-opacity"
+                                                    >
+                                                        {row.Status === '1' ?
+                                                            <FaToggleOn className="text-3xl text-primary" /> :
+                                                            <FaToggleOff className="text-3xl text-gray-400" />
+                                                        }
+                                                    </button>
                                                 </td>
                                                 <td className="px-3 py-3 text-center whitespace-nowrap">
                                                     <button

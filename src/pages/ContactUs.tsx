@@ -2,7 +2,7 @@
 import { FaEnvelope, FaPhone, FaMapMarkerAlt } from "react-icons/fa"
 import Button from "../components/Forms/Button"
 import { useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { API_Email } from "../api/route-api";
 
 const ContactUs = () => {
@@ -67,7 +67,6 @@ const ContactUs = () => {
 
     return (
         <>
-            <ToastContainer position="top-right" />
             <div className="min-h-screen bg-white">
                 <div className="bg-[#f8fafc] py-16">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">

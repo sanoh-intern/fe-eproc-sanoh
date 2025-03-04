@@ -121,7 +121,6 @@ const SupplierVerification: React.FC = () => {
     return (
         <>
             <Breadcrumb pageName="Verification" />
-            <ToastContainer position="top-right" />
             <div className="bg-white shadow-lg rounded-lg overflow-hidden text-primary">
                 <div className="p-6 sm:p-8">
                     <div className="mb-8">

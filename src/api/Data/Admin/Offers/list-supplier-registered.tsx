@@ -1,7 +1,7 @@
 import { API_List_Supplier_Registered_Admin } from "../../../route-api"
 
 export type TypeListSupplierRegistered = {
-    id: string
+    id_user: string
     bp_code: string
     company_name: string
     registered_at: string

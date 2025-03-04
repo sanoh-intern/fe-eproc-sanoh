@@ -32,10 +32,10 @@ const EditUser = () => {
     if (userId) {
       fetchUserDataAdmin(userId).then((data) => {
         if (data) {
-          setCompanyName(data.company_name);
-          setNpwp(data.tax_id);
-          setRole(data.role);
-          setEmail(data.email);
+          setCompanyName(data.company_name || "");
+          setNpwp(data.tax_id || "");
+          setRole(data.role || "");
+          setEmail(data.email || "");
         }
       });
     }
@@ -101,7 +101,7 @@ const EditUser = () => {
         isSubMenu={true}
         parentMenu={{
           name: "Manage User",
-          link: "/list-user" // Explicit link to parent
+          link: "/manage-user" // Explicit link to parent
         }}
       />
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">

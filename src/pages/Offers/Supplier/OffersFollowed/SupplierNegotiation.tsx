@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { ToastContainer, toast } from "react-toastify"
+import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import Breadcrumb from "../../../../components/Breadcrumbs/Breadcrumb"
 import Button from "../../../../components/Forms/Button"
@@ -119,7 +119,6 @@ const SupplierNegotiation: React.FC = () => {
                 pageName="Negotiation Details"
                 parentMenu={{ name: "Followed Offers", link: "/offers/followed" }}
             />
-            <ToastContainer position="top-right" />
             <div>
                 <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-8">
                     <div className="p-4 md:p-4 lg:p-6">

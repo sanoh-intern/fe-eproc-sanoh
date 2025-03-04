@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import DashboardSuperAdmin from './Pages/Admin/SuperAdmin';
-import DashboardSupplier from './Pages/Customer/Supplier';
+// import DashboardSuperAdmin from './Pages/Admin/SuperAdmin';
+// import DashboardSupplier from './Pages/Customer/Supplier';
 import DashboardPurchasing from './Pages/Admin/Purchasing';
 import DashboardReview from './Pages/Admin/Review';
 import DashboardPresdir from './Pages/Admin/Presdir';
+import ComingSoon from '../ComingSoon';
 
 const Dashboard: React.FC = () => {
   const [userRole, setUserRole] = useState<string>('');
@@ -14,7 +15,8 @@ const Dashboard: React.FC = () => {
   }, []);
 
   if (userRole === 'super-admin') {
-    return <DashboardSuperAdmin />;
+    return <ComingSoon />;
+    // return <DashboardSuperAdmin />;
   } else if (userRole === 'presdir') {
     return <DashboardPresdir />;
   } else if (userRole === 'review') {
@@ -23,7 +25,8 @@ const Dashboard: React.FC = () => {
     return <DashboardPurchasing />;
   } else if (userRole === 'supplier') {
     // return "Dashboard Supplier";
-    return <DashboardSupplier />;
+    return <ComingSoon />;
+    // return <DashboardSupplier />;
   } else {
     return <div>No dashboard available for your role.</div>;
   }
