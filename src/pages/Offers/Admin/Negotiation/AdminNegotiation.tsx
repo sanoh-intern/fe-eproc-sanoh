@@ -214,7 +214,15 @@ const AdminNegotiation: React.FC = () => {
                                                 <td className="px-3 py-3 text-center">{proposal.proposal_submit_date}</td>
                                                 <td className="px-3 py-3 text-center">
                                                     <span className="mr-2 border rounded-sm border-gray-300 px-1">IDR</span>
-                                                    <span>{localStorage.getItem('role') === 'presdir' && isView ? Number(proposal.proposal_total_amount).toLocaleString('id-ID') : 'XXX.XXX'}</span>
+                                                    <span>
+                                                        {isView
+                                                            ? localStorage.getItem("role") === "presdir"
+                                                                ? Number(proposal.proposal_total_amount).toLocaleString("id-ID")
+                                                                : proposal.is_final
+                                                                ? "XXX.XXX"
+                                                                : Number(proposal.proposal_total_amount).toLocaleString("id-ID")
+                                                            : "XXX.XXX"}
+                                                    </span>
                                                 </td>
                                                 <td className="px-3 py-3 text-center">{proposal.proposal_revision_no}
                                                 {proposal.is_final && (

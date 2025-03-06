@@ -242,13 +242,18 @@ const AdminRegisteredDetail: React.FC = () => {
                             {proposal.company_name || "-"}
                           </td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
-                            {lastViewed && localStorage.getItem("role") === "presdir"
-                              ? <>
-                                <span className="mr-2 border rounded-sm border-gray-300 px-1">IDR</span>
-                                {Number(proposal.proposal_total_amount).toLocaleString("id-ID")}
-                              </>
-                              : "XXX.XXX"
-                            }
+                            {lastViewed ? (
+                              localStorage.getItem("role") === "presdir" || (!proposal.is_final && localStorage.getItem("role") !== "presdir") ? (
+                                <>
+                                  <span className="mr-2 border rounded-sm border-gray-300 px-1">IDR</span>
+                                  {Number(proposal.proposal_total_amount).toLocaleString("id-ID")}
+                                </>
+                              ) : (
+                                "XXX.XXX"
+                              )
+                            ) : (
+                              "XXX.XXX"
+                            )}
                           </td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
                             {proposal.proposal_revision_no || "N/A"}
