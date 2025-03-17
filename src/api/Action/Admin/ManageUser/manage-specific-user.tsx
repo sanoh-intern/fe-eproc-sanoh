@@ -45,7 +45,7 @@ export async function editUserAdmin(payload: any, userId: string, navigate: any)
         if (response.ok && result.status) {
             toast.success("User successfully updated!");
             setTimeout(() => {
-                navigate("/list-user");
+                navigate("/manage-user");
             }, 1000);
         } else {
             toast.error(result.message || "Failed to update user");

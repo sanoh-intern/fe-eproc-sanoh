@@ -69,15 +69,6 @@ const EditUser = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!companyName || !npwp || !role || !email) {
-      Swal.fire(
-        "Error",
-        "Please fill all required fields correctly.",
-        "error"
-      );
-      return;
-    }
-
     const payload = {
       company_name: companyName,
       tax_id: npwp,
@@ -119,7 +110,6 @@ const EditUser = () => {
                   setCompanyName(e.target.value.toUpperCase())
                 }
                 placeholder="Enter company name"
-                required
                 style={{ textTransform: "uppercase" }}
                 className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
               />
@@ -135,7 +125,6 @@ const EditUser = () => {
                 value={npwp}
                 onChange={(e) => setNpwp(e.target.value)}
                 placeholder="Enter NPWP"
-                required
                 className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
               />
             </div>
@@ -179,7 +168,6 @@ const EditUser = () => {
                   }
                 }}
                 placeholder="Enter email"
-                required
                 className="w-full text-black rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
               />
               {emailError && (
