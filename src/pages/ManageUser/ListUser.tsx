@@ -6,87 +6,80 @@ import SearchBar from '../../components/Table/SearchBar';
 import { FaSortDown, FaSortUp, FaToggleOff, FaToggleOn, FaUserEdit, FaUserPlus } from 'react-icons/fa';
 import MultiSelect from '../../components/Forms/MultiSelect';
 import Button from '../../components/Forms/Button';
-import { fetchUserListAdmin, TypeUser, updateUserStatusAdmin } from '../../api/Action/Admin/ManageUser/manage-user';
+import { API_List_User_Admin, API_Update_Status_Admin } from '../../api/route-api';
+import useFetch from '../../api/useFetch';
+import { toast } from 'react-toastify';
 
+type TypeUser = {
+    id: string;
+    id_tax: string;
+    email: string;
+    bp_code: string;
+    verification_status : string;
+    company_name: string;
+    role: string;
+    account_status: string;
+}
 const ManageUser: React.FC = () => {
-    const [data, setData] = useState<TypeUser[]>([]);
     const [filteredData, setFilteredData] = useState<TypeUser[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10)
-    const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
     const [sortConfig, setSortConfig] = useState({ key: '', direction: '' });
+    const [loadingUserId, setLoadingUserId] = useState<string | null>(null);
     const navigate = useNavigate();
 
+    const { data: userData, loading } = useFetch(API_List_User_Admin(), 'GET');
+    
     useEffect(() => {
-        fetchUserListAdmin()
-        .then((users) => {
-            setData(users);
-        setFilteredData(users);
-        setLoading(false);
-        })
         const savedPage = localStorage.getItem('list_user_current_page');
         if (savedPage) {
             setCurrentPage(parseInt(savedPage));
         }
+        if (userData){
+            setFilteredData(userData);
+        }
     }, []);
-    // handleStatusChange = async (userId: string, status: number, username: string) => {
-    //     const token = localStorage.getItem('access_token');
 
-    //     try {
-    //         const response = await toast.promise(
-    //             fetch(`${API_Update_Status_Admin()}${userId}`, {
-    //                 method: 'PUT',
-    //                 headers: {
-    //                     'Authorization': `Bearer ${token}`,
-    //                     'Content-Type': 'application/json',
-    //                 },
-    //                 body: JSON.stringify({ status: status.toString() }),
-    //             }),
-    //             {
-    //                 pending: {
-    //                     render: `Updating status for "${username}"...`,
-    //                     autoClose: 3000
-    //                 },
-    //                 success: {
-    //                     render: `Status for "${username}" Successfully Updated to ${status === 1 ? 'Active' : 'Deactive'}`,
-    //                     autoClose: 3000
-    //                 },
-    //                 error: {
-    //                     render({data}) {
-    //                         return `Failed to update status for "${username}": ${data}`;
-    //                     },
-    //                     autoClose: 3000
-    //                 }
-    //             }
-    //         );
-
-    //         if (!response.ok) {
-    //             throw new Error(`${response.status} ${response.statusText}`);
-    //         }
-
-    //         await response.json();
-    //         // await fetchListUser();
-    //         setData(data.map((item) => item.UserID === userId ? { ...item, Status: status === 1 ? 'Active' : 'Deactive', isLoading: false } : item));
-    //     } catch (error) {
-    //         throw error;
-    //     }
-    // };
+    const handleStatusChange = async (userId: string, status: string, company_name: string) => {
+        const url = `${API_Update_Status_Admin()}${userId}`;
+        const token = localStorage.getItem('access_token');
+        try {
+            const response = await fetch(url, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ status: status.toString() }),
+            });
+            if (!response.ok) {
+                throw new Error(`Server responded with status ${response.status}`);
+            }
+            toast.success(`User ${company_name} status updated successfully!`);
+            return true;
+        } catch (error) {
+            toast.error(`Failed to update status for "${company_name}": ${error}`);
+            return false;
+        }
+    };
 
     useEffect(() => {
-        let filtered = [...data];
+        if (!userData) return;
+
+        let filtered = [...userData];
     
         if (selectedRoles.length > 0) {
-            filtered = filtered.filter((row) => selectedRoles.includes(row.Role));
+            filtered = filtered.filter((row) => selectedRoles.includes(row.role));
         }
         
     
         // Filter by search query
         if (searchQuery) {
             filtered = filtered.filter((row) =>
-                (row.Email?.toLowerCase()?.includes(searchQuery.toLowerCase()) || false) ||
-                (row.CompanyName?.toLowerCase()?.includes(searchQuery.toLowerCase()) || false)
+                (row.email?.toLowerCase()?.includes(searchQuery.toLowerCase()) || false) ||
+                (row.company_name?.toLowerCase()?.includes(searchQuery.toLowerCase()) || false)
             );
         }
     
@@ -111,7 +104,7 @@ const ManageUser: React.FC = () => {
         }
     
         setFilteredData(filtered);
-    }, [searchQuery, selectedRoles, sortConfig, data]);
+    }, [searchQuery, selectedRoles, sortConfig, userData]);
 
     const paginatedData = filteredData.slice(
         (currentPage - 1) * rowsPerPage,
@@ -165,7 +158,7 @@ const ManageUser: React.FC = () => {
                             <MultiSelect
                                 id="roleSelect"
                                 label="Filter by Role"
-                                options={Array.from(new Set(data.map(item => item.Role))).map(role => ({ value: role, text: role }))}
+                                options={Array.from(new Set((userData || []).map((item: TypeUser) => item.role)) as Set<string>).map((role) => ({ value: role, text: role }))}
                                 selectedOptions={selectedRoles}
                                 onChange={setSelectedRoles}
                             />
@@ -185,10 +178,10 @@ const ManageUser: React.FC = () => {
                                         <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">Role</th>
                                         <th
                                             className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer"
-                                            onClick={() => handleSort('Status')}
+                                            onClick={() => handleSort('account_status')}
                                         >
                                             <span className="flex items-center justify-center">
-                                                {sortConfig.key === 'Status' ? (
+                                                {sortConfig.key === 'account_status' ? (
                                                     sortConfig.direction === 'asc' ? (
                                                         <FaSortUp className="mr-1" />
                                                     ) : (
@@ -237,41 +230,54 @@ const ManageUser: React.FC = () => {
                                     ) : paginatedData.length > 0 ? (
                                         paginatedData.map((row, index) => (
                                             <tr key={index} className="hover:bg-gray-50">
-                                                <td className="px-3 py-3 text-center whitespace-nowrap">{row.Email || '-'}</td>
-                                                <td className="px-3 py-3 text-center whitespace-nowrap">{row.SupplierCode || '-'}</td>
-                                                <td className="px-3 py-3 text-center whitespace-nowrap">{row.CompanyName || '-'}</td>
-                                                <td className="px-3 py-3 text-center whitespace-nowrap">{row.VerificationStatus || '-'}</td>
-                                                <td className="px-3 py-3 text-center whitespace-nowrap">{row.Role}</td>
-                                                <td className="px-3 py-3 text-center whitespace-nowrap">{row.Status}</td>
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">{row.email || '-'}</td>
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">{row.bp_code || '-'}</td>
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">{row.company_name || '-'}</td>
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">{row.verification_status || '-'}</td>
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">{row.role}</td>
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">{row.account_status}</td>
                                                 <td className="px-3 py-3 text-center whitespace-nowrap">
-                                                    <button
-                                                        onClick={async () => {
-                                                            const updatedData = data.map(item =>
-                                                                item.UserID === row.UserID ? { ...item, isLoading: true } : item
-                                                            );
-                                                            setData(updatedData);
-                                                            const updateResult = await updateUserStatusAdmin(row.UserID, (row.Status === "1" ? "0" : "1"), row.CompanyName);
-                                                            if (updateResult.status) {
-                                                                setData(prevData =>
-                                                                    prevData.map(item =>
-                                                                        item.UserID === row.UserID
-                                                                            ? { ...item, Status: row.Status === "1" ? "0" : "1", isLoading: false }
-                                                                            : item
-                                                                    )
-                                                                );
-                                                            }
-                                                        }}
-                                                        className="hover:opacity-80 transition-opacity"
-                                                    >
-                                                        {row.Status === '1' ?
-                                                            <FaToggleOn className="text-3xl text-primary" /> :
-                                                            <FaToggleOff className="text-3xl text-gray-400" />
-                                                        }
-                                                    </button>
+                                                    <div className="relative">
+                                                        {row.id === loadingUserId ? (
+                                                                <div className="animate-spin justify-center rounded-full h-5 w-5 border-b-2 border-primary"></div>
+                                                        ) : (
+                                                            <button
+                                                                onClick={async () => {
+                                                                    const userId = row.id;
+                                                                    setLoadingUserId(userId);
+                                                                    const success = await handleStatusChange(
+                                                                        userId, 
+                                                                        (row.account_status === "1" ? "0" : "1"), 
+                                                                        row.company_name
+                                                                    );
+                                                                    if (success) {
+                                                                        const newData = filteredData.map(item => 
+                                                                            item.id === userId 
+                                                                                ? {...item, account_status: item.account_status === "1" ? "0" : "1"} 
+                                                                                : item
+                                                                        );
+                                                                        setFilteredData(newData);
+                                                                    }
+                                                                    setLoadingUserId(null);
+                                                                }}
+                                                                className="hover:opacity-80 transition-opacity flex flex-col items-center"
+                                                            >
+                                                                {row.account_status === '1' ? (
+                                                                    <>
+                                                                        <FaToggleOn className="text-3xl text-primary" />
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <FaToggleOff className="text-3xl text-gray-400" />
+                                                                    </>
+                                                                )}
+                                                            </button>
+                                                        )}
+                                                    </div>
                                                 </td>
                                                 <td className="px-3 py-3 text-center whitespace-nowrap">
                                                     <button
-                                                        onClick={() => handleEditPage(row.UserID)}
+                                                        onClick={() => handleEditPage(row.id)}
                                                         className="hover:opacity-80 transition-opacity"
                                                     >
                                                         <FaUserEdit className="text-2xl text-primary" />
