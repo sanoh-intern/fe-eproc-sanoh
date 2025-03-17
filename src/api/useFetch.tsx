@@ -1,14 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
-function useFetch(url: string, method = "GET", body = null) {
-    const [data, setData] = useState(null);
+function useFetch(url: string, method = "GET", body: any = null, bodyType = "json") {
+    const [data, setData] = useState<any>(null);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [message, setMessage] = useState(null);
+    const [error, setError] = useState<string | string | null>(null);
+    const [message, setMessage] = useState<string | null>(null);
 
-    const token = localStorage.getItem("access_token"); // Ambil token dari Local Storage
+    const token = localStorage.getItem("access_token");
 
     const fetchData = useCallback(() => {
         setLoading(true);
@@ -16,47 +15,54 @@ function useFetch(url: string, method = "GET", body = null) {
         setMessage(null);
 
         const headers: { [key: string]: string } = {
-        "Content-Type": "application/json",
+            "Content-Type": bodyType === "formdata" ? "multipart/form-data" : "application/json",
         };
 
         if (token) {
-            headers["Authorization"] = `Bearer ${token}`; // Tambahkan token jika ada
+            headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        let requestBody: BodyInit | null = null;
+        if (body) {
+            requestBody = bodyType === "json" ? JSON.stringify(body) : body;
         }
 
         const options = {
-        method,
-        headers,
-        body: body ? JSON.stringify(body) : null,
+            method,
+            headers,
+            body: requestBody,
         };
 
         fetch(url, options)
-        .then((response) => {
-            if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then((result) => {
-            if (result.status) {
-            // Jika API mengembalikan status true (berhasil)
-            setData(result.data);
-            setMessage(result.message || "Berhasil");
-            } else {
-            // Jika API mengembalikan status false (gagal)
-            setError(result.error || "Terjadi kesalahan");
-            toast.error(`Error: ${Array.isArray(result.error) ? result.error.join(", ") : result.error}`);
-            }
-        })
-        .catch((err) => {
-            setError(err.message);
-            toast.error(`Error: ${err.message}`); // Menampilkan error dengan Toastify
-        })
-        .finally(() => setLoading(false));
-    }, [url, method, body, token]);
+            .then((response) => {
+                if (!response.ok) {
+                    // Handle specific HTTP error codes
+                    const errorMessage = `HTTP error! Status: ${response.status}`;
+                    throw new Error(errorMessage);
+                }
+                return response.json();
+            })
+            .then((result) => {
+                if (result.status) {
+                    // If API response status is true (success)
+                    setData(result.data);
+                    setMessage(result.message || "Success");
+                } else {
+                    // If API response status is false (error)
+                    setError(result.error || "An error occurred");
+                    toast.error(`Error: ${Array.isArray(result.error) ? result.error.join(", ") : result.error}`);
+                }
+            })
+            .catch((err) => {
+                setError(err.message);
+                toast.error(`Error: ${err.message}`);
+            })
+            .finally(() => setLoading(false));
+    }, [url, method, body, bodyType, token]);
 
     useEffect(() => {
         if (method === "GET") {
-        fetchData();
+            fetchData();
         }
     }, [fetchData, method]);
 
