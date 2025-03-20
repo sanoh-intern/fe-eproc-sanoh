@@ -79,24 +79,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     try {
       const response = await axios.post(API_Login(), { email, password });
-      const { access_token, role_tags, bp_code, company_name, role_id, company_profile, profile_verified_at } = response.data.data;
-  
-      localStorage.setItem('access_token', access_token);
-      localStorage.setItem('company_name', company_name);
-      localStorage.setItem('company_images', company_profile);
-      localStorage.setItem('isVerified', profile_verified_at);
-      localStorage.setItem('bp_email', email);
-      localStorage.setItem('bp_code', bp_code);
-      localStorage.setItem("role", role_tags);
-      localStorage.setItem("role_id", role_id);
-      
-      setUserRole(role_id);
-      setIsAuthenticated(true);
+      const { status, access_token, role_tags, bp_code, company_name, role_id, company_profile, profile_verified_at } = response.data;
 
-      localStorage.setItem("lastActivity", Date.now().toString());
+      if (status) {
+        localStorage.setItem('access_token', access_token);
+        localStorage.setItem('company_name', company_name);
+        localStorage.setItem('company_images', company_profile);
+        localStorage.setItem('isVerified', profile_verified_at ? 'true' : 'false');
+        localStorage.setItem('bp_email', email);
+        localStorage.setItem('bp_code', bp_code);
+        localStorage.setItem("role", role_tags);
+        localStorage.setItem("role_id", role_id);
+        
+        setUserRole(role_id);
+        setIsAuthenticated(true);
 
-      toast.success('Welcome back! ' + company_name);
-      return true;
+        localStorage.setItem("lastActivity", Date.now().toString());
+
+        toast.success('Welcome back! ' + company_name);
+        return true;
+      } else {
+        toast.error('Login failed: Invalid credentials');
+        return false;
+      }
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         const { message, error: errors } = error.response.data;
