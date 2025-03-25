@@ -288,7 +288,7 @@ const ManageUser: React.FC = () => {
                                     ) : (
                                         <tr>
                                             <td colSpan={8} className="px-3 py-4 text-center text-gray-500">
-                                                No List User available for now
+                                                No User available for now
                                             </td>
                                         </tr>
                                     )}

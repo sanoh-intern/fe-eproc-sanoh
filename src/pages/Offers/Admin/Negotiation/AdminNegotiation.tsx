@@ -216,12 +216,11 @@ const AdminNegotiation: React.FC = () => {
                                                     <span className="mr-2 border rounded-sm border-gray-300 px-1">IDR</span>
                                                     <span>
                                                         {isView
-                                                            ? localStorage.getItem("role") === "presdir"
-                                                                ? Number(proposal.proposal_total_amount).toLocaleString("id-ID")
-                                                                : proposal.is_final
-                                                                ? "XXX.XXX"
-                                                                : Number(proposal.proposal_total_amount).toLocaleString("id-ID")
-                                                            : "XXX.XXX"}
+                                                            ? Number(proposal.proposal_total_amount).toLocaleString("id-ID")
+                                                            : proposal.is_final
+                                                            ? "XXX.XXX"
+                                                            : Number(proposal.proposal_total_amount).toLocaleString("id-ID")
+                                                        }
                                                     </span>
                                                 </td>
                                                 <td className="px-3 py-3 text-center">{proposal.proposal_revision_no}
