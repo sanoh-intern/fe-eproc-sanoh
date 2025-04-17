@@ -30,6 +30,7 @@ import ManageUser from "./pages/ManageUser/ListUser";
 import AddUser from "./pages/ManageUser/CreateUser";
 import EditUser from "./pages/ManageUser/EditUser";
 import ComingSoon from "./pages/ComingSoon";
+import SettingProfile from "./pages/SettingProfile";
 
 const App: React.FC = () => {
   return (
@@ -113,8 +114,8 @@ const App: React.FC = () => {
               element={
                 <ProtectedRoute allowedRoles={['1','2','3','4','5']}>
                   <PageTitle title="Setting Profile | PT SANOH INDONESIA" />
-                  <ComingSoon />
-                  {/* <SettingProfile /> */}
+                  {/* <ComingSoon /> */}
+                  <SettingProfile />
                 </ProtectedRoute>
               }
             />

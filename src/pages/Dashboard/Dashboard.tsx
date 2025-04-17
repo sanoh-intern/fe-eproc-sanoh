@@ -5,6 +5,7 @@ import DashboardPurchasing from './Pages/Admin/Purchasing';
 import DashboardReview from './Pages/Admin/Review';
 import DashboardPresdir from './Pages/Admin/Presdir';
 import ComingSoon from '../ComingSoon';
+import DashboardSuperAdmin from './Pages/Admin/SuperAdmin';
 
 const Dashboard: React.FC = () => {
   const [userRole, setUserRole] = useState<string>('');
@@ -15,8 +16,8 @@ const Dashboard: React.FC = () => {
   }, []);
 
   if (userRole === 'super-admin') {
-    return <ComingSoon />;
-    // return <DashboardSuperAdmin />;
+    // return <ComingSoon />;
+    return <DashboardSuperAdmin />;
   } else if (userRole === 'presdir') {
     return <DashboardPresdir />;
   } else if (userRole === 'review') {
@@ -24,8 +25,8 @@ const Dashboard: React.FC = () => {
   } else if (userRole === 'purchasing') {
     return <DashboardPurchasing />;
   } else if (userRole === 'supplier') {
-    // return "Dashboard Supplier";
-    return <ComingSoon />;
+    return "Dashboard Supplier";
+    // return <ComingSoon />;
     // return <DashboardSupplier />;
   } else {
     return <div>No dashboard available for your role.</div>;
