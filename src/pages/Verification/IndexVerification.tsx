@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-// import AdminVerification from "./Admin/AdminVerification";
-// import SupplierVerification from "./Supplier/SupplierVerification";
-import ComingSoon from "../ComingSoon";
+// import ComingSoon from "../ComingSoon";
 import AdminVerification from "./Admin/AdminVerification";
 import SupplierVerification from "./Supplier/SupplierVerification";
 
