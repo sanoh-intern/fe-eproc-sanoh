@@ -102,8 +102,8 @@ const AdminManageOffers: React.FC = () => {
 
     const handleClose = async (offerId: string) => {
         Swal.fire({
-            title: "Close Offer",
-            text: "Are you sure you want to close this offer?",
+            title: "Close Project",
+            text: "Are you sure you want to close this project?",
             icon: "question",
             showCancelButton: true,
             confirmButtonText: "Yes, close it",
@@ -120,9 +120,9 @@ const AdminManageOffers: React.FC = () => {
                             String(offer.id) === offerId ? { ...offer, project_registration_status: "Closed" } : offer
                         )
                     )
-                    toast.success("Offer closed successfully")
+                    toast.success("Project closed successfully")
                 } catch (error) {
-                    toast.error("Failed to close offer")
+                    toast.error("Failed to close project")
                 }
             }
         })
@@ -130,8 +130,8 @@ const AdminManageOffers: React.FC = () => {
 
     const handleRemove = async (offerId: string) => {
         Swal.fire({
-            title: "Remove Offer",
-            text: "Are you sure you want to remove this offer?",
+            title: "Remove Project",
+            text: "Are you sure you want to remove this project?",
             icon: "question",
             showCancelButton: true,
             confirmButtonText: "Yes, remove it",
@@ -144,9 +144,9 @@ const AdminManageOffers: React.FC = () => {
                     await deleteOffers({ offersId: offerId })
 
                     setOffers((prev) => prev.filter((offer) => String(offer.id) !== offerId))
-                    toast.success("Offer removed successfully")
+                    toast.success("Project removed successfully")
                 } catch (error) {
-                    toast.error("Failed to remove offer")
+                    toast.error("Failed to remove project")
                 }
             }
         })
@@ -154,18 +154,18 @@ const AdminManageOffers: React.FC = () => {
 
     return (
         <>
-            <Breadcrumb pageName="Manage Offers" />
+            <Breadcrumb pageName="Manage Projects" />
             <div className="bg-white">
                 <div className="p-2 md:p-4 lg:p-6 space-y-6">
                     <Button
                         onClick={() => navigate("/offers/create")}
-                        title="Create Offers"
+                        title="Create New Projects"
                         icon={FaPlus}
                         className="px-4 py-2 flex items-center gap-2"
                     />
                     {offers.length === 0 && !loading ? (
                         <div className="text-center">
-                            <p className="mb-4">No offers available.</p>
+                            <p className="mb-4">No projects available.</p>
                         </div>
                     ) : (
                         <>
@@ -204,7 +204,7 @@ const AdminManageOffers: React.FC = () => {
                                                 </th>
                                                 <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer" onClick={() => handleSort("project_type")}>
                                                     <span className="flex items-center justify-center">
-                                                        Offer Type
+                                                        Project Type
                                                     </span>
                                                 </th>
                                                 <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer" onClick={() => handleSort("project_created_at")}>
@@ -323,7 +323,7 @@ const AdminManageOffers: React.FC = () => {
                                         ) : (
                                             <tr>
                                                 <td colSpan={9} className="px-3 py-4 text-center text-gray-500">
-                                                    No offers available.
+                                                    No projects available.
                                                 </td>
                                             </tr>
                                         )}

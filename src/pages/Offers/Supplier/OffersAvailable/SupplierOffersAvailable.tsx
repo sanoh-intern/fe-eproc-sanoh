@@ -108,7 +108,7 @@ const SupplierOffersAvailable: React.FC = () => {
 
     return (
         <>
-            <Breadcrumb pageName="Available Offers" />
+            <Breadcrumb pageName="List Project" />
             <div className="bg-white">
                 <div className="p-4 md:p-4 lg:p-6 space-y-6">
                 {/* Tabs */}
@@ -120,7 +120,7 @@ const SupplierOffersAvailable: React.FC = () => {
                             ${selected ? "bg-primary text-white shadow" : "text-primary hover:bg-secondary hover:text-white bg-white"}`
                             }
                         >
-                            Invited Offers
+                            Invited Project
                         </Tab>
                         <Tab
                             className={({ selected }) =>
@@ -128,7 +128,7 @@ const SupplierOffersAvailable: React.FC = () => {
                                 ${selected ? "bg-primary text-white shadow" : "text-primary hover:bg-secondary hover:text-white bg-white"}`
                                 }
                         >
-                            Public Offers
+                            Public Project
                         </Tab>
                     </TabList>
                     <TabPanels>
@@ -155,7 +155,7 @@ const SupplierOffersAvailable: React.FC = () => {
                                                         Created Date
                                                     </th>
                                                     <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
-                                                        Offer Type
+                                                        Project Type
                                                     </th>
                                                     <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
                                                         Registration Due Date
@@ -246,7 +246,7 @@ const SupplierOffersAvailable: React.FC = () => {
                                             ) : (
                                                 <tr>
                                                     <td colSpan={6} className="px-3 py-4 text-center text-gray-500">
-                                                        No offers available
+                                                        No projects available
                                                     </td>
                                                 </tr>
                                             )}

@@ -34,7 +34,7 @@ const OffersDetailsPage: React.FC = () => {
     <>
       <Breadcrumb 
         isSubMenu={true} 
-        pageName="Offers Details" 
+        pageName="Project Details" 
         parentMenu={{name: "Offers Available", link: "/offers/available"}}
       />
       <div className="bg-white shadow-lg rounded-lg overflow-hidden">

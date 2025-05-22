@@ -47,7 +47,7 @@ export type TypeCompanyData = {
     }
 }
 
-const fetchCompanyData = async (companyId?: string) => {
+const fetchCompanyData = async (companyId: string) => {
     // await fetch(`https://api.example.com/company/${companyId}`, {
     //     method: 'GET',
     //     headers: {
@@ -64,62 +64,69 @@ const fetchCompanyData = async (companyId?: string) => {
     // }
     // );
     return {
-        generalData: {
-            companyName: "ABC Corp",
-            description: "Leading IT solutions provider",
-            field: "Information Technology",
-            subField: "Software Development",
-            taxId: "123456789",
-            address: "123 Tech Street, Silicon Valley",
-            state: "California",
+        general_data: {
+            bp_code: "TEST123",
+            company_name: "ABC Corp",
+            company_description: "Leading IT solutions provider",
+            business_field: "Information Technology",
+            sub_business_field: "Software Development",
+            product: "Software Solutions",
+            tax_id: "123456789",
+            adr_line_1: "123 Tech Street, Silicon Valley",
+            adr_line_2: "Suite 100",
+            adr_line_3: "Building A",
+            adr_line_4: "Tech Park",
+            province: "California",
             city: "San Francisco",
-            postalCode: "94105",
-            companyStatus: "PMDN",
-            phone: "+1 (555) 123-4567",
-            fax: "+1 (555) 987-6543",
-            website: "www.abccorp.com",
-            profileImage: "https://v0.blob.com/DPYHH.png",
-            products: ["Software Solutions", "Cloud Services"],
+            postal_code: "94105",
+            company_status: "PMDN",
+            company_phone_1: "+1 (555) 123-4567",
+            company_phone_2: "+1 (555) 765-4321",
+            company_fax_1: "+1 (555) 987-6543",
+            company_fax_2: "+1 (555) 654-3210",
+            company_url: "https://v0.blob.com/DPYHH.png",
         },
-        contacts: [
+        person_in_charge: [
             {
-                position: "Director",
+                job_position: "Director",
                 department: "Marketing",
-                name: "John Doe",
-                phone: "+1 (555) 111-2222",
-                email: "john@abccorp.com",
+                pic_name: "John Doe",
+                pic_telp_number_1: "+1 (555) 111-2222",
+                pic_telp_number_2: "+1 (555) 222-3333",
+                pic_email_1: "john@abccorp.com",
+                pic_email_2: "john@abccorp.com",
             },
             {
-                position: "Marketing2",
+                job_position: "Department Head",
                 department: "Marketing",
-                name: "John Doe",
-                phone: "+1 (555) 111-2222",
-                email: "john@abccorp.com",
+                pic_name: "John 88",
+                pic_telp_number_1: "+1 (555) 111-2222",
+                pic_email_1: "john@abccorp.com",
             },
         ],
         nib: {
-            issuingAgency: "Business Registration Office",
-            number: "NIB123456",
-            issueDate: "2022-01-01",
-            investmentStatus: "Done",
+            issuing_agency: "Business Registration Office",
+            nib_number: "NIB123456",
+            issuing_date: "2022-01-01",
+            investment_status: "Done",
             kbli: "KBLI62019",
-            file: "nib_document.pdf",
+            nib_file: "nib_document.pdf",
         },
-        businessLicenses: [
+        business_licenses: [
             {
-                type: "Software Development License",
-                issuingAgency: "Tech Regulatory Board",
-                number: "SDL987654",
-                issueDate: "2022-02-15",
-                expiryDate: "2025-02-14",
+                business_type: "Software Development License",
+                issuing_agency: "Tech Regulatory Board",
+                business_license_number: "SDL987654",
+                issuing_date: "2022-02-15",
+                expiry_date: "2025-02-14",
                 qualification: "Advanced",
-                subClassification: "Enterprise Software",
-                file: "software_license.pdf",
+                sub_classification: "Enterprise Software",
+                business_license_file: "software_license.pdf",
             },
         ],
-        integrityPact: {
-            file: "integrity_pact.pdf",
-            description: "Signed integrity pact for ethical business conduct",
+        integrity_pact: {
+            integrity_pact_file: "integrity_pact.pdf",
+            integrity_pact_desc: "Signed integrity pact for ethical business conduct",
         },
     }
 }

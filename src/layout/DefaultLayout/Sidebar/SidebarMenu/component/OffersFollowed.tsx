@@ -27,7 +27,7 @@ export default function OffersFollowed () {
                 }
             >
             <FaClipboardCheck className="fill-current" size={18} />
-                Offers Followed
+                Project Registered
             </NavLink>
         </li>
     )

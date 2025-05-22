@@ -101,7 +101,7 @@ const AdminRegistered: React.FC = () => {
 
     return (
         <>
-            <Breadcrumb pageName="Registered Offers" />
+            <Breadcrumb pageName="Registered Projects" />
             <div className="bg-white">
                 <div className="p-2 md:p-4 lg:p-6 space-y-6">
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 items-center">
@@ -141,14 +141,14 @@ const AdminRegistered: React.FC = () => {
                                     label: statusFilter === "all" ? "All Statuses" : statusFilter,
                                 }}
                                 onChange={(e: any) => setStatusFilter(e.value)}
-                                placeholder="Filter by Offer Status"
+                                placeholder="Filter by Project Status"
                                 className="w-full"
                             />
                         </div>
                     </div>
                     {filteredOffers.length === 0 && !loading ? (
                         <div className="text-center">
-                            <p className="mb-4">No offers available.</p>
+                            <p className="mb-4">No projects available.</p>
                         </div>
                         ) : (
                             <>
@@ -164,7 +164,7 @@ const AdminRegistered: React.FC = () => {
                                                         className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer"
                                                         onClick={() => handleSort("project_type")}
                                                     >
-                                                    Offer Type
+                                                    Project Type
                                                     </th>
                                                     <th
                                                         className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer"
@@ -184,7 +184,7 @@ const AdminRegistered: React.FC = () => {
                                                         </span>
                                                     </th>
                                                     <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
-                                                        Offer Status
+                                                        Project Status
                                                     </th>
                                                     <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
                                                         Total Suppliers
@@ -237,7 +237,7 @@ const AdminRegistered: React.FC = () => {
                                                     
                                                     <tr>
                                                         <td colSpan={6} className="px-3 py-3 text-center">
-                                                            No offers found.
+                                                            No Projects found.
                                                         </td>
                                                     </tr>
                                                     

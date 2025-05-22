@@ -109,15 +109,15 @@ const SupplierNegotiation: React.FC = () => {
     }
 
     if (!offerDetails) {
-        return <div className="text-center py-10">No offer details found.</div>
+        return <div className="text-center py-10">No projects details found.</div>
     }
 
     return (
         <>
             <Breadcrumb
                 isSubMenu={true}
-                pageName="Negotiation Details"
-                parentMenu={{ name: "Followed Offers", link: "/offers/followed" }}
+                pageName="Negotiation"
+                parentMenu={{ name: "Project Registered", link: "/offers/followed" }}
             />
             <div>
                 <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-8">

@@ -27,7 +27,7 @@ const OffersRegistered = () => {
                 }
             >
                 <FaClipboardCheck className="fill-current" size={18} />
-                Offers Registered
+                Project Registered
             </NavLink>
         </li>
     );

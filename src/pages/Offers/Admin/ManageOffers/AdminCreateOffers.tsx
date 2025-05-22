@@ -146,18 +146,18 @@ const AdminCreateOffers: React.FC = () => {
             return
         }
         if (!offerType) {
-            Swal.fire("Error", "Please select an offer type", "error")
+            Swal.fire("Error", "Please select an offprojecter type", "error")
             return
         }
         if (offerType.value === "Invited" && emails.length === 0) {
-            Swal.fire("Error", "For invited offers, please add at least one email", "error")
+            Swal.fire("Error", "For invited projects, please add at least one email", "error")
             return
         }
 
         // Confirm submission
         const data = await Swal.fire({
-            title: "Create Offer",
-            text: "Are you sure you want to create this offer?",
+            title: "Create Project",
+            text: "Are you sure you want to create this project?",
             icon: "question",
             showCancelButton: true,
             confirmButtonText: "Yes, create it",
@@ -193,7 +193,7 @@ const AdminCreateOffers: React.FC = () => {
 
     return (
         <>
-            <Breadcrumb pageName="Create Offer" isSubMenu parentMenu={{ name: "Manage Offers", link: "/offers/manage" }} />
+            <Breadcrumb pageName="Create Project" isSubMenu parentMenu={{ name: "Manage Projects", link: "/offers/manage" }} />
             <div className="rounded-sm border border-stroke bg-white shadow-default p-4 md:p-6.5  mx-auto">
                 <form onSubmit={handleSubmit}>
                     <div className="space-y-6">
@@ -243,12 +243,12 @@ const AdminCreateOffers: React.FC = () => {
                         </div>
                         {/* Offer Type */}
                         <div>
-                            <label className="block mb-2 text-black">Offer Type <span className="text-red-500">*</span></label>
+                            <label className="block mb-2 text-black">Project Type <span className="text-red-500">*</span></label>
                             <Select
                                 options={offerTypeOptions}
                                 value={offerType}
                                 onChange={(option) => setOfferType(option)}
-                                placeholder="Select offer type"
+                                placeholder="Select Project type"
                                 isClearable
                                 className="w-full rounded border border-secondary py-3 px-5 text-black focus:border-primary"
                             />
@@ -261,7 +261,7 @@ const AdminCreateOffers: React.FC = () => {
                             <EmailInput />
                         </div>
                         {/* Create Button */}
-                        <Button type="submit" title="Create Offer" className="w-full justify-center" />
+                        <Button type="submit" title="Create Project" className="w-full justify-center" />
                     </div>
                 </form>
             </div>

@@ -26,7 +26,7 @@ export default function OffersAvailable () {
                     }
                 >
                 <FaHandshake className="fill-current" size={18} />
-                Offers Available
+                List Project
             </NavLink>
         </li>
     )

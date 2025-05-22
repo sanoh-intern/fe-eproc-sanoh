@@ -181,8 +181,8 @@ const AdminEditOffers: React.FC = () => {
 
         // Confirm submission
         const result = await Swal.fire({
-            title: "Update Offer",
-            text: "Are you sure you want to update this offer?",
+            title: "Update Project",
+            text: "Are you sure you want to update this project?",
             icon: "question",
             showCancelButton: true,
             confirmButtonText: "Yes, update it",
@@ -210,10 +210,10 @@ const AdminEditOffers: React.FC = () => {
         console.log("Payload sent", formData)
         const response = await putEditOffers(formData , offerId)
         if (!response) {
-            toast.error("Failed to update offer")
+            toast.error("Failed to update project")
             return
         }
-        toast.success("Offer updated successfully!")
+        toast.success("Project updated successfully!")
     }
 
     const DownloadFile = async () => {
@@ -265,9 +265,9 @@ const AdminEditOffers: React.FC = () => {
     return (
         <>
             <Breadcrumb
-                pageName="Edit Offer"
+                pageName="Edit Project"
                 isSubMenu
-                parentMenu={{ name: "Manage Offers", link: "/offers/manage" }}
+                parentMenu={{ name: "Manage Projects", link: "/offers/manage" }}
             />
             <div className="rounded-sm border border-stroke bg-white shadow-default p-4 md:p-6.5 mx-auto ">
                 <form onSubmit={handleSubmit}>
@@ -337,13 +337,13 @@ const AdminEditOffers: React.FC = () => {
                         {/* Offer Type */}
                         <div>
                             <label className="block mb-2 text-black">
-                                Offer Type <span className="text-red-500">*</span>
+                                Project Type <span className="text-red-500">*</span>
                             </label>
                             <Select
                                 options={offerTypeOptions}
                                 value={projectType}
                                 onChange={(option) => setProjectType(option ? option : undefined)}
-                                placeholder="Select offer type"
+                                placeholder="Select project type"
                                 isClearable
                                 className="w-full rounded border border-secondary py-3 px-5 text-black focus:border-primary"
                             />
@@ -363,7 +363,7 @@ const AdminEditOffers: React.FC = () => {
                         {/* Update Button */}
                         <Button
                             type="submit"
-                            title="Update Offer"
+                            title="Update Project"
                             className="w-full justify-center"
                         />
                     </div>

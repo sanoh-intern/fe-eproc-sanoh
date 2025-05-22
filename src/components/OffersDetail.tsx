@@ -109,7 +109,7 @@ const OffersDetails: React.FC<OffersDetailsProps> = ({ offerDetails }) => {
                     </div>
                     <div className="w-full md:w-1/2 flex items-center mb-2">
                         <FiTarget className="text-secondary mr-2" />
-                        <span className="text-gray-600">Offer Type: {offerDetails.project_type}</span>
+                        <span className="text-gray-600">Project Type: {offerDetails.project_type}</span>
                     </div>
                     <div className="w-full md:w-1/2 flex items-center mb-2">
                         <FiUserCheck className="text-secondary mr-2" />
@@ -117,7 +117,7 @@ const OffersDetails: React.FC<OffersDetailsProps> = ({ offerDetails }) => {
                     </div>
                     <div className="w-full md:w-1/2 flex items-center mb-2">
                         <FiFlag className="text-secondary mr-2" />
-                        <span className="text-gray-600">Offer Status: {offerDetails.project_status}</span>
+                        <span className="text-gray-600">Project Status: {offerDetails.project_status}</span>
                     </div>
                     {offerDetails.project_status === "Supplier Selected" && offerDetails.project_winner && (
                         <div className="w-full md:w-1/2 flex items-center mb-2">

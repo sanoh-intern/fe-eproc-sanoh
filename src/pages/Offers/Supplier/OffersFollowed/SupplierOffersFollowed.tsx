@@ -101,17 +101,17 @@ const SupplierOffersFollowed: React.FC = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Offers Followed" />
+      <Breadcrumb pageName="Project Registered" />
       <div className="bg-white">
         <div className="p-2 md:p-4 lg:p-6 space-y-6">
           {offers.length === 0 && !isLoading ? (
             <div className="text-center">
-              <p className="mb-4">You haven't submitted any offers yet.</p>
+              <p className="mb-4">You haven't submitted any project yet.</p>
               <Link
                 to="/offers/available"
                 className="bg-secondary hover:bg-primary text-white font-bold py-2 px-4 rounded"
               >
-                View Available Offers
+                View Available Projects
               </Link>
             </div>
           ) : Array.isArray(offers) ? (
@@ -158,7 +158,7 @@ const SupplierOffersFollowed: React.FC = () => {
                           className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer" 
                         >
                           <span className="flex items-center justify-center">            
-                          Offer Type
+                          Project Type
                           </span>
                         </th>
                         <th
@@ -220,7 +220,7 @@ const SupplierOffersFollowed: React.FC = () => {
                           className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer"
                         >
                           <span className="flex items-center justify-center">
-                          Offer Status
+                          Project Status
                           </span>
                         </th>
                         <th
@@ -300,7 +300,7 @@ const SupplierOffersFollowed: React.FC = () => {
                       ) : (
                         <tr>
                           <td colSpan={8} className="px-3 py-4 text-center text-gray-500">
-                            No offers available
+                            No project available
                           </td>
                         </tr>
                       )}
@@ -319,7 +319,7 @@ const SupplierOffersFollowed: React.FC = () => {
             </>
           ) : (
             <div className="text-center">
-              <p className="mb-4">Failed to load offers.</p>
+              <p className="mb-4">Failed to load projects.</p>
             </div>
           )}
         </div>
