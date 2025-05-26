@@ -7,6 +7,7 @@ export type TypeNegotiationSupplier = {
     proposal_revision_no: number | null
     proposal_status: string | null
     is_final: boolean
+    proposal_attach?: string | null  // URL to the attachment file
 }
 
 const fetchNegotiationSupplier = async (offerid: string) => {

@@ -4,6 +4,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
+import { FaDownload } from "react-icons/fa"
 import Breadcrumb from "../../../../components/Breadcrumbs/Breadcrumb"
 import Button from "../../../../components/Forms/Button"
 import Pagination from "../../../../components/Table/Pagination"
@@ -46,17 +47,50 @@ const SupplierNegotiation: React.FC = () => {
         }
 
         loadData()
-    }, [])
-
-    // const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    }, [])    // const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     //     if (event.target.files) {
     //         setFile(event.target.files[0])
     //     }
     // }
 
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files[0]) {
+            const selectedFile = event.target.files[0]
+            
+            // Validate file size (max 10MB)
+            if (selectedFile.size > 10 * 1024 * 1024) {
+                toast.error("File size must be less than 10MB")
+                return
+            }
+            
+            // Validate file type (common document types)
+            const allowedTypes = [
+                'application/pdf',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/vnd.ms-excel',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'image/jpeg',
+                'image/png',
+                'image/jpg'
+            ]
+            
+            if (!allowedTypes.includes(selectedFile.type)) {
+                toast.error("Please upload a valid file (PDF, DOC, DOCX, XLS, XLSX, JPG, PNG)")
+                return
+            }
+            
+            setFile(selectedFile)        }
+    }
+
     const handleSubmit = async () => {
         if (!totalAmount && !file) {
             toast.error("Please provide either a total amount or a file.")
+            return
+        }
+
+        if (!totalAmount) {
+            toast.error("Please provide a total amount.")
             return
         }
 
@@ -86,19 +120,44 @@ const SupplierNegotiation: React.FC = () => {
                 const response = await postNegotiation(formData)
                 if (!response.status) {
                     throw new Error(response.message)
-                }
-                toast.success("Proposal submitted successfully!")
+                }                toast.success("Proposal submitted successfully!")
                 const newHistory = await fetchNegotiationSupplier(offersid!)
                 setNegotiationHistory(newHistory)
                 setFile(null)
                 setTotalAmount("")
                 setIsFinal(false)
+                
+                // Clear the file input
+                const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement
+                if (fileInput) {
+                    fileInput.value = ''
+                }
             } catch (error: any) {
                 console.error("There was an error submitting the proposal:", error)
                 toast.error(`Failed to submit proposal: ${error.message}`)
             } finally {
                 
             }
+        }
+    }
+
+    const handleDownloadAttachment = (attachmentUrl: string, fileName?: string) => {
+        try {
+            // Create a temporary link element
+            const link = document.createElement('a')
+            link.href = attachmentUrl
+            link.download = fileName || 'attachment'
+            link.target = '_blank'
+            
+            // Append to body, click, and remove
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+            
+            toast.success("Download started")
+        } catch (error) {
+            toast.error("Failed to download file")
+            console.error("Download error:", error)
         }
     }
 
@@ -136,20 +195,25 @@ const SupplierNegotiation: React.FC = () => {
                 {(offerDetails.project_status !== "Supplier Selected" || !offerDetails.project_winner) && !negotiationHistory.some(entry => entry.is_final) && (
                     <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-8">
                         <div className="p-4 md:p-4 lg:p-6 space-y-6">
-                            <h2 className="text-2xl font-bold text-primary mb-4">Submit Proposal</h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {/* <div>
+                            <h2 className="text-2xl font-bold text-primary mb-4">Submit Proposal</h2>                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
                                     <label className="block text-sm font-medium text-primary">Upload File (Optional)</label>
                                     <input
                                         type="file"
                                         onChange={handleFileChange}
+                                        accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png"
                                         className="mt-2 block w-full text-sm text-primary
                                         file:mr-4 file:py-2 file:px-4 file:border-0
                                         file:text-md file:font-medium
                                         file:bg-primary/10 file:text-primary
                                         hover:file:bg-blue-100 border border-secondary rounded-md focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50"
                                     />
-                                </div> */}
+                                    {file && (
+                                        <p className="mt-1 text-sm text-green-600">
+                                            Selected: {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                                        </p>
+                                    )}
+                                </div>
                                 <div>
                                     <label className="block text-sm font-medium text-primary">Total Amount</label>
                                     <div className="relative mt-2">
@@ -198,15 +262,14 @@ const SupplierNegotiation: React.FC = () => {
                     <div className="p-4 md:p-4 lg:p-6 space-y-6">
                         <h2 className="text-2xl font-bold text-primary mb-4">Negotiation History</h2>
                         <div className="overflow-x-auto">
-                            <table className="w-full text-sm text-left">
-                                <thead className="bg-gray-50">
+                            <table className="w-full text-sm text-left">                                <thead className="bg-gray-50">
                                     <tr>
                                         <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
                                             Submit Date
                                         </th>
-                                        {/* <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
+                                        <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
                                             Attachment
-                                        </th> */}
+                                        </th>
                                         <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
                                             Total Amount
                                         </th>
@@ -217,25 +280,24 @@ const SupplierNegotiation: React.FC = () => {
                                             Status
                                         </th>
                                     </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-200 bg-white">
+                                </thead>                                <tbody className="divide-y divide-gray-200 bg-white">
                                     {paginatedHistory.map((entry) => (
                                         <tr key={entry.id} className="hover:bg-gray-50">
                                             <td className="px-3 py-3 text-center whitespace-nowrap">{entry.proposal_submit_date}</td>
-                                            {/* <td className="px-3 py-3 text-center whitespace-nowrap">
-                                                {entry.attachmentUrl ? (
-                                                    <a
-                                                        href={entry.attachmentUrl}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="text-blue-600 hover:underline"
+                                            <td className="px-3 py-3 text-center whitespace-nowrap">
+                                                {entry.proposal_attach ? (
+                                                    <button
+                                                        onClick={() => handleDownloadAttachment(entry.proposal_attach!, `attachment-${entry.id}`)}
+                                                        className="inline-flex items-center px-3 py-1 bg-primary text-white text-xs font-medium rounded hover:bg-primary/80 transition-colors"
+                                                        title="Download Attachment"
                                                     >
-                                                        View Attachment
-                                                    </a>
+                                                        <FaDownload className="mr-1" />
+                                                        Download
+                                                    </button>
                                                 ) : (
-                                                    "N/A"
+                                                    <span className="text-gray-500 text-sm">No file</span>
                                                 )}
-                                            </td> */}
+                                            </td>
                                             <td className="px-3 py-3 text-center whitespace-nowrap flex items-center justify-center">
                                                 <span className="mr-2 border rounded-sm border-gray-300 px-1">IDR</span>
                                                 <span>{Number(entry.proposal_total_amount).toLocaleString('id-ID')}</span>
