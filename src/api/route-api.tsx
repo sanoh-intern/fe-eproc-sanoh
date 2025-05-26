@@ -62,3 +62,5 @@ export const API_Project_Followed_Supplier = () => API + getRolePath() + '/proje
 export const API_Register_Project_Supplier = () => API + getRolePath() + '/project-header/join/';
 export const API_Negotiation_Supplier = () => API + getRolePath() + '/project-detail/list-offer/get/';
 export const API_Post_Proposal_Supplier = () => API + getRolePath() + '/project-detail/create';
+
+export const API_Mini_Profile_Supplier = () => API + getRolePath() + '/dashboard/mini-profile/get';

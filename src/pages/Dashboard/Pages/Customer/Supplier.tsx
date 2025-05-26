@@ -16,6 +16,8 @@ import {
 } from "react-icons/fa"
 import Button2 from "../../../../components/Forms/Button2"
 import Loader from "../../../../common/Loader"
+import { getMiniProfile, type MiniProfileData } from "../../../../api/Action/Supplier/supplier-actions"
+import { toast } from "react-toastify"
 
 // Card Component
 interface CardProps {
@@ -31,22 +33,41 @@ const SupplierDashboard: React.FC = () => {
     const [announcements, setAnnouncements] = useState<any[]>([])
     const [notifications, setNotifications] = useState<any[]>([])
     const [documents, setDocuments] = useState<any[]>([])
-
-    const companyData = {
-        name: "PT. Sanoh Indonesia",
-        npwp: "01.123.456.7-123.456",
-        description: "Perusahaan yang bergerak di bidang otomotif",
-        field: "IT & Technology",
-        subFields: ["Software Development", "Hardware Supply"],
-        profileImage: "",
-    }
+    const [miniProfile, setMiniProfile] = useState<MiniProfileData | null>(null)
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
-        // Fetch data from API or local storage
-        const storedStatus = localStorage.getItem("isVerified")
-        setVerificationStatus(storedStatus)
+        const fetchMiniProfile = async () => {
+            setIsLoading(true)
+            setError(null)
+            
+            try {
+                const result = await getMiniProfile()
+                  if (result.success && result.data) {
+                    setMiniProfile(result.data)
+                    // Set verification status based on profile_verified_at
+                    // If profile_verified_at is null, it means not verified yet
+                    if (result.data.profile_verified_at === null) {
+                        setVerificationStatus("not_verified")
+                    } else {
+                        setVerificationStatus("verified")
+                    }
+                } else {
+                    setError(result.message)
+                    toast.error(result.message)
+                }
+            } catch (err) {
+                const errorMessage = "Failed to load profile data"
+                setError(errorMessage)
+                toast.error(errorMessage)
+            } finally {
+                setIsLoading(false)
+            }
+        }        // Fetch mini profile data
+        fetchMiniProfile()
 
-        // Mock data
+        // Mock data for other sections (replace with actual API calls later)
         setAnnouncements([
             {
                 id: 1,
@@ -66,17 +87,9 @@ const SupplierDashboard: React.FC = () => {
                 message: "Scheduled maintenance on February 10th", 
                 date: "2024-02-06" 
             
-            },
-        ])
+            },        ])
 
-        setNotifications([
-            { id: 1, message: "Your profile verification is pending review", type: "warning" },
-            { id: 2, message: "Document submission deadline approaching", type: "info" },
-            { id: 1, message: "Your profile verification is pending review", type: "success" },
-            { id: 1, message: "Your profile verification is pending review", type: "success" },
-            { id: 1, message: "Your profile verification is pending review", type: "success" },
-            { id: 1, message: "Your profile verification is pending review", type: "success" },
-        ])
+        // Set documents data
 
         setDocuments([
             { 
@@ -100,22 +113,50 @@ const SupplierDashboard: React.FC = () => {
         ])
     }, [])
 
+    // Update notifications based on verification status
+    useEffect(() => {
+        const baseNotifications = [
+            { id: 2, message: "Document submission deadline approaching", type: "info" },
+            { id: 3, message: "New tender opportunities available", type: "success" },
+            { id: 4, message: "System maintenance scheduled for next week", type: "info" },
+        ]
+
+        let updatedNotifications = [...baseNotifications]
+
+        if (verificationStatus === "not_verified") {
+            updatedNotifications.unshift({
+                id: 1,
+                message: "Company profile is not verified. Please complete your profile.",
+                type: "warning"
+            })
+        } else if (verificationStatus === "pending") {
+            updatedNotifications.unshift({
+                id: 1,
+                message: "Company profile verification is under review.",
+                type: "info"
+            })
+        }
+
+        setNotifications(updatedNotifications)
+    }, [verificationStatus])
+
     const renderVerificationStatus = () => {
         switch (verificationStatus) {
             case "verified":
                 return (
                     <div className="flex items-center text-green-700 bg-green-100 px-3 py-2 rounded-lg">
                         <FaCheckCircle className="mr-2" />
-                        <span>Account Verified</span>
+                        <span>Verified</span>
                     </div>
                 )
             case "pending":
                 return (
                     <div className="flex items-center text-yellow-700 bg-yellow-100 px-3 py-2 rounded-lg">
                         <FaClock className="mr-2" />
-                        <span>Verification in Progress</span>
+                        <span>Verification Under Review</span>
                     </div>
                 )
+            case "not_verified":
             default:
                 return (
                     <div className="flex items-center text-red-700 bg-red-100 px-3 py-2 rounded-lg">
@@ -127,28 +168,7 @@ const SupplierDashboard: React.FC = () => {
     }
 
     const CompanyProfileImage = () => {
-        if (companyData.profileImage) {
-            return (
-                <div className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden">
-                    <img
-                        src={companyData.profileImage || "/placeholder.svg"}
-                        alt={`${companyData.name} logo`}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                        // If image fails to load, replace with default icon
-                        const target = e.target as HTMLImageElement
-                        target.style.display = "none"
-                        target.parentElement?.classList.add("bg-gray-100", "flex", "items-center", "justify-center")
-                        const icon = document.createElement("div")
-                        icon.innerHTML =
-                            '<svg class="w-12 h-12 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm10 0a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2V6a2 2 0 00-2-2h-6z"/></svg>'
-                        target.parentElement?.appendChild(icon)
-                        }}
-                    />
-                </div>
-            )
-        }
-    
+        // Since API doesn't provide profile image, we'll use a default building icon
         return (
             <div className="w-24 h-24 flex-shrink-0 bg-gray-100 rounded-lg flex items-center justify-center">
                 <FaBuilding className="w-12 h-12 text-gray-400" />
@@ -156,13 +176,26 @@ const SupplierDashboard: React.FC = () => {
         )
     }
 
-    if (!companyData) 
-        return (
-            <Loader />
-        )
+    // Show loading state
+    if (isLoading) {
+        return <Loader />
+    }
 
-    return (
-        
+    // Show error state
+    if (error || !miniProfile) {
+        return (
+            <div className="flex items-center justify-center min-h-96">
+                <div className="text-center">
+                    <FaExclamationTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+                    <h2 className="text-xl font-semibold text-gray-800 mb-2">Failed to Load Profile</h2>
+                    <p className="text-gray-600 mb-4">{error || "Unable to load profile data"}</p>
+                    <Button2 onClick={() => window.location.reload()}>
+                        Try Again
+                    </Button2>
+                </div>
+            </div>
+        )
+    }    return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Company Profile Section */}
             <Card className="lg:col-span-2">
@@ -170,22 +203,21 @@ const SupplierDashboard: React.FC = () => {
                     <CompanyProfileImage />
                     <div className="flex-grow">
                         <div className="flex items-center justify-between ">
-                            <h2 className="text-2xl font-bold text-primary">{companyData.name}</h2>
+                            <h2 className="text-2xl font-bold text-primary">{miniProfile.company_name}</h2>
                             {renderVerificationStatus()}
                         </div>
-                        <p className="text-secondary mb-2">{companyData.npwp}</p>
-                        <p className="text-primary mb-4">{companyData.description}</p>
+                        <p className="text-secondary mb-2">{miniProfile.tax_id || "-"}</p>
+                        <p className="text-primary mb-4">{miniProfile.company_description || "-"}</p>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <h3 className="text-sm font-medium text-secondary">Bidang</h3>
-                                <p className="text-primary">{companyData.field}</p>
+                                <h3 className="text-sm font-medium text-secondary">Business Field</h3>
+                                <p className="text-primary">{miniProfile.business_field || "-"}</p>
                             </div>
                             <div>
-                                <h3 className="text-sm font-medium text-secondary">Sub Bidang</h3>
-                                <p className="text-primary">{companyData.subFields.join(" • ")}</p>
+                                <h3 className="text-sm font-medium text-secondary">Sub Business Field</h3>
+                                <p className="text-primary">{miniProfile.sub_business_field || "-"}</p>
                             </div>
-                        </div>
-                        {(!verificationStatus || verificationStatus === "null") && (
+                        </div>                        {(verificationStatus === "not_verified" || !verificationStatus) && (
                             <Button2 as={Link} to="/company-details" className="mt-4">
                                 <FaUserEdit className="mr-2" />
                                 Complete Company Profile
