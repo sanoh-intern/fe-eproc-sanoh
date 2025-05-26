@@ -6,6 +6,7 @@ import Logo from "../../assets/images/logo-sanoh.png"
 import FotoSanoh from "../../assets/images/cover/maskot2.png"
 import "react-toastify/dist/ReactToastify.css"
 import { toast } from "react-toastify"
+import { registerUser, resendPassword } from "../../api/Action/Auth/auth-actions"
 
 const Register: React.FC = () => {
     const [npwp, setNpwp] = useState("")
@@ -21,36 +22,63 @@ const Register: React.FC = () => {
             timer = setTimeout(() => setResendCooldown(resendCooldown - 1), 1000)
         }
         return () => clearTimeout(timer)
-    }, [resendCooldown])
-
+    }, [resendCooldown])    
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setIsLoading(true)
         try {
-            // Simulating API call
-            await new Promise((resolve) => setTimeout(resolve, 2000))
-                // If the API call is successful:
+            const payload = {
+                tax_id: npwp,
+                company_name: companyName,
+                email: email
+            };
+
+            const result = await registerUser(payload);
+            
+            if (result.success) {
                 setIsRegistered(true)
-                toast.success("Registration successful! Please check your email for your password.")
-            } catch (error) {
-                toast.error("Registration failed. Please try again.")
-            } finally {
-                setIsLoading(false)
+                toast.success(result.message)
+            } else {
+                // Handle validation errors
+                if (result.errors) {
+                    if (typeof result.errors === 'object') {
+                        Object.values(result.errors).forEach((errorArray: any) => {
+                            if (Array.isArray(errorArray)) {
+                                errorArray.forEach((error: string) => toast.error(error));
+                            } else {
+                                toast.error(errorArray);
+                            }
+                        });
+                    } else {
+                        toast.error(result.errors);
+                    }
+                } else {
+                    toast.error(result.message);
+                }
+            }
+        } catch (error) {
+            toast.error("Registration failed. Please try again.")        } finally {
+            setIsLoading(false)
         }
     }
 
     const handleResendPassword = async () => {
         if (resendCooldown > 0) return
-            setIsLoading(true)
+        setIsLoading(true)
         try {
-            // Simulating API call for resending password
-            await new Promise((resolve) => setTimeout(resolve, 2000))
-                toast.success("Password resent. Please check your email.")
+            const payload = { email: email };
+            const result = await resendPassword(payload);
+            
+            if (result.success) {
+                toast.success(result.message)
                 setResendCooldown(30)
-            } catch (error) {
-                toast.error("Failed to resend password. Please try again.")
-            } finally {
-                setIsLoading(false)
+            } else {
+                toast.error(result.message)
+            }
+        } catch (error) {
+            toast.error("Failed to resend password. Please try again.")
+        } finally {
+            setIsLoading(false)
         }
     }
 

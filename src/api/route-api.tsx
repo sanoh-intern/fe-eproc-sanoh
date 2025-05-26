@@ -11,6 +11,12 @@ const getRolePath = () => {
 export const API_Login = () => API + '/login';
 export const API_Logout = () => API + getRolePath() + `/logout`;
 
+export const API_Register = () => API + '/guest/register';
+export const API_Resend_Password = () => API + getRolePath() + `/guest/resend-password`;
+export const API_OTP_Mail_Reset_Password = () => API + '/guest/reset-password';
+export const API_Verify_OTP = () => API + getRolePath() + `/guest/verification-token/`;
+export const API_Reset_Password = () => API + getRolePath() + `/guest/reset-password/`;
+
 export const API_Email = () => API + `/email`;
 
 // Global API
@@ -56,62 +62,3 @@ export const API_Project_Followed_Supplier = () => API + getRolePath() + '/proje
 export const API_Register_Project_Supplier = () => API + getRolePath() + '/project-header/join/';
 export const API_Negotiation_Supplier = () => API + getRolePath() + '/project-detail/list-offer/get/';
 export const API_Post_Proposal_Supplier = () => API + getRolePath() + '/project-detail/create';
-
-// // Purchase Order Admin
-// export const API_PO_Admin = () => API + getRolePath() + `/po/index/`;
-// export const API_PO_Detail_Admin = () => API + getRolePath() + `/po/detail/`;
-// export const API_PO_History_Admin = () => API + getRolePath() + `/po/history/`;
-
-// // Performance Report Admin
-// export const API_Performance_Report_Admin = () => API + getRolePath() + `/performance-report/index/`;
-// export const API_Create_Performance_Report_Admin = () => API + getRolePath() + `/performance-report/store`;
-
-// export const API_Forecast_Report_Admin = () => API + getRolePath() + `/forecast/index/`;
-// export const API_Create_Forecast_Report_Admin = () => API + getRolePath() + `/forecast/store`;
-// export const API_Delete_Forecast_Report_Admin = () => API + getRolePath() + `/forecast/delete/`;
-
-// // Delivery Note Admin
-// export const API_DN_Admin = () => API + getRolePath() + `/dn/index/`;
-// export const API_DN_Detail_Admin = () => API + getRolePath() + `/dn/detail/`;
-// export const API_DN_History_Admin = () => API + getRolePath() + `/dn/history/`;
-
-// // Subcont Admin
-// export const API_Create_Item_Subcont_Admin = () => API + getRolePath() + `/item/store`;
-// export const API_List_Item_Subcont_Admin = () => API + getRolePath() + `/item/list/`;
-// export const API_Stock_Item_Subcont_Admin = () => API + getRolePath() + `/item/index/`;
-// export const API_Transaction_Report_Subcont_Admin = () => API + getRolePath() + `/transaction/index/`;
-// export const API_List_Item_ERP_Subcont_Admin = () => API + getRolePath() + `/item/list/item`;
-// export const API_Manage_Item_Subcont_Admin = () => API + getRolePath() + `/item/all-list/`;
-// export const API_Update_Item_Subcont_Admin = () => API + getRolePath() + `/item/update`;
-// export const API_Delete_Item_Subcont_Admin = () => API + getRolePath() + `/item/delete`;
-// export const API_Initial_Stock_Subcont_Admin = () => API + getRolePath() + `/item/stock/initial`;
-// export const API_Create_Transaction_Subcont_Admin = () => API + getRolePath() + `/transaction/store/`;
-// export const API_Transaction_Review_Subcont_Admin = () => API + getRolePath() + `/transaction-review/header/`;
-// export const API_Transaction_Review_Detail_Subcont_Admin = () => API + getRolePath() + `/transaction-review/detail/`;
-// export const API_Transaction_Review_Update_Subcont_Admin = () => API + getRolePath() + `/transaction-review/update`;
-// export const API_Dashboard_Performance_Subcont_Admin = () => API + getRolePath() + `/dashboard/performance-subcont/`;
-
-// // Purchase Order Supplier
-// export const API_PO = () => API + getRolePath() + `/po/index`;
-// export const API_PO_Detail = () => API + getRolePath() + `/po/detail/`;
-// export const API_Update_PO = () => API + getRolePath() + `/po/update/`;
-// export const API_PO_History = () => API + getRolePath() + `/po/history`;
-
-// // Delivery Note Supplier
-// export const API_DN = () => API + getRolePath() + `/dn/index`;
-// export const API_DN_Detail = () => API + getRolePath() + `/dn/detail/`;
-// export const API_DN_Edit = () => API + getRolePath() + `/dn/edit/`;
-// export const API_Update_DN = () => API + getRolePath() + `/dn/update`;
-// export const API_DN_History = () => API + getRolePath() + `/dn/history`;
-
-// // Performance Report Supplier
-// export const API_Performance_Report = () => API + getRolePath() + `/performance-report/index`;
-
-// // Forecast Report Supplier
-// export const API_Forecast_Report = () => API + getRolePath() + `/forecast/index`;
-
-// // Subcont Supplier
-// export const API_Item_Subcont = () => API + getRolePath() + `/item/index`;
-// export const API_List_Item_Subcont = () => API + getRolePath() + `/item/list`;
-// export const API_Transaction_Subcont = () => API + getRolePath() + `/transaction/index`;
-// export const API_Create_Transaction_Subcont = () => API + getRolePath() + `/transaction/store`;

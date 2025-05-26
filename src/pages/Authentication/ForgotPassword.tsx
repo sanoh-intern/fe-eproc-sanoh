@@ -9,10 +9,11 @@ import VerificationCodeInput from "./VerificationPage"
 import Button from "../../components/Forms/Button"
 import PasswordInput from "../../components/PasswordInput"
 import { toast } from "react-toastify"
+import { sendResetPasswordOTP, verifyResetOTP, resetPassword } from "../../api/Action/Auth/auth-actions"
 
 const ForgotPassword: React.FC = () => {
     const [email, setEmail] = useState("")
-    const [verificationCode, setVerificationCode] = useState("")
+    const [token, setToken] = useState("")
     const [newPassword, setNewPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
     const [step, setStep] = useState(1)
@@ -22,29 +23,39 @@ const ForgotPassword: React.FC = () => {
         e.preventDefault()
         setIsLoading(true)
         try {
-            // Simulating API call to send verification code
-            await new Promise((resolve) => setTimeout(resolve, 2000))
-                toast.success("Verification code sent to your email.")
+            const payload = { email: email };
+            const result = await sendResetPasswordOTP(payload);
+            
+            if (result.success) {
+                toast.success(result.message)
                 setStep(2)
-            } catch (error) {
-                toast.error("Failed to send verification code. Please try again.")
-            } finally {
-                setIsLoading(false)
+            } else {
+                toast.error(result.message)
+            }
+        } catch (error) {
+            toast.error("Failed to send verification code. Please try again.")
+        } finally {
+            setIsLoading(false)
         }
     }
 
     const handleVerifyCode = async (code: string) => {
         setIsLoading(true)
         try {
-        // Simulating API call to verify code
-            await new Promise((resolve) => setTimeout(resolve, 2000))
-                setVerificationCode(code)
-                toast.success("Verification code confirmed.")
+            const payload = { token: code, email: email };
+            const result = await verifyResetOTP(payload);
+            
+            if (result.success) {
+                setToken(code)
+                toast.success(result.message)
                 setStep(3)
-            } catch (error) {
-                toast.error("Invalid verification code. Please try again.")
-            } finally {
-        setIsLoading(false)
+            } else {
+                toast.error(result.message)
+            }
+        } catch (error) {
+            toast.error("Invalid verification code. Please try again.")
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -56,14 +67,23 @@ const ForgotPassword: React.FC = () => {
         }
         setIsLoading(true)
         try {
-            // Simulating API call to reset password
-            await new Promise((resolve) => setTimeout(resolve, 2000))
-            toast.success("Password reset successfully. You can now login with your new password.")
-            setStep(4)
+            const payload = { 
+                token: token, 
+                email: email, 
+                password: newPassword 
+            };
+            const result = await resetPassword(payload);
+            
+            if (result.success) {
+                toast.success(result.message)
+                setStep(4)
+            } else {
+                toast.error(result.message)
+            }
         } catch (error) {
             toast.error("Failed to reset password. Please try again.")
         } finally {
-        setIsLoading(false)
+            setIsLoading(false)
         }
     }
 

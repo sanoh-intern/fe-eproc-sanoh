@@ -3,10 +3,12 @@ import { Timeline } from 'flowbite-react';
 import { FaCheckCircle, FaClipboardList, FaFileAlt } from 'react-icons/fa';
 import { FaFileCircleCheck } from 'react-icons/fa6';
 import { LoginModal } from './Authentication/LoginModal';
+import { RegisterModal } from './Authentication/RegisterModal';
 import { useState } from 'react';
 
 const LandingPage = () => {
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
+    const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false)
     
     return (
         <div className="min-h-screen bg-white">
@@ -22,14 +24,21 @@ const LandingPage = () => {
                             </h1>
                             <p className="mt-4 text-lg text-primary">
                                 E-Procurement System PT. Sanoh Indonesia is an application system used as a performance support facility and manages the procurement process at PT. Sanoh Indonesia.
-                            </p>
-                            <div className="mt-8">
-                                <button
-                                    className="bg-primary text-white hover:bg-secondary px-6 py-3 rounded-lg text-base font-medium inline-block"
-                                    onClick={() => setIsLoginModalOpen(true)}
-                                >
-                                    Get Started
-                                </button>
+                            </p>                            <div className="mt-8">
+                                <div className="flex gap-4">
+                                    <button
+                                        className="bg-primary text-white hover:bg-secondary px-6 py-3 rounded-lg text-base font-medium"
+                                        onClick={() => setIsLoginModalOpen(true)}
+                                    >
+                                        Sign In
+                                    </button>
+                                    <button
+                                        className="bg-transparent text-primary border-2 border-primary hover:bg-primary hover:text-white px-6 py-3 rounded-lg text-base font-medium transition-colors"
+                                        onClick={() => setIsRegisterModalOpen(true)}
+                                    >
+                                        Register
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div className="flex justify-center">
@@ -75,14 +84,13 @@ const LandingPage = () => {
                         <h2 className="text-3xl font-bold text-primary">Service Flow</h2>
                         <p className="mt-4 text-primary">Flow sistem e-Procurement</p>
                     </div>
-                    <Timeline horizontal className="md:w-full">
-                        <Timeline.Item className='md:w-1/4'>
+                    <Timeline horizontal className="md:w-full">                        <Timeline.Item className='md:w-1/4'>
                             <Timeline.Point icon={FaClipboardList} />
                             <Timeline.Content>
                                 <Timeline.Time>Step 1</Timeline.Time>
                                 <Timeline.Title>Register</Timeline.Title>
                                 <Timeline.Body>
-                                    The applicant (company) registers through the application.
+                                    The applicant (company) registers through the application using the register button above.
                                 </Timeline.Body>
                             </Timeline.Content>
                         </Timeline.Item>
@@ -118,8 +126,8 @@ const LandingPage = () => {
                         </Timeline.Item>
                     </Timeline>
                 </div>
-            </div>
-            <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+            </div>            <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+            <RegisterModal isOpen={isRegisterModalOpen} onClose={() => setIsRegisterModalOpen(false)} />
         </div>
     );
 };

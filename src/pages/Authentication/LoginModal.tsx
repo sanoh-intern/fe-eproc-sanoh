@@ -6,10 +6,12 @@ import { useAuth } from "../../authentication/AuthContext"
 import { FaTimes } from "react-icons/fa"
 import Button from "../../components/Forms/Button"
 import PasswordInput from "../../components/PasswordInput"
+import { ForgotPasswordModal } from "./ForgotPasswordModal"
 
 export function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false)
     const { login, isLoading } = useAuth()
     const navigate = useNavigate()
 
@@ -59,11 +61,14 @@ export function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                             </div>
                             <div className="flex flex-col mt-3">
                                 <PasswordInput password={password} setPassword={setPassword} isRequired />
-                            </div>
-                            <div className="flex justify-between items-center">
-                                <Link to="auth/reset/password" className="text-sm text-black hover:underline ">
+                            </div>                            <div className="flex justify-between items-center">
+                                <button 
+                                    type="button"
+                                    onClick={() => setIsForgotPasswordOpen(true)}
+                                    className="text-sm text-black hover:underline"
+                                >
                                     Forgot password?
-                                </Link>
+                                </button>
                             </div>
                             <Button
                                 title={isLoading ? "Signing in..." : "Sign In"}
@@ -76,11 +81,14 @@ export function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                         Not registered?{" "}
                             <Link to="/auth/register" className="text-primary hover:underline">
                                 Register here
-                            </Link>
-                        </div>
+                            </Link>                        </div>
                     </div>
                 </div>
             </div>
+            <ForgotPasswordModal 
+                isOpen={isForgotPasswordOpen} 
+                onClose={() => setIsForgotPasswordOpen(false)} 
+            />
         </div>
     )
 }
