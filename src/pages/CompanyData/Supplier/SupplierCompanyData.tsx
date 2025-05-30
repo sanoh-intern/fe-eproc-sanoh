@@ -233,41 +233,29 @@ const SupplierCompanyData: React.FC = () => {
 
   const handlePersonInChargeDelete = async (picId: number) => {
     try {
-      const result = await Swal.fire({
-        title: 'Are you sure?',
-        text: 'You will not be able to recover this person in charge!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'Cancel',
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
+      const response = await fetch(API_Delete_Person_In_Charge_Supplier() + picId, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('access_token') || '',
+          'Content-Type': 'application/json',
+        }
       });
 
-      if (result.isConfirmed) {
-        const response = await fetch(API_Delete_Person_In_Charge_Supplier() + picId, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': 'Bearer ' + localStorage.getItem('access_token') || '',
-            'Content-Type': 'application/json',
-          }
-        });
-
-        const responseData = await response.json();
-        
-        if (response.ok && responseData.status) {
-          toast.success(responseData.message || 'Person in charge deleted successfully');
-          // Refresh company data
-          const updatedData = await fetchCompanyData();
-          setCompanyData(updatedData);
-          setTabCompleteness(prev => ({
-            ...prev,
-            contacts: checkContactsCompleteness(updatedData.person_in_charge)
-          }));
-        } else {
-          toast.error(responseData.message || 'Failed to delete person in charge');
-        }
+      const responseData = await response.json();
+      
+      if (response.ok && responseData.status) {
+        toast.success(responseData.message || 'Person in charge deleted successfully');
+        // Refresh company data
+        const updatedData = await fetchCompanyData();
+        setCompanyData(updatedData);
+        setTabCompleteness(prev => ({
+          ...prev,
+          contacts: checkContactsCompleteness(updatedData.person_in_charge)
+        }));
+      } else {
+        toast.error(responseData.message || 'Failed to delete person in charge');
       }
+      
     } catch (error) {
       console.error('Error deleting person in charge:', error);
       toast.error('An error occurred while deleting person in charge');
@@ -525,59 +513,71 @@ const SupplierCompanyData: React.FC = () => {
       toast.error('An error occurred while deleting NIB');
     }
   };
-
   // Business License CRUD Methods
   const handleBusinessLicenseCreate = async (formData: any) => {
     try {
-      const formDataToSend = new FormData();
+      // Handle both single license and array of licenses
+      const licensesToProcess = Array.isArray(formData) ? formData : [formData];
       
-      // Add all text fields
-      Object.keys(formData).forEach(key => {
-        if (key !== 'business_license_file') {
-          formDataToSend.append(key, formData[key] || '');
+      // Process each license individually with FormData
+      for (const license of licensesToProcess) {
+        const formDataToSend = new FormData();
+        
+        // Add all text fields, excluding tracking fields
+        Object.keys(license).forEach(key => {
+          if (key !== 'business_license_file' && 
+              key !== 'isNew' && 
+              key !== 'isModified' && 
+              key !== 'originalData') {
+            formDataToSend.append(key, license[key] || '');
+          }
+        });
+        
+        if (license.business_license_file instanceof File) {
+          formDataToSend.append('business_license_file', license.business_license_file);
         }
-      });
-      
-      if (formData.business_license_file instanceof File) {
-        formDataToSend.append('business_license_file', formData.business_license_file);
+
+        const response = await fetch(API_Create_Business_License_Supplier(), {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('access_token') || '',
+          },
+          body: formDataToSend
+        });
+
+        const result = await response.json();
+        
+        if (!response.ok || !result.status) {
+          throw new Error(result.message || 'Failed to create business license');
+        }
       }
 
-      const response = await fetch(API_Create_Business_License_Supplier(), {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + localStorage.getItem('access_token') || '',
-        },
-        body: formDataToSend
-      });
-
-      const result = await response.json();
+      // All licenses processed successfully
+      toast.success(`${licensesToProcess.length > 1 ? 'Business licenses' : 'Business license'} created successfully`);
+      setUnsavedChanges(false);
       
-      if (response.ok && result.status) {
-        toast.success(result.message || 'Business license created successfully');
-        setUnsavedChanges(false);
-        // Refresh company data
-        const updatedData = await fetchCompanyData();
-        setCompanyData(updatedData);
-        setTabCompleteness(prev => ({
-          ...prev,
-          businessLicenses: checkBusinessLicensesCompleteness(updatedData.business_licenses)
-        }));
-      } else {
-        toast.error(result.message || 'Failed to create business license');
-      }
-    } catch (error) {
+      // Refresh company data
+      const updatedData = await fetchCompanyData();
+      setCompanyData(updatedData);
+      setTabCompleteness(prev => ({
+        ...prev,
+        businessLicenses: checkBusinessLicensesCompleteness(updatedData.business_licenses)
+      }));
+        } catch (error) {
       console.error('Error creating business license:', error);
-      toast.error('An error occurred while creating business license');
+      toast.error(error instanceof Error ? error.message : 'An error occurred while creating business license');
     }
   };
-
   const handleBusinessLicenseUpdate = async (businessLicenseId: number, formData: any) => {
     try {
       const formDataToSend = new FormData();
       
-      // Add all text fields
+      // Add all text fields, excluding tracking fields
       Object.keys(formData).forEach(key => {
-        if (key !== 'business_license_file') {
+        if (key !== 'business_license_file' && 
+            key !== 'isNew' && 
+            key !== 'isModified' && 
+            key !== 'originalData') {
           formDataToSend.append(key, formData[key] || '');
         }
       });
@@ -617,45 +617,35 @@ const SupplierCompanyData: React.FC = () => {
 
   const handleBusinessLicenseDelete = async (businessLicenseId: number) => {
     try {
-      const result = await Swal.fire({
-        title: 'Are you sure?',
-        text: 'You will not be able to recover this business license!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'Cancel',
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
+      const response = await fetch(API_Delete_Business_License_Supplier() + businessLicenseId, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('access_token') || '',
+          'Content-Type': 'application/json',
+        }
       });
 
-      if (result.isConfirmed) {
-        const response = await fetch(API_Delete_Business_License_Supplier() + businessLicenseId, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': 'Bearer ' + localStorage.getItem('access_token') || '',
-            'Content-Type': 'application/json',
-          }
-        });
-
-        const responseData = await response.json();
-        
-        if (response.ok && responseData.status) {
-          toast.success(responseData.message || 'Business license deleted successfully');
-          // Refresh company data
-          const updatedData = await fetchCompanyData();
-          setCompanyData(updatedData);
-          setTabCompleteness(prev => ({
-            ...prev,
-            businessLicenses: checkBusinessLicensesCompleteness(updatedData.business_licenses)
-          }));
-        } else {
-          toast.error(responseData.message || 'Failed to delete business license');
-        }
+      const responseData = await response.json();
+      
+      if (response.ok && responseData.status) {
+        toast.success(responseData.message || 'Business license deleted successfully');
+        // Refresh company data
+        const updatedData = await fetchCompanyData();
+        setCompanyData(updatedData);
+        setTabCompleteness(prev => ({
+          ...prev,
+          businessLicenses: checkBusinessLicensesCompleteness(updatedData.business_licenses)
+        }));
+      } else {
+        toast.error(responseData.message || 'Failed to delete business license');
       }
+      
     } catch (error) {
       console.error('Error deleting business license:', error);
-      toast.error('An error occurred while deleting business license');    }  };
-  
+      toast.error('An error occurred while deleting business license');
+    }
+  };
+
   const handleTabChange = (newIndex: number) => {
     if (unsavedChanges) {
       Swal.fire({
@@ -962,7 +952,6 @@ const GeneralDataForm: React.FC<{
               type="file"
               name="npwp_file"
               onChange={handleChange}
-              required
               className="flex-1 p-2 border rounded border-primary"
               accept=".pdf,.jpg,.jpeg,.png"
             />
@@ -1006,7 +995,6 @@ const GeneralDataForm: React.FC<{
               type="file"
               name="skpp_file"
               onChange={handleChange}
-              required
               className="flex-1 p-2 border rounded border-primary"
               accept=".pdf,.jpg,.jpeg,.png"
             />
@@ -1197,7 +1185,6 @@ const GeneralDataForm: React.FC<{
           name="company_url"
           value={formData.company_url}
           onChange={handleChange}
-          required
           className="w-full p-2 border rounded border-primary"
           placeholder="https://example.com"
         />
@@ -1287,22 +1274,36 @@ const ContactDataForm: React.FC<{
     
     if (contact.pic_id && !contact.isNew && onDelete) {
       // Existing contact - call delete API
+      const confirmDelete = await Swal.fire({
+        title: "Confirm Delete",
+        text: `Are you sure you want to delete contact ${contact.pic_name}? This action cannot be undone.`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Delete",
+        cancelButtonText: "Cancel",
+        confirmButtonColor: "#d33", // Red color for delete
+        cancelButtonColor: "#3085d6" // Blue color for cancel
+      });
+      
+      if (!confirmDelete.isConfirmed) {
+        return; // User canceled the deletion
+      }
       try {
         await onDelete(contact.pic_id);
         // Immediately remove from local state for instant UI feedback
         const updatedContacts = contacts.filter((_, i) => i !== index);
         setContacts(updatedContacts);
-        toast.success('Contact deleted successfully');
+        // toast.success('Contact deleted successfully');
       } catch (error) {
         console.error('Error deleting contact:', error);
-        toast.error('Failed to delete contact');
+        // toast.error('Failed to delete contact');
       }
     } else {
       // New contact or no ID - just remove from state
       const updatedContacts = contacts.filter((_, i) => i !== index);
       setContacts(updatedContacts);
-      markUnsaved();      
-      toast.success('Contact removed successfully');
+      markUnsaved();
+      // toast.success('Contact removed successfully');
     }
   }
   
@@ -1487,7 +1488,8 @@ const ContactDataForm: React.FC<{
             <div className="mt-2 text-sm text-green-600">
               New contact (not saved yet)
             </div>
-          )}        </div>
+          )}        
+        </div>
       ))}
       
       <div className="flex gap-2 pt-4">
@@ -1693,41 +1695,200 @@ const BusinessLicenseForm: React.FC<{
   onDelete?: (businessLicenseId: number) => void;
   markUnsaved: () => void;
   onViewFile: (filePath: string, fileName: string) => void;
-}> = ({ data, onSubmit, onUpdate: _onUpdate, onDelete: _onDelete, markUnsaved, onViewFile }) => {
-  const [licenses, setLicenses] = useState(data)
+}> = ({ data, onSubmit, onUpdate, onDelete, markUnsaved, onViewFile }) => {
+  const [licenses, setLicenses] = useState(
+    data.map(license => ({
+      ...license,
+      isNew: false,
+      isModified: false,
+      originalData: { ...license }
+    }))
+  )
+
+  // Sync with parent data changes
+  useEffect(() => {
+    setLicenses(
+      data.map(license => ({
+        ...license,
+        isNew: false,
+        isModified: false,
+        originalData: { ...license }
+      }))
+    );
+  }, [data]);
 
   const handleAddLicense = () => {
-    setLicenses([
-      ...licenses,
-      {
-        business_type: "",
-        issuing_agency: "",
-        business_license_number: "",
-        issuing_date: "",
-        expiry_date: "",
-        qualification: "",
-        sub_classification: "",
-        business_license_file: null,
-      },
-    ])
+    const newLicense = {
+      business_type: "",
+      issuing_agency: "",
+      business_license_number: "",
+      issuing_date: "",
+      expiry_date: "",
+      qualification: "",
+      sub_classification: "",
+      business_license_file: null,
+      isNew: true,
+      isModified: false,
+      originalData: {}
+    };
+    setLicenses([...licenses, newLicense])
     markUnsaved();
   }
 
   const handleLicenseChange = (index: number, field: string, value: string | File | null) => {
-    const updatedLicenses = licenses.map((license, i) => (i === index ? { ...license, [field]: value } : license))
-    setLicenses(updatedLicenses)
-    markUnsaved()
+    const updatedLicenses = licenses.map((license, i) => {
+      if (i === index) {
+        const updatedLicense = { ...license, [field]: value };
+        
+        // Check if this is a modification of existing data (not new license)
+        if (!license.isNew) {
+          const isModified = Object.keys(license.originalData).some(key => {
+            if (key === field) return value !== license.originalData[key];
+            return license[key] !== license.originalData[key];
+          }) || value !== license.originalData[field];
+          
+          updatedLicense.isModified = isModified;
+        }
+        
+        return updatedLicense;
+      }
+      return license;
+    });
+    
+    setLicenses(updatedLicenses);
+    markUnsaved();
   }
+
+  const handleRemoveLicense = async (index: number) => {
+    const license = licenses[index];
+    
+    if (license.business_license_id && !license.isNew && onDelete) {
+      // Existing license - show confirmation and call delete API
+      const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: 'You will not be able to recover this business license!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+      });
+
+      if (!result.isConfirmed) return;
+
+      try {
+        await onDelete(license.business_license_id);
+        // Immediately remove from local state for instant UI feedback
+        const updatedLicenses = licenses.filter((_, i) => i !== index);
+        setLicenses(updatedLicenses);
+      } catch (error) {
+        console.error('Error deleting business license:', error);
+      }
+    } else {
+      // New license or no ID - just remove from state
+      const updatedLicenses = licenses.filter((_, i) => i !== index);
+      setLicenses(updatedLicenses);
+      markUnsaved();
+    }
+  }
+
+  const handleSaveLicense = async (index: number) => {
+    const license = licenses[index];
+    
+    // Validate required fields
+    if (!license.business_type || !license.issuing_agency || !license.business_license_number || 
+        !license.issuing_date || !license.expiry_date || !license.qualification || 
+        !license.sub_classification || !license.business_license_file) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    try {
+      if (license.business_license_id && !license.isNew && onUpdate) {
+        // Update existing license
+        await onUpdate(license.business_license_id, license);
+        
+        // Reset modification flags after successful update
+        const updatedLicenses = licenses.map((l, i) => {
+          if (i === index) {
+            return {
+              ...l,
+              isModified: false,
+              originalData: { ...l }
+            };
+          }
+          return l;
+        });
+        setLicenses(updatedLicenses);
+      } else if (license.isNew || !license.business_license_id) {
+        // Create new license
+        await onSubmit([license]);
+        
+        // Remove the license from local state as it will be refreshed from parent
+        const updatedLicenses = licenses.filter((_, i) => i !== index);
+        setLicenses(updatedLicenses);
+      }
+
+      // markUnsaved will be handled by parent component when data refreshes
+    } catch (error) {
+      console.error('Error saving business license:', error);
+    }
+  }
+
+  // Helper functions to check license states
+  const hasNewLicenses = () => {
+    return licenses.some(license => license.isNew);
+  }
+
+  const hasModifiedLicenses = () => {
+    return licenses.some(license => license.isModified && !license.isNew);  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    onSubmit(licenses)
+    
+    // Only submit new licenses
+    const newLicenses = licenses.filter(license => license.isNew);
+    if (newLicenses.length > 0) {
+      onSubmit(newLicenses)
+    }
   }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4 text-black">
       {licenses.map((license, index) => (
         <div key={index} className="border p-4 rounded border-black">
-          <h3 className="font-bold mb-2">Business License {index + 1}</h3>
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="font-bold">Business License {index + 1}</h3>
+            <div className="flex gap-2">
+              {/* Show Save button only for new licenses */}
+              {license.isNew && (
+                <Button 
+                  title="Save"
+                  onClick={() => handleSaveLicense(index)}
+                  type="button"
+                  className="text-sm px-3 py-1"
+                />
+              )}
+              
+              {/* Show Update button only for existing licenses that have been modified */}
+              {license.business_license_id && !license.isNew && license.isModified && (
+                <Button 
+                  title="Update"
+                  onClick={() => handleSaveLicense(index)}
+                  type="button"
+                  className="text-sm px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white"
+                />
+              )}
+              
+              <Button 
+                title="Delete"
+                onClick={() => handleRemoveLicense(index)}
+                type="button"
+                className="text-sm px-3 py-1 bg-red-500 hover:bg-red-600 text-white"
+              />
+            </div>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block mb-1">Business Type*</label>
@@ -1849,8 +2010,34 @@ const BusinessLicenseForm: React.FC<{
           </div>
         </div>
       ))}
-      <Button title="Add Business License" onClick={handleAddLicense} type="button" />
-      <Button title="Save" type="submit" />
+      
+      <div className="space-y-2">
+        <Button title="Add Business License" onClick={handleAddLicense} type="button" />
+        
+        {/* Only show "Save All New Licenses" button when there are new licenses and no modified existing licenses */}
+        {hasNewLicenses() && !hasModifiedLicenses() && (
+          <Button 
+            title="Save All New Licenses" 
+            type="submit" 
+            className="bg-green-500 hover:bg-green-600 text-white"
+          />
+        )}
+        
+        {/* Show warning message when there are mixed states */}
+        {hasNewLicenses() && hasModifiedLicenses() && (
+          <div className="flex flex-col gap-2">
+            <div className="text-orange-600 text-sm">
+              ⚠️ Please save or update individual licenses first before using "Save All New Licenses"
+            </div>
+            <Button 
+              title="Save All New Licenses" 
+              type="submit" 
+              disabled={true}
+              className="bg-gray-400 cursor-not-allowed text-white"
+            />
+          </div>
+        )}
+      </div>
     </form>
   )
 }
