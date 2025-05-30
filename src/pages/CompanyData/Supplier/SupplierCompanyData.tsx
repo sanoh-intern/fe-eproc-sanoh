@@ -1222,10 +1222,27 @@ const ContactDataForm: React.FC<{
       department: contact.department || '',
       pic_telp_number_2: contact.pic_telp_number_2 || '',
       pic_email_2: contact.pic_email_2 || '',
-      isNew: false // Track if this is a new contact
+      isNew: false, // Track if this is a new contact
+      isModified: false, // Track if existing contact has been modified
+      originalData: { ...contact } // Store original data for comparison
     }))
   )
 
+  // Sync local state with prop data when parent data changes
+  useEffect(() => {
+    setContacts(
+      data.map(contact => ({
+        ...contact,
+        // Convert null values to empty strings for form inputs
+        department: contact.department || '',
+        pic_telp_number_2: contact.pic_telp_number_2 || '',
+        pic_email_2: contact.pic_email_2 || '',
+        isNew: false, // Track if this is a new contact
+        isModified: false, // Reset modification state when data refreshes
+        originalData: { ...contact } // Store original data for comparison
+      }))
+    );
+  }, [data]);
   const handleAddContact = () => {
     setContacts([...contacts, { 
       job_position: "", 
@@ -1235,55 +1252,60 @@ const ContactDataForm: React.FC<{
       pic_telp_number_2: "", 
       pic_email_1: "", 
       pic_email_2: "",
-      isNew: true // Mark as new contact
+      isNew: true, // Mark as new contact
+      isModified: false,
+      originalData: {}
     }])
     markUnsaved();
   }
+  
   const handleContactChange = (index: number, field: string, value: string) => {
-    const updatedContacts = contacts.map((contact, i) => 
-      i === index ? { ...contact, [field]: value, isModified: !contact.isNew } : contact
-    )
-    setContacts(updatedContacts)
+    const updatedContacts = contacts.map((contact, i) => {
+      if (i === index) {
+        const updatedContact = { ...contact, [field]: value };
+        
+        // For existing contacts, check if data has been modified compared to original
+        if (!contact.isNew) {
+          const isDataModified = Object.keys(contact.originalData).some(key => {
+            const originalValue = contact.originalData[key] || '';
+            const currentValue = key === field ? value : (contact[key] || '');
+            return originalValue !== currentValue;
+          });
+          updatedContact.isModified = isDataModified;
+        }
+        
+        return updatedContact;
+      }
+      return contact;
+    });
+    
+    setContacts(updatedContacts);
     markUnsaved();
   }
-
   const handleRemoveContact = async (index: number) => {
     const contact = contacts[index];
-    
-    // Show confirmation dialog
-    const result = await Swal.fire({
-      title: 'Are you sure?',
-      text: `You will delete contact: ${contact.pic_name || 'this contact'}`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'Cancel',
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-    });
-
-    if (!result.isConfirmed) {
-      return;
-    }
     
     if (contact.pic_id && !contact.isNew && onDelete) {
       // Existing contact - call delete API
       try {
         await onDelete(contact.pic_id);
-        // After successful deletion, the component will be refreshed with new data
-        // from the parent component, so we don't need to manually update local state here
+        // Immediately remove from local state for instant UI feedback
+        const updatedContacts = contacts.filter((_, i) => i !== index);
+        setContacts(updatedContacts);
+        toast.success('Contact deleted successfully');
       } catch (error) {
         console.error('Error deleting contact:', error);
+        toast.error('Failed to delete contact');
       }
     } else {
       // New contact or no ID - just remove from state
       const updatedContacts = contacts.filter((_, i) => i !== index);
       setContacts(updatedContacts);
-      markUnsaved();
+      markUnsaved();      
       toast.success('Contact removed successfully');
     }
   }
-
+  
   const handleSaveContact = async (index: number) => {
     const contact = contacts[index];
     
@@ -1298,21 +1320,26 @@ const ContactDataForm: React.FC<{
       if (contact.pic_id && !contact.isNew && onUpdate) {
         // Existing contact - call update API
         await onUpdate(contact.pic_id, contact);
-        // Mark as updated in local state
+        
+        // After successful update, refresh data will come from parent via useEffect
+        // Just mark as updated in local state temporarily
         const updatedContacts = contacts.map((c, i) => 
-          i === index ? { ...c, isNew: false } : c
+          i === index ? { ...c, isModified: false } : c
         );
         setContacts(updatedContacts);
       } else if (contact.isNew || !contact.pic_id) {
         // New contact - call create API
         await onSubmit([contact]);
-        // After successful creation, the component will be refreshed with new data
-        // so we don't need to manually update local state here
-      }    } catch (error) {
+        
+        // After successful creation, the parent will refetch data
+        // The useEffect will update our local state with the new data
+        toast.success('Contact saved successfully');
+      }
+    } catch (error) {
       console.error('Error saving contact:', error);
+      toast.error('Failed to save contact');
     }
   }
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
@@ -1325,20 +1352,36 @@ const ContactDataForm: React.FC<{
       toast.info('No new contacts to save. Use individual Save buttons for existing contacts.');
     }
   }
+  // Helper functions to determine button states
+  const hasNewContacts = () => contacts.some(contact => contact.isNew);
+  const hasModifiedContacts = () => contacts.some(contact => contact.isModified && !contact.isNew);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 text-black">
       {contacts.map((contact, index) => (
-        <div key={index} className="border p-4 rounded border-black">
-          <div className="flex justify-between items-center mb-2">
+        <div key={index} className="border p-4 rounded border-black">          <div className="flex justify-between items-center mb-2">
             <h3 className="font-bold">Contact {index + 1}</h3>
             <div className="flex gap-2">
-              <Button 
-                title={contact.pic_id && !contact.isNew ? "Update" : "Save"}
-                onClick={() => handleSaveContact(index)}
-                type="button"
-                className="text-sm px-3 py-1"
-              />
+              {/* Show Save button for new contacts */}
+              {contact.isNew && (
+                <Button 
+                  title="Save"
+                  onClick={() => handleSaveContact(index)}
+                  type="button"
+                  className="text-sm px-3 py-1"
+                />
+              )}
+              
+              {/* Show Update button only for existing contacts that have been modified */}
+              {contact.pic_id && !contact.isNew && contact.isModified && (
+                <Button 
+                  title="Update"
+                  onClick={() => handleSaveContact(index)}
+                  type="button"
+                  className="text-sm px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white"
+                />
+              )}
+              
               <Button 
                 title="Delete"
                 onClick={() => handleRemoveContact(index)}
@@ -1444,11 +1487,36 @@ const ContactDataForm: React.FC<{
             <div className="mt-2 text-sm text-green-600">
               New contact (not saved yet)
             </div>
-          )}
-        </div>
+          )}        </div>
       ))}
-      <Button title="Add Contact" onClick={handleAddContact} type="button" />
-      <Button title="Save All New Contacts" type="submit" />
+      
+      <div className="flex gap-2 pt-4">
+        <Button title="Add Contact" onClick={handleAddContact} type="button" />
+        
+        {/* Only show "Save All New Contacts" button when there are new contacts and no modified existing contacts */}
+        {hasNewContacts() && !hasModifiedContacts() && (
+          <Button 
+            title="Save All New Contacts" 
+            type="submit" 
+            className="bg-green-500 hover:bg-green-600 text-white"
+          />
+        )}
+        
+        {/* Show warning message when there are mixed states */}
+        {hasNewContacts() && hasModifiedContacts() && (
+          <div className="flex flex-col gap-2">
+            <div className="text-orange-600 text-sm">
+              ⚠️ Please save or update individual contacts first before using "Save All New Contacts"
+            </div>
+            <Button 
+              title="Save All New Contacts" 
+              type="submit" 
+              disabled={true}
+              className="bg-gray-400 cursor-not-allowed text-white"
+            />
+          </div>
+        )}
+      </div>
     </form>
   )
 }
