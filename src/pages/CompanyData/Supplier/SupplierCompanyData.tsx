@@ -38,36 +38,35 @@ const SupplierCompanyData: React.FC = () => {
       try {
         const data = await fetchCompanyData()
         setTabCompleteness({
-          generalData: checkGeneralDataCompleteness(data.generalData),
-          contacts: checkContactsCompleteness(data.contacts),
+          generalData: checkGeneralDataCompleteness(data.general_data),
+          contacts: checkContactsCompleteness(data.person_in_charge),
           nib: checkNIBCompleteness(data.nib),
-          businessLicenses: checkBusinessLicensesCompleteness(data.businessLicenses),
-          integrityPact: checkIntegrityPactCompleteness(data.integrityPact),
+          businessLicenses: checkBusinessLicensesCompleteness(data.business_licenses),
+          integrityPact: checkIntegrityPactCompleteness(data.integrity_pact),
         })
         setCompanyData(data)
       } catch (error) {
         console.error("Error fetching company data:", error)
-        toast.error("Failed to load company data")
-      }
+        toast.error("Failed to load company data")      }
     }
 
     fetchData()
   }, [])
 
   const checkGeneralDataCompleteness = (data: any) => {
-    const requiredFields = ["companyName", "taxId", "address", "state", "city", "postalCode", "companyStatus", "phone"]
+    const requiredFields = ["bp_code", "company_name", "company_description", "business_field", "sub_business_field", "product", "tax_id", "adr_line_1", "province", "city", "postal_code", "company_status", "company_phone_1", "company_fax_1", "company_url", "npwp_number", "npwp_file", "skpp_file"]
     return requiredFields.every((field) => data[field] !== null && data[field] !== undefined && data[field] !== "")
   }
 
   const checkContactsCompleteness = (contacts: any[]) => {
     return (
       contacts.length > 0 &&
-      contacts.every((contact) => contact.position && contact.department && contact.name && contact.email)
+      contacts.every((contact) => contact.job_position && contact.department && contact.pic_name && contact.pic_email_1)
     )
   }
 
   const checkNIBCompleteness = (data: any) => {
-    const requiredFields = ["issuingAgency", "number", "issueDate", "investmentStatus", "kbli", "file"]
+    const requiredFields = ["issuing_agency", "nib_number", "issuing_date", "investment_status", "kbli", "nib_file"]
     return requiredFields.every((field) => data[field] !== null && data[field] !== undefined && data[field] !== "")
   }
 
@@ -76,20 +75,20 @@ const SupplierCompanyData: React.FC = () => {
       licenses.length > 0 &&
       licenses.every(
         (license) =>
-          license.type &&
-          license.issuingAgency &&
-          license.number &&
-          license.issueDate &&
-          license.expiryDate &&
+          license.business_type &&
+          license.issuing_agency &&
+          license.business_license_number &&
+          license.issuing_date &&
+          license.expiry_date &&
           license.qualification &&
-          license.subClassification &&
-          license.file,
+          license.sub_classification &&
+          license.business_license_file,
       )
     )
   }
 
   const checkIntegrityPactCompleteness = (data: any) => {
-    return data.file && data.description
+    return data.integrity_pact_file && data.integrity_pact_desc
   }
 
   const markUnsaved = () => setUnsavedChanges(true);
@@ -230,14 +229,14 @@ const SupplierCompanyData: React.FC = () => {
             <div>
               <TabPanel>
                 <GeneralDataForm
-                  data={companyData.generalData}
+                  data={companyData.general_data}
                   onSubmit={(data) => handleSubmit(data, "generalData")}
                   markUnsaved={markUnsaved}
                 />
               </TabPanel>
               <TabPanel>
                 <ContactDataForm 
-                  data={companyData.contacts} 
+                  data={companyData.person_in_charge} 
                   onSubmit={(data) => handleSubmit(data, "contacts")} 
                   markUnsaved={markUnsaved}
                 />
@@ -251,14 +250,14 @@ const SupplierCompanyData: React.FC = () => {
               </TabPanel>
               <TabPanel>
                 <BusinessLicenseForm
-                  data={companyData.businessLicenses}
+                  data={companyData.business_licenses}
                   onSubmit={(data) => handleSubmit(data, "businessLicenses")}
                   markUnsaved={markUnsaved}
                 />
               </TabPanel>
               <TabPanel>
                 <IntegrityPactForm
-                  data={companyData.integrityPact}
+                  data={companyData.integrity_pact}
                   onSubmit={(data) => handleSubmit(data, "integrityPact")}
                   markUnsaved={markUnsaved}
                 />
@@ -292,27 +291,292 @@ const GeneralDataForm: React.FC<{
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 text-black ">
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block mb-1">BP Code*</label>
+          <input
+            type="text"
+            name="bp_code"
+            value={formData.bp_code}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border rounded border-primary"
+          />
+        </div>
+        <div>
+          <label className="block mb-1">Company Name*</label>
+          <input
+            type="text"
+            name="company_name"
+            value={formData.company_name}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border rounded border-primary"
+          />
+        </div>
+      </div>
+      
       <div>
-        <label className="block mb-1">Company Name*</label>
+        <label className="block mb-1">Company Description*</label>
+        <textarea
+          name="company_description"
+          value={formData.company_description}
+          onChange={handleChange}
+          required
+          className="w-full p-2 border rounded border-primary"
+          rows={3}
+        />
+      </div>
+      
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block mb-1">Business Field*</label>
+          <input
+            type="text"
+            name="business_field"
+            value={formData.business_field}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border rounded border-primary"
+          />
+        </div>
+        <div>
+          <label className="block mb-1">Sub Business Field*</label>
+          <input
+            type="text"
+            name="sub_business_field"
+            value={formData.sub_business_field}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border rounded border-primary"
+          />
+        </div>
+      </div>
+      
+      <div>
+        <label className="block mb-1">Product*</label>
         <input
           type="text"
-          name="companyName"
-          value={formData.companyName}
+          name="product"
+          value={formData.product}
           onChange={handleChange}
           required
           className="w-full p-2 border rounded border-primary"
         />
       </div>
+      
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block mb-1">Tax ID (NPWP)*</label>
+          <input
+            type="text"
+            name="tax_id"
+            value={formData.tax_id}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border rounded border-primary"
+          />
+        </div>
+        <div>
+          <label className="block mb-1">NPWP Number*</label>
+          <input
+            type="text"
+            name="npwp_number"
+            value={formData.npwp_number}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border rounded border-primary"
+          />
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block mb-1">NPWP File*</label>
+          <input
+            type="file"
+            name="npwp_file"
+            onChange={handleChange}
+            required
+            className="w-full p-2 border rounded border-primary"
+            accept=".pdf,.jpg,.jpeg,.png"
+          />
+        </div>
+        <div>
+          <label className="block mb-1">SKPP File*</label>
+          <input
+            type="file"
+            name="skpp_file"
+            onChange={handleChange}
+            required
+            className="w-full p-2 border rounded border-primary"
+            accept=".pdf,.jpg,.jpeg,.png"
+          />
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block mb-1">Address Line 1*</label>
+          <input
+            type="text"
+            name="adr_line_1"
+            value={formData.adr_line_1}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border rounded border-primary"
+          />
+        </div>
+        <div>
+          <label className="block mb-1">Address Line 2</label>
+          <input
+            type="text"
+            name="adr_line_2"
+            value={formData.adr_line_2}
+            onChange={handleChange}
+            className="w-full p-2 border rounded border-primary"
+          />
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block mb-1">Address Line 3</label>
+          <input
+            type="text"
+            name="adr_line_3"
+            value={formData.adr_line_3}
+            onChange={handleChange}
+            className="w-full p-2 border rounded border-primary"
+          />
+        </div>
+        <div>
+          <label className="block mb-1">Address Line 4</label>
+          <input
+            type="text"
+            name="adr_line_4"
+            value={formData.adr_line_4}
+            onChange={handleChange}
+            className="w-full p-2 border rounded border-primary"
+          />
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-3 gap-4">
+        <div>
+          <label className="block mb-1">Province*</label>
+          <input
+            type="text"
+            name="province"
+            value={formData.province}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border rounded border-primary"
+          />
+        </div>
+        <div>
+          <label className="block mb-1">City*</label>
+          <input
+            type="text"
+            name="city"
+            value={formData.city}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border rounded border-primary"
+          />
+        </div>
+        <div>
+          <label className="block mb-1">Postal Code*</label>
+          <input
+            type="text"
+            name="postal_code"
+            value={formData.postal_code}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border rounded border-primary"
+          />
+        </div>
+      </div>
+      
       <div>
-        <label className="block mb-1">Description</label>
-        <textarea
-          name="description"
-          value={formData.description}
+        <label className="block mb-1">Company Status*</label>
+        <select
+          name="company_status"
+          value={formData.company_status}
           onChange={handleChange}
+          required
           className="w-full p-2 border rounded border-primary"
+        >
+          <option value="">Select Status</option>
+          <option value="PMDN">PMDN (Penanaman Modal Dalam Negeri)</option>
+          <option value="PMA">PMA (Penanaman Modal Asing)</option>
+          <option value="BUMN">BUMN (Badan Usaha Milik Negara)</option>
+          <option value="BUMD">BUMD (Badan Usaha Milik Daerah)</option>
+          <option value="Swasta">Swasta</option>
+        </select>
+      </div>
+      
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block mb-1">Phone 1*</label>
+          <input
+            type="tel"
+            name="company_phone_1"
+            value={formData.company_phone_1}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border rounded border-primary"
+          />
+        </div>
+        <div>
+          <label className="block mb-1">Phone 2</label>
+          <input
+            type="tel"
+            name="company_phone_2"
+            value={formData.company_phone_2}
+            onChange={handleChange}
+            className="w-full p-2 border rounded border-primary"
+          />
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block mb-1">Fax 1*</label>
+          <input
+            type="text"
+            name="company_fax_1"
+            value={formData.company_fax_1}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border rounded border-primary"
+          />
+        </div>
+        <div>
+          <label className="block mb-1">Fax 2</label>
+          <input
+            type="text"
+            name="company_fax_2"
+            value={formData.company_fax_2}
+            onChange={handleChange}
+            className="w-full p-2 border rounded border-primary"
+          />
+        </div>
+      </div>
+      
+      <div>
+        <label className="block mb-1">Company URL*</label>
+        <input
+          type="url"
+          name="company_url"
+          value={formData.company_url}
+          onChange={handleChange}
+          required
+          className="w-full p-2 border rounded border-primary"
+          placeholder="https://example.com"
         />
       </div>
-      {/* Add other fields similarly */}
+      
       <Button title="Save" type="submit" />
     </form>
   )
@@ -326,7 +590,15 @@ const ContactDataForm: React.FC<{
   const [contacts, setContacts] = useState(data)
 
   const handleAddContact = () => {
-    setContacts([...contacts, { position: "", department: "", name: "", phone: "", email: "" }])
+    setContacts([...contacts, { 
+      job_position: "", 
+      department: "", 
+      pic_name: "", 
+      pic_telp_number_1: "", 
+      pic_telp_number_2: "", 
+      pic_email_1: "", 
+      pic_email_2: "" 
+    }])
     markUnsaved();
   }
 
@@ -348,10 +620,10 @@ const ContactDataForm: React.FC<{
           <h3 className="font-bold mb-2">Contact {index + 1}</h3>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block mb-1">Position*</label>
+              <label className="block mb-1">Job Position*</label>
               <select
-                value={contact.position}
-                onChange={(e) => handleContactChange(index, "position", e.target.value)}
+                value={contact.job_position}
+                onChange={(e) => handleContactChange(index, "job_position", e.target.value)}
                 required
                 className="w-full p-2 border rounded border-primary"
               >
@@ -383,31 +655,50 @@ const ContactDataForm: React.FC<{
               </select>
             </div>
             <div>
-              <label className="block mb-1">Name*</label>
+              <label className="block mb-1">PIC Name*</label>
               <input
                 type="text"
-                value={contact.name}
-                onChange={(e) => handleContactChange(index, "name", e.target.value)}
+                value={contact.pic_name}
+                onChange={(e) => handleContactChange(index, "pic_name", e.target.value)}
                 required
                 className="w-full p-2 border rounded border-primary"
               />
             </div>
             <div>
-              <label className="block mb-1">Phone</label>
+              <label className="block mb-1">Phone Number 1*</label>
               <input
                 type="tel"
-                value={contact.phone}
-                onChange={(e) => handleContactChange(index, "phone", e.target.value)}
+                value={contact.pic_telp_number_1}
+                onChange={(e) => handleContactChange(index, "pic_telp_number_1", e.target.value)}
+                required
                 className="w-full p-2 border rounded border-primary"
               />
             </div>
             <div>
-              <label className="block mb-1">Email*</label>
+              <label className="block mb-1">Phone Number 2</label>
+              <input
+                type="tel"
+                value={contact.pic_telp_number_2}
+                onChange={(e) => handleContactChange(index, "pic_telp_number_2", e.target.value)}
+                className="w-full p-2 border rounded border-primary"
+              />
+            </div>
+            <div>
+              <label className="block mb-1">Email 1*</label>
               <input
                 type="email"
-                value={contact.email}
-                onChange={(e) => handleContactChange(index, "email", e.target.value)}
+                value={contact.pic_email_1}
+                onChange={(e) => handleContactChange(index, "pic_email_1", e.target.value)}
                 required
+                className="w-full p-2 border rounded border-primary"
+              />
+            </div>
+            <div>
+              <label className="block mb-1">Email 2</label>
+              <input
+                type="email"
+                value={contact.pic_email_2}
+                onChange={(e) => handleContactChange(index, "pic_email_2", e.target.value)}
                 className="w-full p-2 border rounded border-primary"
               />
             </div>
@@ -443,8 +734,8 @@ const NIBForm: React.FC<{
         <label className="block mb-1">Issuing Agency*</label>
         <input
           type="text"
-          name="issuingAgency"
-          value={formData.issuingAgency}
+          name="issuing_agency"
+          value={formData.issuing_agency}
           onChange={handleChange}
           required
           className="w-full p-2 border rounded border-primary"
@@ -454,19 +745,19 @@ const NIBForm: React.FC<{
         <label className="block mb-1">NIB Number*</label>
         <input
           type="text"
-          name="number"
-          value={formData.number}
+          name="nib_number"
+          value={formData.nib_number}
           onChange={handleChange}
           required
           className="w-full p-2 border rounded border-primary"
         />
       </div>
       <div>
-        <label className="block mb-1">Issue Date*</label>
+        <label className="block mb-1">Issuing Date*</label>
         <input
           type="date"
-          name="issueDate"
-          value={formData.issueDate}
+          name="issuing_date"
+          value={formData.issuing_date}
           onChange={handleChange}
           required
           className="w-full p-2 border rounded border-primary"
@@ -475,12 +766,13 @@ const NIBForm: React.FC<{
       <div>
         <label className="block mb-1">Investment Status*</label>
         <select
-          name="investmentStatus"
-          value={formData.investmentStatus}
+          name="investment_status"
+          value={formData.investment_status}
           onChange={handleChange}
           required
           className="w-full p-2 border rounded border-primary"
         >
+          <option value="">Select Status</option>
           <option value="Done">Done</option>
           <option value="In Progress">In Progress</option>
         </select>
@@ -498,7 +790,14 @@ const NIBForm: React.FC<{
       </div>
       <div>
         <label className="block mb-1">NIB File*</label>
-        <input type="file" name="file" onChange={handleChange} required className="w-full p-2 border rounded" />
+        <input 
+          type="file" 
+          name="nib_file" 
+          onChange={handleChange} 
+          required 
+          className="w-full p-2 border rounded border-primary"
+          accept=".pdf,.jpg,.jpeg,.png"
+        />
       </div>
       <Button title="Save" type="submit" />
     </form>
@@ -516,14 +815,14 @@ const BusinessLicenseForm: React.FC<{
     setLicenses([
       ...licenses,
       {
-        type: "",
-        issuingAgency: "",
-        number: "",
-        issueDate: "",
-        expiryDate: "",
+        business_type: "",
+        issuing_agency: "",
+        business_license_number: "",
+        issuing_date: "",
+        expiry_date: "",
         qualification: "",
-        subClassification: "",
-        file: null,
+        sub_classification: "",
+        business_license_file: null,
       },
     ])
     markUnsaved();
@@ -550,8 +849,8 @@ const BusinessLicenseForm: React.FC<{
               <label className="block mb-1">Business Type*</label>
               <input
                 type="text"
-                value={license.type}
-                onChange={(e) => handleLicenseChange(index, "type", e.target.value)}
+                value={license.business_type}
+                onChange={(e) => handleLicenseChange(index, "business_type", e.target.value)}
                 required
                 className="w-full p-2 border rounded border-primary"
               />
@@ -560,28 +859,28 @@ const BusinessLicenseForm: React.FC<{
               <label className="block mb-1">Issuing Agency*</label>
               <input
                 type="text"
-                value={license.issuingAgency}
-                onChange={(e) => handleLicenseChange(index, "issuingAgency", e.target.value)}
+                value={license.issuing_agency}
+                onChange={(e) => handleLicenseChange(index, "issuing_agency", e.target.value)}
                 required
                 className="w-full p-2 border rounded border-primary"
               />
             </div>
             <div>
-              <label className="block mb-1">License Number*</label>
+              <label className="block mb-1">Business License Number*</label>
               <input
                 type="text"
-                value={license.number}
-                onChange={(e) => handleLicenseChange(index, "number", e.target.value)}
+                value={license.business_license_number}
+                onChange={(e) => handleLicenseChange(index, "business_license_number", e.target.value)}
                 required
                 className="w-full p-2 border rounded border-primary"
               />
             </div>
             <div>
-              <label className="block mb-1">Issue Date*</label>
+              <label className="block mb-1">Issuing Date*</label>
               <input
                 type="date"
-                value={license.issueDate}
-                onChange={(e) => handleLicenseChange(index, "issueDate", e.target.value)}
+                value={license.issuing_date}
+                onChange={(e) => handleLicenseChange(index, "issuing_date", e.target.value)}
                 required
                 className="w-full p-2 border rounded border-primary"
               />
@@ -590,8 +889,8 @@ const BusinessLicenseForm: React.FC<{
               <label className="block mb-1">Expiry Date*</label>
               <input
                 type="date"
-                value={license.expiryDate}
-                onChange={(e) => handleLicenseChange(index, "expiryDate", e.target.value)}
+                value={license.expiry_date}
+                onChange={(e) => handleLicenseChange(index, "expiry_date", e.target.value)}
                 required
                 className="w-full p-2 border rounded border-primary"
               />
@@ -610,25 +909,25 @@ const BusinessLicenseForm: React.FC<{
               <label className="block mb-1">Sub-classification*</label>
               <input
                 type="text"
-                value={license.subClassification}
-                onChange={(e) => handleLicenseChange(index, "subClassification", e.target.value)}
+                value={license.sub_classification}
+                onChange={(e) => handleLicenseChange(index, "sub_classification", e.target.value)}
                 required
                 className="w-full p-2 border rounded border-primary"
               />
             </div>
             <div>
-              <label className="block mb-1">License File*</label>
+              <label className="block mb-1">Business License File*</label>
               <input
                 type="file"
-                onChange={(e) => handleLicenseChange(index, "file", e.target.files ? e.target.files[0] : '')}
+                onChange={(e) => handleLicenseChange(index, "business_license_file", e.target.files ? e.target.files[0] : '')}
                 required
                 className="w-full p-2 border rounded border-primary"
+                accept=".pdf,.jpg,.jpeg,.png"
               />
             </div>
           </div>
         </div>
-      ))}
-      <Button title="Add Business License" onClick={handleAddLicense} type="button" />
+      ))}      <Button title="Add Business License" onClick={handleAddLicense} type="button" />
       <Button title="Save" type="submit" />
     </form>
   )
@@ -665,19 +964,26 @@ const IntegrityPactForm: React.FC<{
       </div>
       <div>
         <label className="block mb-1">Upload Integrity Pact*</label>
-        <input type="file" name="file" onChange={handleChange} required className="w-full p-2 border rounded border-primary" />
+        <input 
+          type="file" 
+          name="integrity_pact_file" 
+          onChange={handleChange} 
+          required 
+          className="w-full p-2 border rounded border-primary"
+          accept=".pdf,.jpg,.jpeg,.png"
+        />
       </div>
       <div>
         <label className="block mb-1">Description*</label>
         <textarea
-          name="description"
-          value={formData.description}
+          name="integrity_pact_desc"
+          value={formData.integrity_pact_desc}
           onChange={handleChange}
           required
           className="w-full p-2 border rounded border-primary"
+          rows={4}
         />
-      </div>
-      <Button title="Save" type="submit" />
+      </div>      <Button title="Save" type="submit" />
     </form>
   )
 }

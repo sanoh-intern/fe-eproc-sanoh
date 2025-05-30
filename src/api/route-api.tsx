@@ -64,3 +64,5 @@ export const API_Negotiation_Supplier = () => API + getRolePath() + '/project-de
 export const API_Post_Proposal_Supplier = () => API + getRolePath() + '/project-detail/create';
 
 export const API_Mini_Profile_Supplier = () => API + getRolePath() + '/dashboard/mini-profile/get';
+
+export const API_Company_Profile_Supplier = () => API + getRolePath() + '/user/profile';

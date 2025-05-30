@@ -1,53 +1,63 @@
-export type TypeCompanyData = {
-    generalData: {
-        companyName: string
-        description: string
-        field: string
-        subField: string
-        taxId: string
-        address: string
-        state: string
+export type TypeCompanyData = {    
+    general_data: {
+        bp_code: string
+        company_name: string
+        company_description: string
+        business_field: string
+        sub_business_field: string
+        product: string
+        tax_id: string
+        adr_line_1: string
+        adr_line_2: string
+        adr_line_3: string
+        adr_line_4: string
+        province: string
         city: string
-        postalCode: string
-        companyStatus: string
-        phone: string
-        fax: string
-        website: string
-        profileImage: string
-        products: string[]
+        postal_code: string
+        company_status: string
+        company_phone_1: string
+        company_phone_2: string
+        company_fax_1: string
+        company_fax_2: string
+        company_url: string
+        npwp_number: string
+        npwp_file: string
+        skpp_file: string
     }
-    contacts: {
-        position: string
+    person_in_charge: {
+        job_position: string
         department: string
-        name: string
-        phone: string
-        email: string
+        pic_name: string
+        pic_telp_number_1: string
+        pic_telp_number_2?: string
+        pic_email_1: string
+        pic_email_2?: string
     }[]
     nib: {
-        issuingAgency: string
-        number: string
-        issueDate: string
-        investmentStatus: string
+        issuing_agency: string
+        nib_number: string
+        issuing_date: string
+        investment_status: string
         kbli: string
-        file: string
+        nib_file: string
     }
-    businessLicenses: {
-        type: string
-        issuingAgency: string
-        number: string
-        issueDate: string
-        expiryDate: string
+    business_licenses: {
+        business_type: string
+        issuing_agency: string
+        business_license_number: string
+        issuing_date: string
+        expiry_date: string
         qualification: string
-        subClassification: string
-        file: string
+        sub_classification: string
+        business_license_file: string
     }[]
-    integrityPact: {
-        file: string
-        description: string
+    integrity_pact: {
+        integrity_pact_file: string
+        integrity_pact_desc: string
     }
 }
 
-const fetchCompanyData = async (companyId: string) => {
+const fetchCompanyData = async () => {
     // await fetch(`https://api.example.com/company/${companyId}`, {
     //     method: 'GET',
     //     headers: {
@@ -63,8 +73,7 @@ const fetchCompanyData = async (companyId: string) => {
     //     return error.message || 'Error';
     // }
     // );
-    return {
-        general_data: {
+    return {        general_data: {
             bp_code: "TEST123",
             company_name: "ABC Corp",
             company_description: "Leading IT solutions provider",
@@ -85,6 +94,9 @@ const fetchCompanyData = async (companyId: string) => {
             company_fax_1: "+1 (555) 987-6543",
             company_fax_2: "+1 (555) 654-3210",
             company_url: "https://v0.blob.com/DPYHH.png",
+            npwp_number: "12.345.678.9-012.000",
+            npwp_file: "npwp_document.pdf",
+            skpp_file: "skpp_document.pdf",
         },
         person_in_charge: [
             {
