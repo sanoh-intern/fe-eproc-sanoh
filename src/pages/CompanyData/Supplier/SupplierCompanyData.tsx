@@ -14,12 +14,14 @@ import {
   FaCheck,
   FaExclamationCircle,
   FaDownload,
+  FaEye,
 } from "react-icons/fa"
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb"
 import Swal from "sweetalert2"
 import Loader from "../../../common/Loader"
 import fetchCompanyData, { TypeCompanyData } from "../../../api/Data/company-data"
 import { postUpdateCompanyData } from "../../../api/Action/Supplier/post-update-company-data"
+import FileStreamModal from "../../../components/FileStreamModal"
 
 const SupplierCompanyData: React.FC = () => {
   const [companyData, setCompanyData] = useState<TypeCompanyData>();
@@ -32,6 +34,11 @@ const SupplierCompanyData: React.FC = () => {
     businessLicenses: false,
     integrityPact: false,
   });
+  
+  // File stream modal state
+  const [isFileModalOpen, setIsFileModalOpen] = useState(false);
+  const [selectedFilePath, setSelectedFilePath] = useState('');
+  const [selectedFileName, setSelectedFileName] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,16 +59,14 @@ const SupplierCompanyData: React.FC = () => {
 
     fetchData()
   }, [])
-
   const checkGeneralDataCompleteness = (data: any) => {
-    const requiredFields = ["bp_code", "company_name", "company_description", "business_field", "sub_business_field", "product", "tax_id", "adr_line_1", "province", "city", "postal_code", "company_status", "company_phone_1", "company_fax_1", "company_url", "npwp_number", "npwp_file", "skpp_file"]
+    const requiredFields = ["bp_code", "company_name", "company_description", "business_field", "sub_business_field", "product", "tax_id", "adr_line_1", "province", "city", "postal_code", "company_status", "company_phone_1", "company_fax_1", "company_url"]
     return requiredFields.every((field) => data[field] !== null && data[field] !== undefined && data[field] !== "")
   }
-
   const checkContactsCompleteness = (contacts: any[]) => {
     return (
       contacts.length > 0 &&
-      contacts.every((contact) => contact.job_position && contact.department && contact.pic_name && contact.pic_email_1)
+      contacts.every((contact) => contact.job_position && contact.pic_name && contact.pic_email_1 && contact.pic_telp_number_1)
     )
   }
 
@@ -90,8 +95,13 @@ const SupplierCompanyData: React.FC = () => {
   const checkIntegrityPactCompleteness = (data: any) => {
     return data.integrity_pact_file && data.integrity_pact_desc
   }
-
   const markUnsaved = () => setUnsavedChanges(true);
+
+  const handleViewFile = (filePath: string, fileName: string) => {
+    setSelectedFilePath(filePath);
+    setSelectedFileName(fileName);
+    setIsFileModalOpen(true);
+  };
 
   const handleSubmit = async (tabData: any, tabName: string) => {
     try {
@@ -156,72 +166,75 @@ const SupplierCompanyData: React.FC = () => {
       <Loader />
     )
   }
-
   return (
     <>
       <Breadcrumb pageName="Company Details" />
       <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-        <div className="p-6 sm:p-8">
+        <div className="p-4 sm:p-6 lg:p-8">
           {unsavedChanges && (
-            <div className="bg-yellow-100 text-yellow-800 p-2 mb-3">
+            <div className="bg-yellow-100 text-yellow-800 p-2 mb-3 rounded">
               Don't forget to save your changes!
             </div>
           )}
           <Tabs selectedIndex={activeTab} onSelect={handleTabChange}>
-            <TabList className="flex border-b mb-4">
+            <TabList className="flex flex-wrap border-b mb-4 overflow-x-auto">
               <Tab
-                className={`px-4 py-2 cursor-pointer flex items-center ${activeTab === 0 ? "text-primary border-b-2 border-black font-medium" : "text-primarylight "}`}
+                className={`px-2 sm:px-4 py-2 cursor-pointer flex items-center text-sm sm:text-base whitespace-nowrap ${activeTab === 0 ? "text-primary border-b-2 border-black font-medium" : "text-primarylight"}`}
               >
-                <FaBuilding className="mr-2" />
-                General Data
+                <FaBuilding className="mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">General Data</span>
+                <span className="sm:hidden">General</span>
                 {tabCompleteness.generalData ? (
-                  <FaCheck className="ml-2 text-green-500" />
+                  <FaCheck className="ml-1 sm:ml-2 text-green-500" />
                 ) : (
-                  <FaExclamationCircle className="ml-2 text-yellow-500" />
+                  <FaExclamationCircle className="ml-1 sm:ml-2 text-yellow-500" />
                 )}
               </Tab>
               <Tab
-                className={`px-4 py-2 cursor-pointer flex items-center ${activeTab === 1 ? "text-primary border-b-2 border-black font-medium" : "text-primarylight"}`}
+                className={`px-2 sm:px-4 py-2 cursor-pointer flex items-center text-sm sm:text-base whitespace-nowrap ${activeTab === 1 ? "text-primary border-b-2 border-black font-medium" : "text-primarylight"}`}
               >
-                <FaAddressCard className="mr-2" />
-                Contact Data
+                <FaAddressCard className="mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Contact Data</span>
+                <span className="sm:hidden">Contact</span>
                 {tabCompleteness.contacts ? (
-                  <FaCheck className="ml-2 text-green-500" />
+                  <FaCheck className="ml-1 sm:ml-2 text-green-500" />
                 ) : (
-                  <FaExclamationCircle className="ml-2 text-yellow-500" />
+                  <FaExclamationCircle className="ml-1 sm:ml-2 text-yellow-500" />
                 )}
               </Tab>
               <Tab
-                className={`px-4 py-2 cursor-pointer flex items-center ${activeTab === 2 ? "text-primary border-b-2 border-black font-medium" : "text-primarylight"}`}
+                className={`px-2 sm:px-4 py-2 cursor-pointer flex items-center text-sm sm:text-base whitespace-nowrap ${activeTab === 2 ? "text-primary border-b-2 border-black font-medium" : "text-primarylight"}`}
               >
-                <FaFileAlt className="mr-2" />
+                <FaFileAlt className="mr-1 sm:mr-2" />
                 NIB
                 {tabCompleteness.nib ? (
-                  <FaCheck className="ml-2 text-green-500" />
+                  <FaCheck className="ml-1 sm:ml-2 text-green-500" />
                 ) : (
-                  <FaExclamationCircle className="ml-2 text-yellow-500" />
+                  <FaExclamationCircle className="ml-1 sm:ml-2 text-yellow-500" />
                 )}
               </Tab>
               <Tab
-                className={`px-4 py-2 cursor-pointer flex items-center ${activeTab === 3 ? "text-primary border-b-2 border-black font-medium" : "text-primarylight"}`}
+                className={`px-2 sm:px-4 py-2 cursor-pointer flex items-center text-sm sm:text-base whitespace-nowrap ${activeTab === 3 ? "text-primary border-b-2 border-black font-medium" : "text-primarylight"}`}
               >
-                <FaBusinessTime className="mr-2" />
-                Business License
+                <FaBusinessTime className="mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Business License</span>
+                <span className="sm:hidden">License</span>
                 {tabCompleteness.businessLicenses ? (
-                  <FaCheck className="ml-2 text-green-500" />
+                  <FaCheck className="ml-1 sm:ml-2 text-green-500" />
                 ) : (
-                  <FaExclamationCircle className="ml-2 text-yellow-500" />
+                  <FaExclamationCircle className="ml-1 sm:ml-2 text-yellow-500" />
                 )}
               </Tab>
               <Tab
-                className={`px-4 py-2 cursor-pointer flex items-center ${activeTab === 4 ? "text-primary border-b-2 border-black font-medium" : "text-primarylight"}`}
+                className={`px-2 sm:px-4 py-2 cursor-pointer flex items-center text-sm sm:text-base whitespace-nowrap ${activeTab === 4 ? "text-primary border-b-2 border-black font-medium" : "text-primarylight"}`}
               >
-                <FaShieldAlt className="mr-2" />
-                Integrity Pact
+                <FaShieldAlt className="mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Integrity Pact</span>
+                <span className="sm:hidden">Integrity</span>
                 {tabCompleteness.integrityPact ? (
-                  <FaCheck className="ml-2 text-green-500" />
+                  <FaCheck className="ml-1 sm:ml-2 text-green-500" />
                 ) : (
-                  <FaExclamationCircle className="ml-2 text-yellow-500" />
+                  <FaExclamationCircle className="ml-1 sm:ml-2 text-yellow-500" />
                 )}
               </Tab>
             </TabList>
@@ -232,6 +245,7 @@ const SupplierCompanyData: React.FC = () => {
                   data={companyData.general_data}
                   onSubmit={(data) => handleSubmit(data, "generalData")}
                   markUnsaved={markUnsaved}
+                  onViewFile={handleViewFile}
                 />
               </TabPanel>
               <TabPanel>
@@ -246,6 +260,7 @@ const SupplierCompanyData: React.FC = () => {
                   data={companyData.nib} 
                   onSubmit={(data) => handleSubmit(data, "nib")} 
                   markUnsaved={markUnsaved}
+                  onViewFile={handleViewFile}
                 />
               </TabPanel>
               <TabPanel>
@@ -253,6 +268,7 @@ const SupplierCompanyData: React.FC = () => {
                   data={companyData.business_licenses}
                   onSubmit={(data) => handleSubmit(data, "businessLicenses")}
                   markUnsaved={markUnsaved}
+                  onViewFile={handleViewFile}
                 />
               </TabPanel>
               <TabPanel>
@@ -260,12 +276,21 @@ const SupplierCompanyData: React.FC = () => {
                   data={companyData.integrity_pact}
                   onSubmit={(data) => handleSubmit(data, "integrityPact")}
                   markUnsaved={markUnsaved}
+                  onViewFile={handleViewFile}
                 />
               </TabPanel>
             </div>
           </Tabs>
         </div>
       </div>
+
+      {/* File Stream Modal */}
+      <FileStreamModal
+        isOpen={isFileModalOpen}
+        onClose={() => setIsFileModalOpen(false)}
+        filePath={selectedFilePath}
+        fileName={selectedFileName}
+      />
     </>
   )
 }
@@ -274,8 +299,33 @@ const GeneralDataForm: React.FC<{
   data: any;
   onSubmit: (data: any) => void;
   markUnsaved: () => void;
-}> = ({ data, onSubmit, markUnsaved }) => {
-  const [formData, setFormData] = useState(data);
+  onViewFile: (filePath: string, fileName: string) => void;
+}> = ({ data, onSubmit, markUnsaved, onViewFile }) => {
+  const [formData, setFormData] = useState({
+    ...data,
+    // Convert null values to empty strings for form inputs
+    company_description: data.company_description || '',
+    business_field: data.business_field || '',
+    sub_business_field: data.sub_business_field || '',
+    product: data.product || '',
+    tax_id: data.tax_id || '',
+    adr_line_1: data.adr_line_1 || '',
+    adr_line_2: data.adr_line_2 || '',
+    adr_line_3: data.adr_line_3 || '',
+    adr_line_4: data.adr_line_4 || '',
+    province: data.province || '',
+    city: data.city || '',
+    postal_code: data.postal_code || '',
+    company_status: data.company_status || '',
+    company_phone_1: data.company_phone_1 || '',
+    company_phone_2: data.company_phone_2 || '',
+    company_fax_1: data.company_fax_1 || '',
+    company_fax_2: data.company_fax_2 || '',
+    company_url: data.company_url || '',
+    npwp_number: data.npwp_number || '',
+    npwp_file: data.npwp_file || '',
+    skpp_file: data.skpp_file || '',
+  });
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -288,10 +338,9 @@ const GeneralDataForm: React.FC<{
     e.preventDefault();
     onSubmit(formData);
   };
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4 text-black ">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block mb-1">BP Code*</label>
           <input
@@ -328,7 +377,7 @@ const GeneralDataForm: React.FC<{
         />
       </div>
       
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block mb-1">Business Field*</label>
           <input
@@ -365,7 +414,7 @@ const GeneralDataForm: React.FC<{
         />
       </div>
       
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block mb-1">Tax ID (NPWP)*</label>
           <input
@@ -388,34 +437,97 @@ const GeneralDataForm: React.FC<{
             className="w-full p-2 border rounded border-primary"
           />
         </div>
-      </div>
-      
-      <div className="grid grid-cols-2 gap-4">
+      </div><div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block mb-1">NPWP File*</label>
-          <input
-            type="file"
-            name="npwp_file"
-            onChange={handleChange}
-            required
-            className="w-full p-2 border rounded border-primary"
-            accept=".pdf,.jpg,.jpeg,.png"
-          />
+          <div className="flex gap-2">
+            <input
+              type="file"
+              name="npwp_file"
+              onChange={handleChange}
+              required
+              className="flex-1 p-2 border rounded border-primary"
+              accept=".pdf,.jpg,.jpeg,.png"
+            />
+            {formData.npwp_file && formData.npwp_file !== "" && formData.npwp_file !== null && (
+              <div className="flex gap-1">
+                <button
+                  type="button"
+                  onClick={() => onViewFile(formData.npwp_file, `NPWP_${formData.company_name || 'document'}.pdf`)}
+                  className="px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 flex items-center"
+                  title="View NPWP File"
+                >
+                  <FaEye />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    // Create download link for NPWP file
+                    const link = document.createElement('a');
+                    link.href = formData.npwp_file;
+                    link.download = `NPWP_${formData.company_name || 'document'}.pdf`;
+                    link.click();
+                  }}
+                  className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 flex items-center"
+                  title="Download NPWP File"
+                >
+                  <FaDownload />
+                </button>
+              </div>
+            )}
+          </div>
+          {formData.npwp_file && formData.npwp_file !== "" && formData.npwp_file !== null && (
+            <div className="mt-1 text-sm text-gray-600">
+              Current file: {formData.npwp_file.split('/').pop() || formData.npwp_file}
+            </div>
+          )}
         </div>
         <div>
           <label className="block mb-1">SKPP File*</label>
-          <input
-            type="file"
-            name="skpp_file"
-            onChange={handleChange}
-            required
-            className="w-full p-2 border rounded border-primary"
-            accept=".pdf,.jpg,.jpeg,.png"
-          />
+          <div className="flex gap-2">
+            <input
+              type="file"
+              name="skpp_file"
+              onChange={handleChange}
+              required
+              className="flex-1 p-2 border rounded border-primary"
+              accept=".pdf,.jpg,.jpeg,.png"
+            />
+            {formData.skpp_file && formData.skpp_file !== "" && formData.skpp_file !== null && (
+              <div className="flex gap-1">
+                <button
+                  type="button"
+                  onClick={() => onViewFile(formData.skpp_file, `SKPP_${formData.company_name || 'document'}.pdf`)}
+                  className="px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 flex items-center"
+                  title="View SKPP File"
+                >
+                  <FaEye />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    // Create download link for SKPP file
+                    const link = document.createElement('a');
+                    link.href = formData.skpp_file;
+                    link.download = `SKPP_${formData.company_name || 'document'}.pdf`;
+                    link.click();
+                  }}
+                  className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 flex items-center"
+                  title="Download SKPP File"
+                >
+                  <FaDownload />
+                </button>
+              </div>
+            )}
+          </div>
+          {formData.skpp_file && formData.skpp_file !== "" && formData.skpp_file !== null && (
+            <div className="mt-1 text-sm text-gray-600">
+              Current file: {formData.skpp_file.split('/').pop() || formData.skpp_file}
+            </div>
+          )}
         </div>
       </div>
-      
-      <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block mb-1">Address Line 1*</label>
           <input
@@ -438,8 +550,7 @@ const GeneralDataForm: React.FC<{
           />
         </div>
       </div>
-      
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block mb-1">Address Line 3</label>
           <input
@@ -462,7 +573,7 @@ const GeneralDataForm: React.FC<{
         </div>
       </div>
       
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <label className="block mb-1">Province*</label>
           <input
@@ -515,8 +626,7 @@ const GeneralDataForm: React.FC<{
           <option value="Swasta">Swasta</option>
         </select>
       </div>
-      
-      <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block mb-1">Phone 1*</label>
           <input
@@ -539,8 +649,7 @@ const GeneralDataForm: React.FC<{
           />
         </div>
       </div>
-      
-      <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block mb-1">Fax 1*</label>
           <input
@@ -587,7 +696,15 @@ const ContactDataForm: React.FC<{
   onSubmit: (data: any) => void 
   markUnsaved: () => void;
 }> = ({ data, onSubmit, markUnsaved }) => {
-  const [contacts, setContacts] = useState(data)
+  const [contacts, setContacts] = useState(
+    data.map(contact => ({
+      ...contact,
+      // Convert null values to empty strings for form inputs
+      department: contact.department || '',
+      pic_telp_number_2: contact.pic_telp_number_2 || '',
+      pic_email_2: contact.pic_email_2 || ''
+    }))
+  )
 
   const handleAddContact = () => {
     setContacts([...contacts, { 
@@ -612,13 +729,12 @@ const ContactDataForm: React.FC<{
     e.preventDefault()
     onSubmit(contacts)
   }
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4 text-black">
       {contacts.map((contact, index) => (
         <div key={index} className="border p-4 rounded border-black">
           <h3 className="font-bold mb-2">Contact {index + 1}</h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block mb-1">Job Position*</label>
               <select
@@ -654,6 +770,8 @@ const ContactDataForm: React.FC<{
                 <option value="Tax">Tax</option>
               </select>
             </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block mb-1">PIC Name*</label>
               <input
@@ -674,6 +792,8 @@ const ContactDataForm: React.FC<{
                 className="w-full p-2 border rounded border-primary"
               />
             </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block mb-1">Phone Number 2</label>
               <input
@@ -693,15 +813,15 @@ const ContactDataForm: React.FC<{
                 className="w-full p-2 border rounded border-primary"
               />
             </div>
-            <div>
-              <label className="block mb-1">Email 2</label>
-              <input
-                type="email"
-                value={contact.pic_email_2}
-                onChange={(e) => handleContactChange(index, "pic_email_2", e.target.value)}
-                className="w-full p-2 border rounded border-primary"
-              />
-            </div>
+          </div>
+          <div>
+            <label className="block mb-1">Email 2</label>
+            <input
+              type="email"
+              value={contact.pic_email_2}
+              onChange={(e) => handleContactChange(index, "pic_email_2", e.target.value)}
+              className="w-full p-2 border rounded border-primary"
+            />
           </div>
         </div>
       ))}
@@ -715,7 +835,8 @@ const NIBForm: React.FC<{
   data: any; 
   onSubmit: (data: any) => void 
   markUnsaved: () => void;
-}> = ({ data, onSubmit, markUnsaved }) => {
+  onViewFile: (filePath: string, fileName: string) => void;
+}> = ({ data, onSubmit, markUnsaved, onViewFile }) => {
   const [formData, setFormData] = useState(data)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -727,55 +848,58 @@ const NIBForm: React.FC<{
     e.preventDefault()
     onSubmit(formData)
   }
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4 text-black">
-      <div>
-        <label className="block mb-1">Issuing Agency*</label>
-        <input
-          type="text"
-          name="issuing_agency"
-          value={formData.issuing_agency}
-          onChange={handleChange}
-          required
-          className="w-full p-2 border rounded border-primary"
-        />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block mb-1">Issuing Agency*</label>
+          <input
+            type="text"
+            name="issuing_agency"
+            value={formData.issuing_agency}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border rounded border-primary"
+          />
+        </div>
+        <div>
+          <label className="block mb-1">NIB Number*</label>
+          <input
+            type="text"
+            name="nib_number"
+            value={formData.nib_number}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border rounded border-primary"
+          />
+        </div>
       </div>
-      <div>
-        <label className="block mb-1">NIB Number*</label>
-        <input
-          type="text"
-          name="nib_number"
-          value={formData.nib_number}
-          onChange={handleChange}
-          required
-          className="w-full p-2 border rounded border-primary"
-        />
-      </div>
-      <div>
-        <label className="block mb-1">Issuing Date*</label>
-        <input
-          type="date"
-          name="issuing_date"
-          value={formData.issuing_date}
-          onChange={handleChange}
-          required
-          className="w-full p-2 border rounded border-primary"
-        />
-      </div>
-      <div>
-        <label className="block mb-1">Investment Status*</label>
-        <select
-          name="investment_status"
-          value={formData.investment_status}
-          onChange={handleChange}
-          required
-          className="w-full p-2 border rounded border-primary"
-        >
-          <option value="">Select Status</option>
-          <option value="Done">Done</option>
-          <option value="In Progress">In Progress</option>
-        </select>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block mb-1">Issuing Date*</label>
+          <input
+            type="date"
+            name="issuing_date"
+            value={formData.issuing_date}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border rounded border-primary"
+          />
+        </div>
+        <div>
+          <label className="block mb-1">Investment Status*</label>
+          <select
+            name="investment_status"
+            value={formData.investment_status}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border rounded border-primary"
+          >
+            <option value="">Select Status</option>
+            <option value="Done">Done</option>
+            <option value="In Progress">In Progress</option>
+          </select>
+        </div>
       </div>
       <div>
         <label className="block mb-1">KBLI*</label>
@@ -790,14 +914,47 @@ const NIBForm: React.FC<{
       </div>
       <div>
         <label className="block mb-1">NIB File*</label>
-        <input 
-          type="file" 
-          name="nib_file" 
-          onChange={handleChange} 
-          required 
-          className="w-full p-2 border rounded border-primary"
-          accept=".pdf,.jpg,.jpeg,.png"
-        />
+        <div className="flex gap-2">
+          <input 
+            type="file" 
+            name="nib_file" 
+            onChange={handleChange} 
+            required 
+            className="flex-1 p-2 border rounded border-primary"
+            accept=".pdf,.jpg,.jpeg,.png"
+          />
+          {formData.nib_file && formData.nib_file !== "" && formData.nib_file !== null && (
+            <div className="flex gap-1">
+              <button
+                type="button"
+                onClick={() => onViewFile(formData.nib_file, `NIB_${formData.nib_number || 'document'}.pdf`)}
+                className="px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 flex items-center"
+                title="View NIB File"
+              >
+                <FaEye />
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  // Create download link for NIB file
+                  const link = document.createElement('a');
+                  link.href = formData.nib_file;
+                  link.download = `NIB_${formData.nib_number || 'document'}.pdf`;
+                  link.click();
+                }}
+                className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 flex items-center"
+                title="Download NIB File"
+              >
+                <FaDownload />
+              </button>
+            </div>
+          )}
+        </div>
+        {formData.nib_file && formData.nib_file !== "" && formData.nib_file !== null && (
+          <div className="mt-1 text-sm text-gray-600">
+            Current file: {formData.nib_file.split('/').pop() || formData.nib_file}
+          </div>
+        )}
       </div>
       <Button title="Save" type="submit" />
     </form>
@@ -808,7 +965,8 @@ const BusinessLicenseForm: React.FC<{
   data: any[]; 
   onSubmit: (data: any) => void 
   markUnsaved: () => void;
-}> = ({ data, onSubmit, markUnsaved }) => {
+  onViewFile: (filePath: string, fileName: string) => void;
+}> = ({ data, onSubmit, markUnsaved, onViewFile }) => {
   const [licenses, setLicenses] = useState(data)
 
   const handleAddLicense = () => {
@@ -838,13 +996,12 @@ const BusinessLicenseForm: React.FC<{
     e.preventDefault()
     onSubmit(licenses)
   }
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4 text-black">
       {licenses.map((license, index) => (
         <div key={index} className="border p-4 rounded border-black">
           <h3 className="font-bold mb-2">Business License {index + 1}</h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block mb-1">Business Type*</label>
               <input
@@ -865,6 +1022,8 @@ const BusinessLicenseForm: React.FC<{
                 className="w-full p-2 border rounded border-primary"
               />
             </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block mb-1">Business License Number*</label>
               <input
@@ -885,6 +1044,8 @@ const BusinessLicenseForm: React.FC<{
                 className="w-full p-2 border rounded border-primary"
               />
             </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block mb-1">Expiry Date*</label>
               <input
@@ -905,29 +1066,63 @@ const BusinessLicenseForm: React.FC<{
                 className="w-full p-2 border rounded border-primary"
               />
             </div>
-            <div>
-              <label className="block mb-1">Sub-classification*</label>
-              <input
-                type="text"
-                value={license.sub_classification}
-                onChange={(e) => handleLicenseChange(index, "sub_classification", e.target.value)}
-                required
-                className="w-full p-2 border rounded border-primary"
-              />
-            </div>
-            <div>
-              <label className="block mb-1">Business License File*</label>
+          </div>
+          <div>
+            <label className="block mb-1">Sub-classification*</label>
+            <input
+              type="text"
+              value={license.sub_classification}
+              onChange={(e) => handleLicenseChange(index, "sub_classification", e.target.value)}
+              required
+              className="w-full p-2 border rounded border-primary"
+            />
+          </div>
+          <div>
+            <label className="block mb-1">Business License File*</label>
+            <div className="flex gap-2">
               <input
                 type="file"
                 onChange={(e) => handleLicenseChange(index, "business_license_file", e.target.files ? e.target.files[0] : '')}
                 required
-                className="w-full p-2 border rounded border-primary"
+                className="flex-1 p-2 border rounded border-primary"
                 accept=".pdf,.jpg,.jpeg,.png"
               />
+              {license.business_license_file && license.business_license_file !== "" && license.business_license_file !== null && (
+                <div className="flex gap-1">
+                  <button
+                    type="button"
+                    onClick={() => onViewFile(license.business_license_file, `BusinessLicense_${license.business_license_number || 'document'}.pdf`)}
+                    className="px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 flex items-center"
+                    title="View Business License File"
+                  >
+                    <FaEye />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // Create download link for Business License file
+                      const link = document.createElement('a');
+                      link.href = license.business_license_file;
+                      link.download = `BusinessLicense_${license.business_license_number || 'document'}.pdf`;
+                      link.click();
+                    }}
+                    className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 flex items-center"
+                    title="Download Business License File"
+                  >
+                    <FaDownload />
+                  </button>
+                </div>
+              )}
             </div>
+            {license.business_license_file && license.business_license_file !== "" && license.business_license_file !== null && (
+              <div className="mt-1 text-sm text-gray-600">
+                Current file: {(typeof license.business_license_file === 'string' ? license.business_license_file.split('/').pop() : license.business_license_file.name) || license.business_license_file}
+              </div>
+            )}
           </div>
         </div>
-      ))}      <Button title="Add Business License" onClick={handleAddLicense} type="button" />
+      ))}
+      <Button title="Add Business License" onClick={handleAddLicense} type="button" />
       <Button title="Save" type="submit" />
     </form>
   )
@@ -937,7 +1132,8 @@ const IntegrityPactForm: React.FC<{
   data: any; 
   onSubmit: (data: any) => void 
   markUnsaved: () => void;
-}> = ({ data, onSubmit, markUnsaved }) => {
+  onViewFile: (filePath: string, fileName: string) => void;
+}> = ({ data, onSubmit, markUnsaved, onViewFile }) => {
   const [formData, setFormData] = useState(data)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -961,17 +1157,49 @@ const IntegrityPactForm: React.FC<{
           }}
           type="button"
         />
-      </div>
-      <div>
+      </div>      <div>
         <label className="block mb-1">Upload Integrity Pact*</label>
-        <input 
-          type="file" 
-          name="integrity_pact_file" 
-          onChange={handleChange} 
-          required 
-          className="w-full p-2 border rounded border-primary"
-          accept=".pdf,.jpg,.jpeg,.png"
-        />
+        <div className="flex gap-2">
+          <input 
+            type="file" 
+            name="integrity_pact_file" 
+            onChange={handleChange} 
+            required 
+            className="flex-1 p-2 border rounded border-primary"
+            accept=".pdf,.jpg,.jpeg,.png"
+          />
+          {formData.integrity_pact_file && formData.integrity_pact_file !== "" && formData.integrity_pact_file !== null && (
+            <div className="flex gap-1">
+              <button
+                type="button"
+                onClick={() => onViewFile(formData.integrity_pact_file, `IntegrityPact_document.pdf`)}
+                className="px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 flex items-center"
+                title="View Integrity Pact File"
+              >
+                <FaEye />
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  // Create download link for Integrity Pact file
+                  const link = document.createElement('a');
+                  link.href = formData.integrity_pact_file;
+                  link.download = `IntegrityPact_document.pdf`;
+                  link.click();
+                }}
+                className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 flex items-center"
+                title="Download Integrity Pact File"
+              >
+                <FaDownload />
+              </button>
+            </div>
+          )}
+        </div>
+        {formData.integrity_pact_file && formData.integrity_pact_file !== "" && formData.integrity_pact_file !== null && (
+          <div className="mt-1 text-sm text-gray-600">
+            Current file: {formData.integrity_pact_file.split('/').pop() || formData.integrity_pact_file}
+          </div>
+        )}
       </div>
       <div>
         <label className="block mb-1">Description*</label>

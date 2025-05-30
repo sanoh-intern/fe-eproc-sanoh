@@ -5,7 +5,7 @@ import { FiDownload, FiCalendar, FiClock, FiTarget, FiUserCheck, FiFlag, FiAward
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import Button from "./Forms/Button"
-import { API_Download_Dokumen } from "../api/route-api"
+import { API_Download_Document } from "../api/route-api"
 
 interface OffersDetailsProps {
     offerDetails: OfferDetails | null;
@@ -32,7 +32,7 @@ const OffersDetails: React.FC<OffersDetailsProps> = ({ offerDetails }) => {
             try {
                 const token = localStorage.getItem("access_token");
                 toastId = toast.loading("Downloading file...");
-                const response = await fetch(API_Download_Dokumen() + offerDetails.id, {
+                const response = await fetch(API_Download_Document() + offerDetails.id, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },

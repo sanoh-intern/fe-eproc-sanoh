@@ -22,7 +22,8 @@ export const API_Email = () => API + `/email`;
 // Global API
 export const API_Dashboard = () => API + getRolePath() + `/dashboard`;
 export const API_Detail_Offer = () => API + getRolePath() + `/project-header/get/`;
-export const API_Download_Dokumen = () => API + `/download/project/attachment/`;
+export const API_Download_Document = () => API + `/download/project/attachment/`;
+export const API_Stream_Document = () => API + getRolePath() + `/stream/file`;
 
 // Global Admin API
 export const API_List_Offer_Admin = () => API + getRolePath() + `/project-header/manage-offer/get/all`;

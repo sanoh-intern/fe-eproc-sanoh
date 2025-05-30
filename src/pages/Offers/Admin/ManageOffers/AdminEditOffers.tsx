@@ -10,7 +10,7 @@ import "react-toastify/dist/ReactToastify.css"
 import Loader from "../../../../common/Loader"
 import { putEditOffers } from "../../../../api/Action/Admin/Offers/put-update-offers"
 import fetchEditOfferDetails, { TypeEditOfferDetails } from "../../../../api/Data/Admin/ManageOffers/edit-offers-details"
-import { API_Download_Dokumen } from "../../../../api/route-api"
+import { API_Download_Document } from "../../../../api/route-api"
 
 interface Option {
     value: string
@@ -222,7 +222,7 @@ const AdminEditOffers: React.FC = () => {
             try {
                 const token = localStorage.getItem("access_token");
                 toastId = toast.loading("Downloading file...");
-                const response = await fetch(API_Download_Dokumen() + offerId, {
+                const response = await fetch(API_Download_Document() + offerId, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
