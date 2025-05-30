@@ -63,7 +63,19 @@ export const API_Project_Followed_Supplier = () => API + getRolePath() + '/proje
 export const API_Register_Project_Supplier = () => API + getRolePath() + '/project-header/join/';
 export const API_Negotiation_Supplier = () => API + getRolePath() + '/project-detail/list-offer/get/';
 export const API_Post_Proposal_Supplier = () => API + getRolePath() + '/project-detail/create';
-
 export const API_Mini_Profile_Supplier = () => API + getRolePath() + '/dashboard/mini-profile/get';
 
 export const API_Company_Profile_Supplier = () => API + getRolePath() + '/user/profile';
+export const API_Update_General_Data_Supplier = () => API + getRolePath() + '/company-profile/update/';
+export const API_Create_Person_In_Charge_Supplier = () => API + getRolePath() + '/pic/create';
+export const API_Update_Person_In_Charge_Supplier = () => API + getRolePath() + '/pic/update/';
+export const API_Delete_Person_In_Charge_Supplier = () => API + getRolePath() + '/pic/delete/';
+export const API_Create_Intergrity_Supplier = () => API + getRolePath() + '/intergrity-pact/create';
+export const API_Update_Intergrity_Supplier = () => API + getRolePath() + '/intergrity-pact/update/';
+export const API_Delete_Intergrity_Supplier = () => API + getRolePath() + '/intergrity-pact/delete/';
+export const API_Create_NIB_Supplier = () => API + getRolePath() + '/nib/create';
+export const API_Update_NIB_Supplier = () => API + getRolePath() + '/nib/update/';
+export const API_Delete_NIB_Supplier = () => API + getRolePath() + '/nib/delete/';
+export const API_Create_Business_License_Supplier = () => API + getRolePath() + '/business-license/create';
+export const API_Update_Business_License_Supplier = () => API + getRolePath() + '/business-license/update/';
+export const API_Delete_Business_License_Supplier = () => API + getRolePath() + '/business-license/delete/';

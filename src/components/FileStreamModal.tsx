@@ -1,8 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { FaTimes, FaDownload, FaSpinner } from 'react-icons/fa';
+import React, { useState, useEffect, useRef } from 'react';
+import { FaTimes, FaDownload, FaSpinner, FaCog } from 'react-icons/fa';
 import { streamFile } from '../api/Action/stream-file';
 import { toast } from 'react-toastify';
 import Button from './Forms/Button';
+
+type ModalSize = 'small' | 'medium' | 'large' | 'fullscreen';
+
+interface ModalSizeConfig {
+  maxWidth: string;
+  maxHeight: string;
+  label: string;
+}
 
 interface FileStreamModalProps {
   isOpen: boolean;
@@ -19,7 +27,48 @@ const FileStreamModal: React.FC<FileStreamModalProps> = ({
 }) => {
   const [fileUrl, setFileUrl] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>('');  const [modalSize, setModalSize] = useState<ModalSize>('medium');
+  const [showSizeOptions, setShowSizeOptions] = useState(false);
+  const [customHeight, setCustomHeight] = useState<number>(85); // Percentage - default 85%
+  const [isCustomSize, setIsCustomSize] = useState(true); // Default ke custom size
+  const sizeOptionsRef = useRef<HTMLDivElement>(null);  const modalSizes: Record<ModalSize, ModalSizeConfig> = {
+    small: {
+      maxWidth: '672px', // max-w-2xl equivalent
+      maxHeight: '50vh',
+      label: 'Small (50%)'
+    },
+    medium: {
+      maxWidth: '896px', // max-w-4xl equivalent
+      maxHeight: '75vh',
+      label: 'Medium (75%)'
+    },
+    large: {
+      maxWidth: '1152px', // max-w-6xl equivalent
+      maxHeight: '85vh',
+      label: 'Large (85%)'
+    },
+    fullscreen: {
+      maxWidth: '95vw',
+      maxHeight: '95vh',
+      label: 'Fullscreen (95%)'
+    }
+  };
+  // Close size options when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sizeOptionsRef.current && !sizeOptionsRef.current.contains(event.target as Node)) {
+        setShowSizeOptions(false);
+      }
+    };
+
+    if (showSizeOptions) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showSizeOptions]);
 
   useEffect(() => {
     if (isOpen && filePath) {
@@ -59,6 +108,28 @@ const FileStreamModal: React.FC<FileStreamModalProps> = ({
     }
   };
 
+  const handleSizeChange = (size: ModalSize) => {
+    setModalSize(size);
+    setIsCustomSize(false);
+    setShowSizeOptions(false);
+  };
+  const handleCustomSizeChange = (height: number) => {
+    setCustomHeight(height);
+    setIsCustomSize(true);
+  };  const getModalStyle = () => {
+    if (isCustomSize) {
+      return { 
+        maxWidth: '1152px', // Large width untuk custom
+        maxHeight: `${customHeight}vh`,
+        height: `${customHeight}vh`
+      };
+    }
+    return {
+      maxWidth: modalSizes[modalSize].maxWidth,
+      maxHeight: modalSizes[modalSize].maxHeight
+    };
+  };
+
   const handleClose = () => {
     if (fileUrl) {
       URL.revokeObjectURL(fileUrl);
@@ -69,16 +140,81 @@ const FileStreamModal: React.FC<FileStreamModalProps> = ({
   };
 
   if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b">
-          <h3 className="text-lg font-semibold text-gray-900 truncate">
-            {fileName}
-          </h3>
+  
+  return (    <div className="fixed inset-0 z-99999 flex items-center justify-center bg-black bg-opacity-50 p-4">
+      <div 
+        className={`bg-white rounded-lg shadow-xl w-full flex flex-col`}
+        style={getModalStyle()}
+      >
+        {/* Header */}        <div className="flex items-center justify-between p-4 border-b">
           <div className="flex items-center space-x-2">
+            <h3 className="text-lg font-semibold text-gray-900 truncate">
+              {fileName}
+            </h3>
+            {isCustomSize && (
+              <span className="text-xs bg-blue-100 text-primary px-2 py-1 rounded">
+                Custom {customHeight}%
+              </span>
+            )}
+          </div>
+          <div className="flex items-center space-x-2">
+            {/* Size Options */}
+            <div className="relative" ref={sizeOptionsRef}>
+              <button
+                onClick={() => setShowSizeOptions(!showSizeOptions)}
+                className="p-2 text-gray-400 hover:bg-gray-100 rounded-lg transition-colors"
+                title="Resize Modal"
+              >
+                <FaCog size={16} />
+              </button>
+              
+              {showSizeOptions && (
+                <div className="absolute right-0 top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 w-64 p-4">
+                  <h4 className="text-sm font-medium text-gray-900 mb-3">Modal Size</h4>
+                  
+                  {/* Size Presets */}
+                  <div className="space-y-2 mb-4">
+                    {Object.entries(modalSizes).map(([size, config]) => (
+                      <button
+                        key={size}
+                        onClick={() => handleSizeChange(size as ModalSize)}
+                        className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
+                          modalSize === size && !isCustomSize
+                            ? 'bg-blue-100 text-primary'
+                            : 'hover:bg-gray-100'
+                        }`}
+                      >
+                        {config.label}
+                      </button>
+                    ))}
+                  </div>
+                    {/* Custom Size */}
+                  <div className="border-t pt-3">
+                    <label className={`block text-sm font-medium mb-2 ${
+                      isCustomSize ? 'text-primary' : 'text-gray-700'
+                    }`}>
+                      Custom Height: {customHeight}%
+                      {isCustomSize && <span className="ml-2 text-xs bg-blue-100 text-primary px-2 py-1 rounded">Active</span>}
+                    </label>
+                    <input
+                      type="range"
+                      min="30"
+                      max="95"
+                      value={customHeight}
+                      onChange={(e) => handleCustomSizeChange(Number(e.target.value))}
+                      className={`w-full h-2 rounded-lg appearance-none cursor-pointer ${
+                        isCustomSize ? 'bg-blue-200' : 'bg-gray-200'
+                      }`}
+                    />
+                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                      <span>30%</span>
+                      <span>95%</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+            
             <button
               onClick={handleClose}
               className="p-2 text-gray-400 hover:bg-gray-100 rounded-lg transition-colors"
@@ -93,7 +229,7 @@ const FileStreamModal: React.FC<FileStreamModalProps> = ({
           {isLoading && (
             <div className="flex items-center justify-center h-64">
               <div className="flex flex-col items-center space-y-2">
-                <FaSpinner className="animate-spin text-blue-500" size={32} />
+                <FaSpinner className="animate-spin text-primary" size={32} />
                 <span className="text-gray-600">Loading file...</span>
               </div>
             </div>
@@ -105,7 +241,7 @@ const FileStreamModal: React.FC<FileStreamModalProps> = ({
                 <p className="text-red-600 mb-2">{error}</p>
                 <button
                   onClick={loadFile}
-                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                  className="px-4 py-2 bg-primary text-white rounded hover:bg-secondary transition-colors"
                 >
                   Retry
                 </button>
