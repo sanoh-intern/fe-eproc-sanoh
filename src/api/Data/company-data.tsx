@@ -22,14 +22,13 @@ export type TypeCompanyData = {
         company_fax_1: string | null
         company_fax_2: string | null
         company_url: string | null
-        npwp_number?: string | null
         npwp_file?: string | null
         skpp_file?: string | null
     }
     person_in_charge: {
         pic_id?: number | null
         job_position: string
-        department: string | null
+        departement: string | null
         pic_name: string
         pic_telp_number_1: string
         pic_telp_number_2?: string
@@ -84,7 +83,6 @@ const fetchCompanyData = async (): Promise<TypeCompanyData> => {
             const transformedData: TypeCompanyData = {
                 general_data: {
                     ...result.data.general_data,
-                    npwp_number: result.data.general_data.npwp_number || null,
                     npwp_file: result.data.general_data.npwp_file || null,
                     skpp_file: result.data.general_data.skpp_file || null,
                 },

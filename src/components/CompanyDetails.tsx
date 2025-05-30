@@ -31,7 +31,7 @@ interface CompanyData {
   }
   contacts: {
     position: string
-    department: string
+    departement: string
     name: string
     phone: string
     email: string
@@ -184,10 +184,9 @@ const CompanyDetails: React.FC<CompanyDataProps> = ({ companyData }) => {
                             <div>
                             <p className="text-sm text-gray-500">Position</p>
                             <p className="font-medium text-gray-800">{contact.position}</p>
-                            </div>
-                            <div>
+                            </div>                            <div>
                             <p className="text-sm text-gray-500">Department</p>
-                            <p className="font-medium text-gray-800">{contact.department}</p>
+                            <p className="font-medium text-gray-800">{contact.departement}</p>
                             </div>
                             <div className="col-span-2">
                             <p className="text-sm text-gray-500">Name</p>

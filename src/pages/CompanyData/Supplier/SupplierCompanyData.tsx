@@ -20,8 +20,23 @@ import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb"
 import Swal from "sweetalert2"
 import Loader from "../../../common/Loader"
 import fetchCompanyData, { TypeCompanyData } from "../../../api/Data/company-data"
-import { postUpdateCompanyData } from "../../../api/Action/Supplier/post-update-company-data"
 import FileStreamModal from "../../../components/FileStreamModal"
+// Import API endpoints
+import {
+  API_Update_General_Data_Supplier,
+  API_Create_Person_In_Charge_Supplier,
+  API_Update_Person_In_Charge_Supplier,
+  API_Delete_Person_In_Charge_Supplier,
+  API_Create_Intergrity_Supplier,
+  API_Update_Intergrity_Supplier,
+  API_Delete_Intergrity_Supplier,
+  API_Create_NIB_Supplier,
+  API_Update_NIB_Supplier,
+  API_Delete_NIB_Supplier,
+  API_Create_Business_License_Supplier,
+  API_Update_Business_License_Supplier,
+  API_Delete_Business_License_Supplier
+} from "../../../api/route-api"
 
 const SupplierCompanyData: React.FC = () => {
   const [companyData, setCompanyData] = useState<TypeCompanyData>();
@@ -96,48 +111,551 @@ const SupplierCompanyData: React.FC = () => {
     return data.integrity_pact_file && data.integrity_pact_desc
   }
   const markUnsaved = () => setUnsavedChanges(true);
-
   const handleViewFile = (filePath: string, fileName: string) => {
     setSelectedFilePath(filePath);
     setSelectedFileName(fileName);
     setIsFileModalOpen(true);
   };
 
-  const handleSubmit = async (tabData: any, tabName: string) => {
+  // General Data CRUD Methods
+  const handleGeneralDataSave = async (formData: any) => {
     try {
-      const response = await postUpdateCompanyData( tabName, tabData )
-      if (response.success) {
-        toast.success(response.message)
-        setTabCompleteness((prev) => ({
+      const formDataToSend = new FormData();
+      
+      // Add all text fields
+      Object.keys(formData).forEach(key => {
+        if (key !== 'npwp_file' && key !== 'skpp_file') {
+          formDataToSend.append(key, formData[key] || '');
+        }
+      });
+      
+      // Add files if they exist
+      if (formData.npwp_file instanceof File) {
+        formDataToSend.append('npwp_file', formData.npwp_file);
+      }
+      if (formData.skpp_file instanceof File) {
+        formDataToSend.append('skpp_file', formData.skpp_file);
+      }
+
+      const response = await fetch(API_Update_General_Data_Supplier(), {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('access_token') || '',
+        },
+        body: formDataToSend
+      });
+
+      const result = await response.json();
+      
+      if (response.ok && result.status) {
+        toast.success(result.message || 'General data updated successfully');
+        setUnsavedChanges(false);
+        // Refresh company data
+        const updatedData = await fetchCompanyData();
+        setCompanyData(updatedData);
+        setTabCompleteness(prev => ({
           ...prev,
-          [tabName]: checkTabCompleteness(tabName, tabData),
-        }))
+          generalData: checkGeneralDataCompleteness(updatedData.general_data)
+        }));
       } else {
-        toast.error("Failed to update data")
+        toast.error(result.message || 'Failed to update general data');
       }
     } catch (error) {
-      console.error("Error updating company data:", error)
-      toast.error("An error occurred while updating data")
+      console.error('Error updating general data:', error);
+      toast.error('An error occurred while updating general data');
     }
-  }
+  };
 
-  const checkTabCompleteness = (tabName: string, data: any) => {
-    switch (tabName) {
-      case "generalData":
-        return checkGeneralDataCompleteness(data)
-      case "contacts":
-        return checkContactsCompleteness(data)
-      case "nib":
-        return checkNIBCompleteness(data)
-      case "businessLicenses":
-        return checkBusinessLicensesCompleteness(data)
-      case "integrityPact":
-        return checkIntegrityPactCompleteness(data)
-      default:
-        return false
+  // Person in Charge CRUD Methods
+  const handlePersonInChargeCreate = async (contactsData: any[]) => {
+    try {
+      const response = await fetch(API_Create_Person_In_Charge_Supplier(), {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('access_token') || '',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ data: contactsData })
+      });
+
+      const result = await response.json();
+      
+      if (response.ok && result.status) {
+        toast.success(result.message || 'Person in charge created successfully');
+        setUnsavedChanges(false);
+        // Refresh company data
+        const updatedData = await fetchCompanyData();
+        setCompanyData(updatedData);
+        setTabCompleteness(prev => ({
+          ...prev,
+          contacts: checkContactsCompleteness(updatedData.person_in_charge)
+        }));
+      } else {
+        toast.error(result.message || 'Failed to create person in charge');
+      }
+    } catch (error) {
+      console.error('Error creating person in charge:', error);
+      toast.error('An error occurred while creating person in charge');
     }
-  }
+  };
 
+  const handlePersonInChargeUpdate = async (picId: number, contactData: any) => {
+    try {
+      const response = await fetch(API_Update_Person_In_Charge_Supplier() + picId, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('access_token') || '',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(contactData)
+      });
+
+      const result = await response.json();
+      
+      if (response.ok && result.status) {
+        toast.success(result.message || 'Person in charge updated successfully');
+        setUnsavedChanges(false);
+        // Refresh company data
+        const updatedData = await fetchCompanyData();
+        setCompanyData(updatedData);
+        setTabCompleteness(prev => ({
+          ...prev,
+          contacts: checkContactsCompleteness(updatedData.person_in_charge)
+        }));
+      } else {
+        toast.error(result.message || 'Failed to update person in charge');
+      }
+    } catch (error) {
+      console.error('Error updating person in charge:', error);
+      toast.error('An error occurred while updating person in charge');
+    }
+  };
+
+  const handlePersonInChargeDelete = async (picId: number) => {
+    try {
+      const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: 'You will not be able to recover this person in charge!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+      });
+
+      if (result.isConfirmed) {
+        const response = await fetch(API_Delete_Person_In_Charge_Supplier() + picId, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('access_token') || '',
+            'Content-Type': 'application/json',
+          }
+        });
+
+        const responseData = await response.json();
+        
+        if (response.ok && responseData.status) {
+          toast.success(responseData.message || 'Person in charge deleted successfully');
+          // Refresh company data
+          const updatedData = await fetchCompanyData();
+          setCompanyData(updatedData);
+          setTabCompleteness(prev => ({
+            ...prev,
+            contacts: checkContactsCompleteness(updatedData.person_in_charge)
+          }));
+        } else {
+          toast.error(responseData.message || 'Failed to delete person in charge');
+        }
+      }
+    } catch (error) {
+      console.error('Error deleting person in charge:', error);
+      toast.error('An error occurred while deleting person in charge');
+    }
+  };
+
+  // Integrity Pact CRUD Methods
+  const handleIntegrityPactCreate = async (formData: any) => {
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append('integrity_pact_desc', formData.integrity_pact_desc || '');
+      
+      if (formData.integrity_pact_file instanceof File) {
+        formDataToSend.append('integrity_pact_file', formData.integrity_pact_file);
+      }
+
+      const response = await fetch(API_Create_Intergrity_Supplier(), {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('access_token') || '',
+        },
+        body: formDataToSend
+      });
+
+      const result = await response.json();
+      
+      if (response.ok && result.status) {
+        toast.success(result.message || 'Integrity pact created successfully');
+        setUnsavedChanges(false);
+        // Refresh company data
+        const updatedData = await fetchCompanyData();
+        setCompanyData(updatedData);
+        setTabCompleteness(prev => ({
+          ...prev,
+          integrityPact: checkIntegrityPactCompleteness(updatedData.integrity_pact)
+        }));
+      } else {
+        toast.error(result.message || 'Failed to create integrity pact');
+      }
+    } catch (error) {
+      console.error('Error creating integrity pact:', error);
+      toast.error('An error occurred while creating integrity pact');
+    }
+  };
+
+  const handleIntegrityPactUpdate = async (integrityPactId: number, formData: any) => {
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append('integrity_pact_desc', formData.integrity_pact_desc || '');
+      
+      if (formData.integrity_pact_file instanceof File) {
+        formDataToSend.append('integrity_pact_file', formData.integrity_pact_file);
+      }
+
+      const response = await fetch(API_Update_Intergrity_Supplier() + integrityPactId, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('access_token') || '',
+        },
+        body: formDataToSend
+      });
+
+      const result = await response.json();
+      
+      if (response.ok && result.status) {
+        toast.success(result.message || 'Integrity pact updated successfully');
+        setUnsavedChanges(false);
+        // Refresh company data
+        const updatedData = await fetchCompanyData();
+        setCompanyData(updatedData);
+        setTabCompleteness(prev => ({
+          ...prev,
+          integrityPact: checkIntegrityPactCompleteness(updatedData.integrity_pact)
+        }));
+      } else {
+        toast.error(result.message || 'Failed to update integrity pact');
+      }
+    } catch (error) {
+      console.error('Error updating integrity pact:', error);
+      toast.error('An error occurred while updating integrity pact');
+    }
+  };
+
+  const handleIntegrityPactDelete = async (integrityPactId: number) => {
+    try {
+      const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: 'You will not be able to recover this integrity pact!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+      });
+
+      if (result.isConfirmed) {
+        const response = await fetch(API_Delete_Intergrity_Supplier() + integrityPactId, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('access_token') || '',
+            'Content-Type': 'application/json',
+          }
+        });
+
+        const responseData = await response.json();
+        
+        if (response.ok && responseData.status) {
+          toast.success(responseData.message || 'Integrity pact deleted successfully');
+          // Refresh company data
+          const updatedData = await fetchCompanyData();
+          setCompanyData(updatedData);
+          setTabCompleteness(prev => ({
+            ...prev,
+            integrityPact: checkIntegrityPactCompleteness(updatedData.integrity_pact)
+          }));
+        } else {
+          toast.error(responseData.message || 'Failed to delete integrity pact');
+        }
+      }
+    } catch (error) {
+      console.error('Error deleting integrity pact:', error);
+      toast.error('An error occurred while deleting integrity pact');
+    }
+  };
+
+  // NIB CRUD Methods
+  const handleNIBCreate = async (formData: any) => {
+    try {
+      const formDataToSend = new FormData();
+      
+      // Add all text fields
+      Object.keys(formData).forEach(key => {
+        if (key !== 'nib_file') {
+          formDataToSend.append(key, formData[key] || '');
+        }
+      });
+      
+      if (formData.nib_file instanceof File) {
+        formDataToSend.append('nib_file', formData.nib_file);
+      }
+
+      const response = await fetch(API_Create_NIB_Supplier(), {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('access_token') || '',
+        },
+        body: formDataToSend
+      });
+
+      const result = await response.json();
+      
+      if (response.ok && result.status) {
+        toast.success(result.message || 'NIB created successfully');
+        setUnsavedChanges(false);
+        // Refresh company data
+        const updatedData = await fetchCompanyData();
+        setCompanyData(updatedData);
+        setTabCompleteness(prev => ({
+          ...prev,
+          nib: checkNIBCompleteness(updatedData.nib)
+        }));
+      } else {
+        toast.error(result.message || 'Failed to create NIB');
+      }
+    } catch (error) {
+      console.error('Error creating NIB:', error);
+      toast.error('An error occurred while creating NIB');
+    }
+  };
+
+  const handleNIBUpdate = async (nibId: number, formData: any) => {
+    try {
+      const formDataToSend = new FormData();
+      
+      // Add all text fields
+      Object.keys(formData).forEach(key => {
+        if (key !== 'nib_file') {
+          formDataToSend.append(key, formData[key] || '');
+        }
+      });
+      
+      if (formData.nib_file instanceof File) {
+        formDataToSend.append('nib_file', formData.nib_file);
+      }
+
+      const response = await fetch(API_Update_NIB_Supplier() + nibId, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('access_token') || '',
+        },
+        body: formDataToSend
+      });
+
+      const result = await response.json();
+      
+      if (response.ok && result.status) {
+        toast.success(result.message || 'NIB updated successfully');
+        setUnsavedChanges(false);
+        // Refresh company data
+        const updatedData = await fetchCompanyData();
+        setCompanyData(updatedData);
+        setTabCompleteness(prev => ({
+          ...prev,
+          nib: checkNIBCompleteness(updatedData.nib)
+        }));
+      } else {
+        toast.error(result.message || 'Failed to update NIB');
+      }
+    } catch (error) {
+      console.error('Error updating NIB:', error);
+      toast.error('An error occurred while updating NIB');
+    }
+  };
+
+  const handleNIBDelete = async (nibId: number) => {
+    try {
+      const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: 'You will not be able to recover this NIB!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+      });
+
+      if (result.isConfirmed) {
+        const response = await fetch(API_Delete_NIB_Supplier() + nibId, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('access_token') || '',
+            'Content-Type': 'application/json',
+          }
+        });
+
+        const responseData = await response.json();
+        
+        if (response.ok && responseData.status) {
+          toast.success(responseData.message || 'NIB deleted successfully');
+          // Refresh company data
+          const updatedData = await fetchCompanyData();
+          setCompanyData(updatedData);
+          setTabCompleteness(prev => ({
+            ...prev,
+            nib: checkNIBCompleteness(updatedData.nib)
+          }));
+        } else {
+          toast.error(responseData.message || 'Failed to delete NIB');
+        }
+      }
+    } catch (error) {
+      console.error('Error deleting NIB:', error);
+      toast.error('An error occurred while deleting NIB');
+    }
+  };
+
+  // Business License CRUD Methods
+  const handleBusinessLicenseCreate = async (formData: any) => {
+    try {
+      const formDataToSend = new FormData();
+      
+      // Add all text fields
+      Object.keys(formData).forEach(key => {
+        if (key !== 'business_license_file') {
+          formDataToSend.append(key, formData[key] || '');
+        }
+      });
+      
+      if (formData.business_license_file instanceof File) {
+        formDataToSend.append('business_license_file', formData.business_license_file);
+      }
+
+      const response = await fetch(API_Create_Business_License_Supplier(), {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('access_token') || '',
+        },
+        body: formDataToSend
+      });
+
+      const result = await response.json();
+      
+      if (response.ok && result.status) {
+        toast.success(result.message || 'Business license created successfully');
+        setUnsavedChanges(false);
+        // Refresh company data
+        const updatedData = await fetchCompanyData();
+        setCompanyData(updatedData);
+        setTabCompleteness(prev => ({
+          ...prev,
+          businessLicenses: checkBusinessLicensesCompleteness(updatedData.business_licenses)
+        }));
+      } else {
+        toast.error(result.message || 'Failed to create business license');
+      }
+    } catch (error) {
+      console.error('Error creating business license:', error);
+      toast.error('An error occurred while creating business license');
+    }
+  };
+
+  const handleBusinessLicenseUpdate = async (businessLicenseId: number, formData: any) => {
+    try {
+      const formDataToSend = new FormData();
+      
+      // Add all text fields
+      Object.keys(formData).forEach(key => {
+        if (key !== 'business_license_file') {
+          formDataToSend.append(key, formData[key] || '');
+        }
+      });
+      
+      if (formData.business_license_file instanceof File) {
+        formDataToSend.append('business_license_file', formData.business_license_file);
+      }
+
+      const response = await fetch(API_Update_Business_License_Supplier() + businessLicenseId, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('access_token') || '',
+        },
+        body: formDataToSend
+      });
+
+      const result = await response.json();
+      
+      if (response.ok && result.status) {
+        toast.success(result.message || 'Business license updated successfully');
+        setUnsavedChanges(false);
+        // Refresh company data
+        const updatedData = await fetchCompanyData();
+        setCompanyData(updatedData);
+        setTabCompleteness(prev => ({
+          ...prev,
+          businessLicenses: checkBusinessLicensesCompleteness(updatedData.business_licenses)
+        }));
+      } else {
+        toast.error(result.message || 'Failed to update business license');
+      }
+    } catch (error) {
+      console.error('Error updating business license:', error);
+      toast.error('An error occurred while updating business license');
+    }
+  };
+
+  const handleBusinessLicenseDelete = async (businessLicenseId: number) => {
+    try {
+      const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: 'You will not be able to recover this business license!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+      });
+
+      if (result.isConfirmed) {
+        const response = await fetch(API_Delete_Business_License_Supplier() + businessLicenseId, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('access_token') || '',
+            'Content-Type': 'application/json',
+          }
+        });
+
+        const responseData = await response.json();
+        
+        if (response.ok && responseData.status) {
+          toast.success(responseData.message || 'Business license deleted successfully');
+          // Refresh company data
+          const updatedData = await fetchCompanyData();
+          setCompanyData(updatedData);
+          setTabCompleteness(prev => ({
+            ...prev,
+            businessLicenses: checkBusinessLicensesCompleteness(updatedData.business_licenses)
+          }));
+        } else {
+          toast.error(responseData.message || 'Failed to delete business license');
+        }
+      }
+    } catch (error) {
+      console.error('Error deleting business license:', error);
+      toast.error('An error occurred while deleting business license');    }  };
+  
   const handleTabChange = (newIndex: number) => {
     if (unsavedChanges) {
       Swal.fire({
@@ -239,26 +757,27 @@ const SupplierCompanyData: React.FC = () => {
               </Tab>
             </TabList>
 
-            <div>
-              <TabPanel>
+            <div>              <TabPanel>
                 <GeneralDataForm
                   data={companyData.general_data}
-                  onSubmit={(data) => handleSubmit(data, "generalData")}
+                  onSubmit={handleGeneralDataSave}
                   markUnsaved={markUnsaved}
                   onViewFile={handleViewFile}
                 />
-              </TabPanel>
-              <TabPanel>
+              </TabPanel>              <TabPanel>
                 <ContactDataForm 
                   data={companyData.person_in_charge} 
-                  onSubmit={(data) => handleSubmit(data, "contacts")} 
+                  onSubmit={handlePersonInChargeCreate}
+                  onUpdate={handlePersonInChargeUpdate}
+                  onDelete={handlePersonInChargeDelete}
                   markUnsaved={markUnsaved}
                 />
-              </TabPanel>
-              <TabPanel>
+              </TabPanel>              <TabPanel>
                 <NIBForm 
                   data={companyData.nib} 
-                  onSubmit={(data) => handleSubmit(data, "nib")} 
+                  onSubmit={handleNIBCreate}
+                  onUpdate={handleNIBUpdate}
+                  onDelete={handleNIBDelete}
                   markUnsaved={markUnsaved}
                   onViewFile={handleViewFile}
                 />
@@ -266,7 +785,9 @@ const SupplierCompanyData: React.FC = () => {
               <TabPanel>
                 <BusinessLicenseForm
                   data={companyData.business_licenses}
-                  onSubmit={(data) => handleSubmit(data, "businessLicenses")}
+                  onSubmit={handleBusinessLicenseCreate}
+                  onUpdate={handleBusinessLicenseUpdate}
+                  onDelete={handleBusinessLicenseDelete}
                   markUnsaved={markUnsaved}
                   onViewFile={handleViewFile}
                 />
@@ -274,7 +795,9 @@ const SupplierCompanyData: React.FC = () => {
               <TabPanel>
                 <IntegrityPactForm
                   data={companyData.integrity_pact}
-                  onSubmit={(data) => handleSubmit(data, "integrityPact")}
+                  onSubmit={handleIntegrityPactCreate}
+                  onUpdate={handleIntegrityPactUpdate}
+                  onDelete={handleIntegrityPactDelete}
                   markUnsaved={markUnsaved}
                   onViewFile={handleViewFile}
                 />
@@ -322,15 +845,20 @@ const GeneralDataForm: React.FC<{
     company_fax_1: data.company_fax_1 || '',
     company_fax_2: data.company_fax_2 || '',
     company_url: data.company_url || '',
-    npwp_number: data.npwp_number || '',
     npwp_file: data.npwp_file || '',
     skpp_file: data.skpp_file || '',
   });
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (e.target.type === 'file') {
+      const files = (e.target as HTMLInputElement).files;
+      if (files && files.length > 0) {
+        setFormData({ ...formData, [e.target.name]: files[0] });
+      }
+    } else {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+    }
     markUnsaved();
   };
 
@@ -421,17 +949,6 @@ const GeneralDataForm: React.FC<{
             type="text"
             name="tax_id"
             value={formData.tax_id}
-            onChange={handleChange}
-            required
-            className="w-full p-2 border rounded border-primary"
-          />
-        </div>
-        <div>
-          <label className="block mb-1">NPWP Number*</label>
-          <input
-            type="text"
-            name="npwp_number"
-            value={formData.npwp_number}
             onChange={handleChange}
             required
             className="w-full p-2 border rounded border-primary"
@@ -693,16 +1210,19 @@ const GeneralDataForm: React.FC<{
 
 const ContactDataForm: React.FC<{ 
   data: any[]; 
-  onSubmit: (data: any) => void 
+  onSubmit: (data: any) => void;
+  onUpdate?: (picId: number, contactData: any) => void;
+  onDelete?: (picId: number) => void;
   markUnsaved: () => void;
-}> = ({ data, onSubmit, markUnsaved }) => {
+}> = ({ data, onSubmit, onUpdate, onDelete, markUnsaved }) => {
   const [contacts, setContacts] = useState(
     data.map(contact => ({
       ...contact,
       // Convert null values to empty strings for form inputs
       department: contact.department || '',
       pic_telp_number_2: contact.pic_telp_number_2 || '',
-      pic_email_2: contact.pic_email_2 || ''
+      pic_email_2: contact.pic_email_2 || '',
+      isNew: false // Track if this is a new contact
     }))
   )
 
@@ -714,26 +1234,119 @@ const ContactDataForm: React.FC<{
       pic_telp_number_1: "", 
       pic_telp_number_2: "", 
       pic_email_1: "", 
-      pic_email_2: "" 
+      pic_email_2: "",
+      isNew: true // Mark as new contact
     }])
     markUnsaved();
   }
-
   const handleContactChange = (index: number, field: string, value: string) => {
-    const updatedContacts = contacts.map((contact, i) => (i === index ? { ...contact, [field]: value } : contact))
+    const updatedContacts = contacts.map((contact, i) => 
+      i === index ? { ...contact, [field]: value, isModified: !contact.isNew } : contact
+    )
     setContacts(updatedContacts)
     markUnsaved();
   }
 
+  const handleRemoveContact = async (index: number) => {
+    const contact = contacts[index];
+    
+    // Show confirmation dialog
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: `You will delete contact: ${contact.pic_name || 'this contact'}`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
+    
+    if (contact.pic_id && !contact.isNew && onDelete) {
+      // Existing contact - call delete API
+      try {
+        await onDelete(contact.pic_id);
+        // After successful deletion, the component will be refreshed with new data
+        // from the parent component, so we don't need to manually update local state here
+      } catch (error) {
+        console.error('Error deleting contact:', error);
+      }
+    } else {
+      // New contact or no ID - just remove from state
+      const updatedContacts = contacts.filter((_, i) => i !== index);
+      setContacts(updatedContacts);
+      markUnsaved();
+      toast.success('Contact removed successfully');
+    }
+  }
+
+  const handleSaveContact = async (index: number) => {
+    const contact = contacts[index];
+    
+    // Validate required fields
+    if (!contact.job_position || !contact.department || !contact.pic_name || 
+        !contact.pic_telp_number_1 || !contact.pic_email_1) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    try {
+      if (contact.pic_id && !contact.isNew && onUpdate) {
+        // Existing contact - call update API
+        await onUpdate(contact.pic_id, contact);
+        // Mark as updated in local state
+        const updatedContacts = contacts.map((c, i) => 
+          i === index ? { ...c, isNew: false } : c
+        );
+        setContacts(updatedContacts);
+      } else if (contact.isNew || !contact.pic_id) {
+        // New contact - call create API
+        await onSubmit([contact]);
+        // After successful creation, the component will be refreshed with new data
+        // so we don't need to manually update local state here
+      }    } catch (error) {
+      console.error('Error saving contact:', error);
+    }
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    onSubmit(contacts)
+    
+    // Only submit new contacts that haven't been individually saved
+    const newContacts = contacts.filter(contact => contact.isNew && !contact.pic_id);
+    
+    if (newContacts.length > 0) {
+      onSubmit(newContacts);
+    } else {
+      toast.info('No new contacts to save. Use individual Save buttons for existing contacts.');
+    }
   }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4 text-black">
       {contacts.map((contact, index) => (
         <div key={index} className="border p-4 rounded border-black">
-          <h3 className="font-bold mb-2">Contact {index + 1}</h3>
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="font-bold">Contact {index + 1}</h3>
+            <div className="flex gap-2">
+              <Button 
+                title={contact.pic_id && !contact.isNew ? "Update" : "Save"}
+                onClick={() => handleSaveContact(index)}
+                type="button"
+                className="text-sm px-3 py-1"
+              />
+              <Button 
+                title="Delete"
+                onClick={() => handleRemoveContact(index)}
+                type="button"
+                className="text-sm px-3 py-1 bg-red-500 hover:bg-red-600 text-white"
+              />
+            </div>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block mb-1">Job Position*</label>
@@ -752,7 +1365,7 @@ const ContactDataForm: React.FC<{
                 <option value="Delivery">Delivery</option>
                 <option value="Driver">Driver</option>
               </select>
-            </div>
+            </div>            
             <div>
               <label className="block mb-1">Department*</label>
               <select
@@ -822,32 +1435,67 @@ const ContactDataForm: React.FC<{
               onChange={(e) => handleContactChange(index, "pic_email_2", e.target.value)}
               className="w-full p-2 border rounded border-primary"
             />
-          </div>
+          </div>          {contact.pic_id && !contact.isNew && (
+            <div className={`mt-2 text-sm ${contact.isModified ? 'text-orange-600' : 'text-gray-600'}`}>
+              Contact ID: {contact.pic_id} {contact.isModified ? '(Modified - needs update)' : '(Existing record)'}
+            </div>
+          )}
+          {contact.isNew && (
+            <div className="mt-2 text-sm text-green-600">
+              New contact (not saved yet)
+            </div>
+          )}
         </div>
       ))}
       <Button title="Add Contact" onClick={handleAddContact} type="button" />
-      <Button title="Save" type="submit" />
+      <Button title="Save All New Contacts" type="submit" />
     </form>
   )
 }
 
 const NIBForm: React.FC<{ 
   data: any; 
-  onSubmit: (data: any) => void 
+  onSubmit: (data: any) => void;
+  onUpdate?: (nibId: number, formData: any) => void;
+  onDelete?: (nibId: number) => void;
   markUnsaved: () => void;
   onViewFile: (filePath: string, fileName: string) => void;
-}> = ({ data, onSubmit, markUnsaved, onViewFile }) => {
-  const [formData, setFormData] = useState(data)
-
+}> = ({ data, onSubmit, onUpdate, onDelete, markUnsaved, onViewFile }) => {
+  const [formData, setFormData] = useState(data);
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
+    if (e.target.type === 'file') {
+      const files = (e.target as HTMLInputElement).files;
+      if (files && files.length > 0) {
+        setFormData({ ...formData, [e.target.name]: files[0] });
+      }
+    } else {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+    }
     markUnsaved();
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    onSubmit(formData)
+    
+    // Determine if this is an update or create operation
+    const isUpdate = formData.nib_id && formData.nib_id !== null;
+    
+    if (isUpdate && onUpdate) {
+      onUpdate(formData.nib_id, formData);
+    } else {
+      onSubmit(formData);
+    }
   }
+
+  const handleDelete = () => {
+    if (formData.nib_id && onDelete) {
+      onDelete(formData.nib_id);
+    }
+  }
+
+  const isExistingRecord = formData.nib_id && formData.nib_id !== null;
+  const hasExistingFile = formData.nib_file && formData.nib_file !== "" && formData.nib_file !== null && typeof formData.nib_file === 'string';
   return (
     <form onSubmit={handleSubmit} className="space-y-4 text-black">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -911,19 +1559,18 @@ const NIBForm: React.FC<{
           required
           className="w-full p-2 border rounded border-primary"
         />
-      </div>
-      <div>
-        <label className="block mb-1">NIB File*</label>
+      </div>      <div>
+        <label className="block mb-1">NIB File{isExistingRecord && hasExistingFile ? '' : '*'}</label>
         <div className="flex gap-2">
           <input 
             type="file" 
             name="nib_file" 
             onChange={handleChange} 
-            required 
+            required={!isExistingRecord || !hasExistingFile}
             className="flex-1 p-2 border rounded border-primary"
             accept=".pdf,.jpg,.jpeg,.png"
           />
-          {formData.nib_file && formData.nib_file !== "" && formData.nib_file !== null && (
+          {hasExistingFile && (
             <div className="flex gap-1">
               <button
                 type="button"
@@ -950,23 +1597,35 @@ const NIBForm: React.FC<{
             </div>
           )}
         </div>
-        {formData.nib_file && formData.nib_file !== "" && formData.nib_file !== null && (
+        {hasExistingFile && (
           <div className="mt-1 text-sm text-gray-600">
             Current file: {formData.nib_file.split('/').pop() || formData.nib_file}
           </div>
         )}
       </div>
-      <Button title="Save" type="submit" />
+      <div className="flex gap-2">
+        <Button title={isExistingRecord ? "Update" : "Save"} type="submit" />
+        {isExistingRecord && (
+          <Button 
+            title="Delete" 
+            onClick={handleDelete} 
+            type="button" 
+            className="bg-red-500 hover:bg-red-600 text-white"
+          />
+        )}
+      </div>
     </form>
   )
 }
 
 const BusinessLicenseForm: React.FC<{ 
   data: any[]; 
-  onSubmit: (data: any) => void 
+  onSubmit: (data: any) => void;
+  onUpdate?: (businessLicenseId: number, formData: any) => void;
+  onDelete?: (businessLicenseId: number) => void;
   markUnsaved: () => void;
   onViewFile: (filePath: string, fileName: string) => void;
-}> = ({ data, onSubmit, markUnsaved, onViewFile }) => {
+}> = ({ data, onSubmit, onUpdate: _onUpdate, onDelete: _onDelete, markUnsaved, onViewFile }) => {
   const [licenses, setLicenses] = useState(data)
 
   const handleAddLicense = () => {
@@ -1130,21 +1789,46 @@ const BusinessLicenseForm: React.FC<{
 
 const IntegrityPactForm: React.FC<{ 
   data: any; 
-  onSubmit: (data: any) => void 
+  onSubmit: (data: any) => void;
+  onUpdate?: (integrityPactId: number, formData: any) => void;
+  onDelete?: (integrityPactId: number) => void;
   markUnsaved: () => void;
   onViewFile: (filePath: string, fileName: string) => void;
-}> = ({ data, onSubmit, markUnsaved, onViewFile }) => {
+}> = ({ data, onSubmit, onUpdate, onDelete, markUnsaved, onViewFile }) => {
   const [formData, setFormData] = useState(data)
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-    markUnsaved()
+    if (e.target.type === 'file') {
+      const files = (e.target as HTMLInputElement).files;
+      if (files && files.length > 0) {
+        setFormData({ ...formData, [e.target.name]: files[0] });
+      }
+    } else {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+    }
+    markUnsaved();
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    onSubmit(formData)
+    
+    // Determine if this is an update or create operation
+    const isUpdate = formData.integrity_pact_id && formData.integrity_pact_id !== null;
+    
+    if (isUpdate && onUpdate) {
+      onUpdate(formData.integrity_pact_id, formData);
+    } else {
+      onSubmit(formData);
+    }
   }
+
+  const handleDelete = () => {
+    if (formData.integrity_pact_id && onDelete) {
+      onDelete(formData.integrity_pact_id);
+    }
+  }
+
+  const isExistingRecord = formData.integrity_pact_id && formData.integrity_pact_id !== null;
+  const hasExistingFile = formData.integrity_pact_file && formData.integrity_pact_file !== "" && formData.integrity_pact_file !== null && typeof formData.integrity_pact_file === 'string';
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 text-black">
@@ -1158,17 +1842,17 @@ const IntegrityPactForm: React.FC<{
           type="button"
         />
       </div>      <div>
-        <label className="block mb-1">Upload Integrity Pact*</label>
+        <label className="block mb-1">Upload Integrity Pact{isExistingRecord && hasExistingFile ? '' : '*'}</label>
         <div className="flex gap-2">
           <input 
             type="file" 
             name="integrity_pact_file" 
             onChange={handleChange} 
-            required 
+            required={!isExistingRecord || !hasExistingFile}
             className="flex-1 p-2 border rounded border-primary"
             accept=".pdf,.jpg,.jpeg,.png"
           />
-          {formData.integrity_pact_file && formData.integrity_pact_file !== "" && formData.integrity_pact_file !== null && (
+          {hasExistingFile && (
             <div className="flex gap-1">
               <button
                 type="button"
@@ -1195,7 +1879,7 @@ const IntegrityPactForm: React.FC<{
             </div>
           )}
         </div>
-        {formData.integrity_pact_file && formData.integrity_pact_file !== "" && formData.integrity_pact_file !== null && (
+        {hasExistingFile && (
           <div className="mt-1 text-sm text-gray-600">
             Current file: {formData.integrity_pact_file.split('/').pop() || formData.integrity_pact_file}
           </div>
@@ -1208,10 +1892,20 @@ const IntegrityPactForm: React.FC<{
           value={formData.integrity_pact_desc}
           onChange={handleChange}
           required
-          className="w-full p-2 border rounded border-primary"
-          rows={4}
+          className="w-full p-2 border rounded border-primary"          rows={4}
         />
-      </div>      <Button title="Save" type="submit" />
+      </div>
+      <div className="flex gap-2">
+        <Button title={isExistingRecord ? "Update" : "Save"} type="submit" />
+        {isExistingRecord && (
+          <Button 
+            title="Delete" 
+            onClick={handleDelete} 
+            type="button" 
+            className="bg-red-500 hover:bg-red-600 text-white"
+          />
+        )}
+      </div>
     </form>
   )
 }
