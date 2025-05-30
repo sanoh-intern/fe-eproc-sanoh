@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaTimes, FaDownload, FaSpinner } from 'react-icons/fa';
 import { streamFile } from '../api/Action/stream-file';
 import { toast } from 'react-toastify';
+import Button from './Forms/Button';
 
 interface FileStreamModalProps {
   isOpen: boolean;
@@ -78,15 +79,6 @@ const FileStreamModal: React.FC<FileStreamModalProps> = ({
             {fileName}
           </h3>
           <div className="flex items-center space-x-2">
-            {fileUrl && (
-              <button
-                onClick={handleDownload}
-                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                title="Download File"
-              >
-                <FaDownload size={16} />
-              </button>
-            )}
             <button
               onClick={handleClose}
               className="p-2 text-gray-400 hover:bg-gray-100 rounded-lg transition-colors"
@@ -151,13 +143,11 @@ const FileStreamModal: React.FC<FileStreamModalProps> = ({
             Close
           </button>
           {fileUrl && (
-            <button
+            <Button
               onClick={handleDownload}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors flex items-center space-x-2"
-            >
-              <FaDownload size={14} />
-              <span>Download</span>
-            </button>
+              title="Download File"
+              icon={FaDownload}
+            />
           )}
         </div>
       </div>
