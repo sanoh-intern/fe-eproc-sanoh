@@ -24,14 +24,14 @@ const FileStreamModal: React.FC<FileStreamModalProps> = ({
   onClose,
   filePath,
   fileName
-}) => {
-  const [fileUrl, setFileUrl] = useState<string>('');
+}) => {  const [fileUrl, setFileUrl] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>('');  const [modalSize, setModalSize] = useState<ModalSize>('medium');
   const [showSizeOptions, setShowSizeOptions] = useState(false);
   const [customHeight, setCustomHeight] = useState<number>(85); // Percentage - default 85%
   const [isCustomSize, setIsCustomSize] = useState(true); // Default ke custom size
-  const sizeOptionsRef = useRef<HTMLDivElement>(null);  const modalSizes: Record<ModalSize, ModalSizeConfig> = {
+  const [iframeError, setIframeError] = useState(false); // Track iframe loading errors
+  const sizeOptionsRef = useRef<HTMLDivElement>(null);const modalSizes: Record<ModalSize, ModalSizeConfig> = {
     small: {
       maxWidth: '672px', // max-w-2xl equivalent
       maxHeight: '50vh',
@@ -69,27 +69,39 @@ const FileStreamModal: React.FC<FileStreamModalProps> = ({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [showSizeOptions]);
-
   useEffect(() => {
     if (isOpen && filePath) {
+      console.log('Modal opened with filePath:', filePath);
       loadFile();
     }
     
     return () => {
       if (fileUrl) {
+        console.log('Cleaning up blob URL:', fileUrl);
         URL.revokeObjectURL(fileUrl);
       }
     };
   }, [isOpen, filePath]);
 
-  const loadFile = async () => {
+  // Add a separate useEffect to monitor fileUrl changes
+  useEffect(() => {
+    console.log('FileUrl state changed:', fileUrl);
+    if (fileUrl) {
+      console.log('FileUrl is available for rendering');
+    }
+  }, [fileUrl]);  const loadFile = async () => {
     setIsLoading(true);
     setError('');
+    setIframeError(false); // Reset iframe error state
+    
+    console.log('LoadFile called with:', { filePath, fileName });
     
     try {
       const url = await streamFile(filePath);
+      console.log('Received URL from streamFile:', url);
       setFileUrl(url);
     } catch (error) {
+      console.error('Error in loadFile:', error);
       setError('Failed to load file');
       toast.error('Failed to load file');
     } finally {
@@ -247,22 +259,103 @@ const FileStreamModal: React.FC<FileStreamModalProps> = ({
                 </button>
               </div>
             </div>
-          )}
-
-          {fileUrl && !isLoading && !error && (
+          )}          {fileUrl && !isLoading && !error && (
             <div className="h-full">
               {fileName.toLowerCase().includes('.pdf') ? (
-                <iframe
-                  src={fileUrl}
-                  className="w-full h-full border-0 rounded"
-                  title={fileName}
-                />
+                <div className="h-full flex flex-col">
+                  {/* Try multiple PDF display methods */}
+                  <div className="flex-1 relative">
+                    {!iframeError ? (
+                      <iframe
+                        src={`${fileUrl}#view=FitH`}
+                        className="w-full h-full border-0 rounded"
+                        title={fileName}
+                        allow="fullscreen"
+                        onLoad={(e) => {
+                          console.log('PDF iframe loaded successfully');
+                          // Check if iframe actually has content
+                          const iframe = e.target as HTMLIFrameElement;
+                          setTimeout(() => {
+                            try {
+                              // If iframe is empty or has navigation issues, fallback
+                              if (!iframe.contentDocument && !iframe.contentWindow) {
+                                console.log('Iframe empty, switching to embed fallback');
+                                setIframeError(true);
+                              }
+                            } catch (err) {
+                              console.log('Iframe access restricted, but this is normal for blob URLs');
+                            }
+                          }, 1000);
+                          setIframeError(false);
+                        }}
+                        onError={(e) => {
+                          console.error('PDF iframe error:', e);
+                          setIframeError(true);
+                        }}
+                      />
+                    ) : (
+                      /* Fallback: Use object tag which is more reliable for PDFs */
+                      <object
+                        data={fileUrl}
+                        type="application/pdf"
+                        className="w-full h-full border-0 rounded"
+                        title={fileName}
+                      >
+                        {/* If object fails, show embed */}
+                        <embed
+                          src={fileUrl}
+                          type="application/pdf"
+                          className="w-full h-full border-0 rounded"
+                          title={fileName}
+                        />
+                        {/* If both fail, show fallback message */}
+                        <div className="flex items-center justify-center h-full bg-gray-50">
+                          <div className="text-center p-4">
+                            <p className="text-gray-600 mb-4">Unable to display PDF in browser</p>
+                            <div className="space-x-2">
+                              <a 
+                                href={fileUrl} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                              >
+                                Open in New Tab
+                              </a>
+                              <button
+                                onClick={handleDownload}
+                                className="inline-block px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                              >
+                                Download PDF
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </object>
+                    )}
+                    
+                    {/* Force fallback button */}
+                    <div className="absolute top-2 right-2">
+                      <button
+                        onClick={() => setIframeError(!iframeError)}
+                        className="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded hover:bg-gray-300"
+                        title="Toggle display method"
+                      >
+                        {iframeError ? 'Try IFrame' : 'Try Object'}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="mt-2 text-sm text-gray-600">
+                    Alternative: <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">Open in new tab</a>
+                  </div>
+                </div>
               ) : (
                 <div className="flex items-center justify-center h-full">
                   <img
                     src={fileUrl}
                     alt={fileName}
                     className="max-w-full max-h-full object-contain"
+                    onLoad={() => console.log('Image loaded successfully')}
+                    onError={(e) => console.error('Image error:', e)}
                   />
                 </div>
               )}
