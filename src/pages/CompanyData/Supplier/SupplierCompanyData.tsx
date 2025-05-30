@@ -954,32 +954,15 @@ const GeneralDataForm: React.FC<{
               onChange={handleChange}
               className="flex-1 p-2 border rounded border-primary"
               accept=".pdf,.jpg,.jpeg,.png"
-            />
-            {formData.npwp_file && formData.npwp_file !== "" && formData.npwp_file !== null && (
-              <div className="flex gap-1">
-                <button
-                  type="button"
-                  onClick={() => onViewFile(formData.npwp_file, `NPWP_${formData.company_name || 'document'}.pdf`)}
-                  className="px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 flex items-center"
-                  title="View NPWP File"
-                >
-                  <FaEye />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    // Create download link for NPWP file
-                    const link = document.createElement('a');
-                    link.href = formData.npwp_file;
-                    link.download = `NPWP_${formData.company_name || 'document'}.pdf`;
-                    link.click();
-                  }}
-                  className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 flex items-center"
-                  title="Download NPWP File"
-                >
-                  <FaDownload />
-                </button>
-              </div>
+            />            {formData.npwp_file && formData.npwp_file !== "" && formData.npwp_file !== null && (
+              <button
+                type="button"
+                onClick={() => onViewFile(formData.npwp_file, `NPWP_${formData.company_name || 'document'}.pdf`)}
+                className="px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 flex items-center"
+                title="View NPWP File"
+              >
+                <FaEye />
+              </button>
             )}
           </div>
           {formData.npwp_file && formData.npwp_file !== "" && formData.npwp_file !== null && (
@@ -997,32 +980,15 @@ const GeneralDataForm: React.FC<{
               onChange={handleChange}
               className="flex-1 p-2 border rounded border-primary"
               accept=".pdf,.jpg,.jpeg,.png"
-            />
-            {formData.skpp_file && formData.skpp_file !== "" && formData.skpp_file !== null && (
-              <div className="flex gap-1">
-                <button
-                  type="button"
-                  onClick={() => onViewFile(formData.skpp_file, `SKPP_${formData.company_name || 'document'}.pdf`)}
-                  className="px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 flex items-center"
-                  title="View SKPP File"
-                >
-                  <FaEye />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    // Create download link for SKPP file
-                    const link = document.createElement('a');
-                    link.href = formData.skpp_file;
-                    link.download = `SKPP_${formData.company_name || 'document'}.pdf`;
-                    link.click();
-                  }}
-                  className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 flex items-center"
-                  title="Download SKPP File"
-                >
-                  <FaDownload />
-                </button>
-              </div>
+            />            {formData.skpp_file && formData.skpp_file !== "" && formData.skpp_file !== null && (
+              <button
+                type="button"
+                onClick={() => onViewFile(formData.skpp_file, `SKPP_${formData.company_name || 'document'}.pdf`)}
+                className="px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 flex items-center"
+                title="View SKPP File"
+              >
+                <FaEye />
+              </button>
             )}
           </div>
           {formData.skpp_file && formData.skpp_file !== "" && formData.skpp_file !== null && (
@@ -1639,32 +1605,15 @@ const NIBForm: React.FC<{
             required={!isExistingRecord || !hasExistingFile}
             className="flex-1 p-2 border rounded border-primary"
             accept=".pdf,.jpg,.jpeg,.png"
-          />
-          {hasExistingFile && (
-            <div className="flex gap-1">
-              <button
-                type="button"
-                onClick={() => onViewFile(formData.nib_file, `NIB_${formData.nib_number || 'document'}.pdf`)}
-                className="px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 flex items-center"
-                title="View NIB File"
-              >
-                <FaEye />
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  // Create download link for NIB file
-                  const link = document.createElement('a');
-                  link.href = formData.nib_file;
-                  link.download = `NIB_${formData.nib_number || 'document'}.pdf`;
-                  link.click();
-                }}
-                className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 flex items-center"
-                title="Download NIB File"
-              >
-                <FaDownload />
-              </button>
-            </div>
+          />          {hasExistingFile && (
+            <button
+              type="button"
+              onClick={() => onViewFile(formData.nib_file, `NIB_${formData.nib_number || 'document'}.pdf`)}
+              className="px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 flex items-center"
+              title="View NIB File"
+            >
+              <FaEye />
+            </button>
           )}
         </div>
         {hasExistingFile && (
@@ -1974,32 +1923,15 @@ const BusinessLicenseForm: React.FC<{
                 required
                 className="flex-1 p-2 border rounded border-primary"
                 accept=".pdf,.jpg,.jpeg,.png"
-              />
-              {license.business_license_file && license.business_license_file !== "" && license.business_license_file !== null && (
-                <div className="flex gap-1">
-                  <button
-                    type="button"
-                    onClick={() => onViewFile(license.business_license_file, `BusinessLicense_${license.business_license_number || 'document'}.pdf`)}
-                    className="px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 flex items-center"
-                    title="View Business License File"
-                  >
-                    <FaEye />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      // Create download link for Business License file
-                      const link = document.createElement('a');
-                      link.href = license.business_license_file;
-                      link.download = `BusinessLicense_${license.business_license_number || 'document'}.pdf`;
-                      link.click();
-                    }}
-                    className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 flex items-center"
-                    title="Download Business License File"
-                  >
-                    <FaDownload />
-                  </button>
-                </div>
+              />              {license.business_license_file && license.business_license_file !== "" && license.business_license_file !== null && (
+                <button
+                  type="button"
+                  onClick={() => onViewFile(license.business_license_file, `BusinessLicense_${license.business_license_number || 'document'}.pdf`)}
+                  className="px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 flex items-center"
+                  title="View Business License File"
+                >
+                  <FaEye />
+                </button>
               )}
             </div>
             {license.business_license_file && license.business_license_file !== "" && license.business_license_file !== null && (
@@ -2106,32 +2038,15 @@ const IntegrityPactForm: React.FC<{
             required={!isExistingRecord || !hasExistingFile}
             className="flex-1 p-2 border rounded border-primary"
             accept=".pdf,.jpg,.jpeg,.png"
-          />
-          {hasExistingFile && (
-            <div className="flex gap-1">
-              <button
-                type="button"
-                onClick={() => onViewFile(formData.integrity_pact_file, `IntegrityPact_document.pdf`)}
-                className="px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 flex items-center"
-                title="View Integrity Pact File"
-              >
-                <FaEye />
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  // Create download link for Integrity Pact file
-                  const link = document.createElement('a');
-                  link.href = formData.integrity_pact_file;
-                  link.download = `IntegrityPact_document.pdf`;
-                  link.click();
-                }}
-                className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 flex items-center"
-                title="Download Integrity Pact File"
-              >
-                <FaDownload />
-              </button>
-            </div>
+          />          {hasExistingFile && (
+            <button
+              type="button"
+              onClick={() => onViewFile(formData.integrity_pact_file, `IntegrityPact_document.pdf`)}
+              className="px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 flex items-center"
+              title="View Integrity Pact File"
+            >
+              <FaEye />
+            </button>
           )}
         </div>
         {hasExistingFile && (

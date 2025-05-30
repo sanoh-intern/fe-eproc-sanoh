@@ -79,3 +79,7 @@ export const API_Delete_NIB_Supplier = () => API + getRolePath() + '/nib/delete/
 export const API_Create_Business_License_Supplier = () => API + getRolePath() + '/business-license/create';
 export const API_Update_Business_License_Supplier = () => API + getRolePath() + '/business-license/update/';
 export const API_Delete_Business_License_Supplier = () => API + getRolePath() + '/business-license/delete/';
+
+export const API_Status_Verification_Supplier = () => API + getRolePath() + '/verification/status';
+export const API_Request_Verification_Supplier = () => API + getRolePath() + '/verification/create';
+export const API_History_Verification_Supplier = () => API + getRolePath() + '/verification/history/get';
