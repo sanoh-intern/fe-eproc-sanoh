@@ -11,7 +11,7 @@ interface CompanyDataProps {
     companyData: CompanyData | null;
 }
 
-interface CompanyData {
+export interface CompanyData {
   generalData: {
     companyName: string
     description: string

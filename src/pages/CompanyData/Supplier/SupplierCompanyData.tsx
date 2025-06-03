@@ -114,38 +114,73 @@ const SupplierCompanyData: React.FC = () => {
   const handleViewFile = (filePath: string, fileName: string) => {
     setSelectedFilePath(filePath);
     setSelectedFileName(fileName);
-    setIsFileModalOpen(true);
-  };
-
+    setIsFileModalOpen(true);  };
   // General Data CRUD Methods
   const handleGeneralDataSave = async (formData: any) => {
     try {
       const formDataToSend = new FormData();
       
-      // Add all text fields
+      // Add only the changed fields
       Object.keys(formData).forEach(key => {
-        if (key !== 'npwp_file' && key !== 'skpp_file') {
+        if (key !== 'tax_id_file' && key !== 'skpp_file' && key !== 'company_photo') {
           formDataToSend.append(key, formData[key] || '');
         }
       });
       
-      // Add files if they exist
-      if (formData.npwp_file instanceof File) {
-        formDataToSend.append('npwp_file', formData.npwp_file);
+      // Add files if they exist and are File objects (newly selected)
+      if (formData.tax_id_file instanceof File) {
+        formDataToSend.append('tax_id_file', formData.tax_id_file);
       }
       if (formData.skpp_file instanceof File) {
         formDataToSend.append('skpp_file', formData.skpp_file);
       }
+      if (formData.company_photo instanceof File) {
+        formDataToSend.append('company_photo', formData.company_photo);
+      }      // CORS Fix: Try multiple URL variants to avoid redirects
+      const baseUrl = API_Update_General_Data_Supplier();
+      const urlVariants = [
+        baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl, // Without trailing slash
+        baseUrl.endsWith('/') ? baseUrl : baseUrl + '/',        // With trailing slash
+      ];
 
-      const response = await fetch(API_Update_General_Data_Supplier(), {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + localStorage.getItem('access_token') || '',
-        },
-        body: formDataToSend
-      });
+      let response: Response | null = null;
+      let lastError: Error | null = null;
 
-      const result = await response.json();
+      // Try each URL variant until one works
+      for (const apiUrl of urlVariants) {
+        try {
+          console.log('Attempting to POST to:', apiUrl);
+          
+          response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Authorization': 'Bearer ' + localStorage.getItem('access_token') || '',
+              // Don't set Content-Type for FormData - let browser set it with boundary
+            },
+            body: formDataToSend,
+            // Add these options to help with CORS
+            mode: 'cors',
+            credentials: 'omit' // Don't send cookies to avoid additional CORS complications
+          });
+
+          // If we get a response (even if not ok), break out of the loop
+          if (response) {
+            console.log('Successfully got response from:', apiUrl);
+            break;
+          }
+        } catch (error) {
+          console.warn(`Failed to fetch from ${apiUrl}:`, error);
+          lastError = error as Error;
+          
+          // Continue to try the next URL variant
+          continue;
+        }
+      }
+
+      // If no successful response after trying all variants
+      if (!response) {
+        throw lastError || new Error('All API request variants failed');
+      }const result = await response.json();
       
       if (response.ok && result.status) {
         toast.success(result.message || 'General data updated successfully');
@@ -162,7 +197,15 @@ const SupplierCompanyData: React.FC = () => {
       }
     } catch (error) {
       console.error('Error updating general data:', error);
-      toast.error('An error occurred while updating general data');
+      
+      // Enhanced error handling for CORS issues
+      if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+        toast.error('Network error: Unable to connect to server. This may be a CORS issue that needs to be resolved on the backend.');
+      } else if (error instanceof Error && error.message && error.message.includes('CORS')) {
+        toast.error('CORS error: Please contact the backend team to configure proper CORS headers.');
+      } else {
+        toast.error('An error occurred while updating general data');
+      }
     }
   };
 
@@ -814,82 +857,181 @@ const GeneralDataForm: React.FC<{
   markUnsaved: () => void;
   onViewFile: (filePath: string, fileName: string) => void;
 }> = ({ data, onSubmit, markUnsaved, onViewFile }) => {
-  const [formData, setFormData] = useState({
-    ...data,
-    // Convert null values to empty strings for form inputs
-    company_description: data.company_description || '',
-    business_field: data.business_field || '',
-    sub_business_field: data.sub_business_field || '',
-    product: data.product || '',
-    tax_id: data.tax_id || '',
-    adr_line_1: data.adr_line_1 || '',
-    adr_line_2: data.adr_line_2 || '',
-    adr_line_3: data.adr_line_3 || '',
-    adr_line_4: data.adr_line_4 || '',
-    province: data.province || '',
-    city: data.city || '',
-    postal_code: data.postal_code || '',
-    company_status: data.company_status || '',
-    company_phone_1: data.company_phone_1 || '',
-    company_phone_2: data.company_phone_2 || '',
-    company_fax_1: data.company_fax_1 || '',
-    company_fax_2: data.company_fax_2 || '',
-    company_url: data.company_url || '',
-    npwp_file: data.npwp_file || '',
-    skpp_file: data.skpp_file || '',
-  });
+  // Function to convert null values to empty strings for all form fields
+  const sanitizeFormData = (data: any) => {
+    const sanitized: any = {};
+    Object.keys(data).forEach(key => {
+      if (data[key] === null || data[key] === undefined) {
+        sanitized[key] = '';
+      } else {
+        sanitized[key] = data[key];
+      }
+    });
+    return sanitized;
+  };
+
+  const [formData, setFormData] = useState(() => sanitizeFormData(data));
+  const [originalData, setOriginalData] = useState(() => sanitizeFormData(data));
+  const [changedFields, setChangedFields] = useState<Set<string>>(new Set());
+
+  // Re-sanitize data when parent data changes
+  useEffect(() => {
+    const sanitizedData = sanitizeFormData(data);
+    setFormData(sanitizedData);
+    setOriginalData(sanitizedData);
+    setChangedFields(new Set());
+  }, [data]);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
-    if (e.target.type === 'file') {
-      const files = (e.target as HTMLInputElement).files;
-      if (files && files.length > 0) {
-        setFormData({ ...formData, [e.target.name]: files[0] });
+    try {
+      const fieldName = e.target.name;
+      
+      if (e.target.type === 'file') {
+        const files = (e.target as HTMLInputElement).files;
+        if (files && files.length > 0) {
+          const file = files[0];
+          
+          // Validate file size (max 10MB)
+          if (file.size > 10 * 1024 * 1024) {
+            toast.error('File size must be less than 10MB');
+            return;
+          }
+          
+          // Validate file type for photos and documents
+          let allowedTypes: string[] = [];
+          if (fieldName === 'company_photo') {
+            allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+          } else {
+            allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+          }
+          
+          if (!allowedTypes.includes(file.type)) {
+            if (fieldName === 'company_photo') {
+              toast.error('Please upload a JPG, JPEG, or PNG image for company photo');
+            } else {
+              toast.error('Please upload a PDF, JPG, JPEG, or PNG file');
+            }
+            return;
+          }
+          
+          console.log('Setting file:', file.name, 'for field:', fieldName);
+          setFormData((prevData: any) => ({ ...prevData, [fieldName]: file }));
+          setChangedFields(prev => new Set(prev).add(fieldName));
+        }
+      } else {
+        const newValue = e.target.value;
+        setFormData((prevData: any) => ({ ...prevData, [fieldName]: newValue }));
+        
+        // Track if field has actually changed from original
+        if (newValue !== originalData[fieldName]) {
+          setChangedFields(prev => new Set(prev).add(fieldName));
+        } else {
+          setChangedFields(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(fieldName);
+            return newSet;
+          });
+        }
+      }
+      markUnsaved();
+    } catch (error) {
+      console.error('Error in handleChange:', error);
+      toast.error('An error occurred while processing the file');
+    }
+  };
+
+  const handleViewFile = (file: File | string, fileName: string) => {
+    if (file instanceof File) {
+      // Create a temporary URL for viewing the selected file
+      const fileUrl = URL.createObjectURL(file);
+      const newWindow = window.open(fileUrl, '_blank');
+      if (newWindow) {
+        // Clean up the URL after the window is opened
+        newWindow.onunload = () => URL.revokeObjectURL(fileUrl);
       }
     } else {
-      setFormData({ ...formData, [e.target.name]: e.target.value });
+      // Use the existing onViewFile for uploaded files
+      onViewFile(file, fileName);
     }
-    markUnsaved();
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
-  };
-  return (
+    
+    // Only send changed fields
+    const changedData: any = {};
+    changedFields.forEach(fieldName => {
+      changedData[fieldName] = formData[fieldName];
+    });
+    
+    if (changedFields.size === 0) {
+      toast.info('No changes to save');
+      return;
+    }
+    
+    console.log('Submitting changed fields:', Array.from(changedFields), changedData);
+    onSubmit(changedData);
+  };  return (
     <form onSubmit={handleSubmit} className="space-y-4 text-black ">
+      {/* Company Photo Upload */}
+      <div>
+        <label className="block mb-1">Company Photo</label>
+        <div className="flex gap-2">
+          <input
+            type="file"
+            name="company_photo"
+            onChange={handleChange}
+            className="flex-1 p-2 border rounded border-primary"
+            accept="image/jpeg,image/jpg,image/png"
+          />
+          {formData.company_photo && (
+            <button
+              type="button"
+              onClick={() => handleViewFile(formData.company_photo, `CompanyPhoto_${formData.company_name || 'document'}`)}
+              className="px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 flex items-center"
+              title="View Company Photo"
+            >
+              <FaEye />
+            </button>
+          )}
+        </div>
+        {formData.company_photo && (
+          <div className="mt-1 text-sm text-gray-600">
+            Current file: {formData.company_photo instanceof File ? formData.company_photo.name : (formData.company_photo.split('/').pop() || formData.company_photo)}
+          </div>
+        )}
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block mb-1">BP Code*</label>
+          <label className="block mb-1">BP Code</label>
           <input
             type="text"
             name="bp_code"
             value={formData.bp_code}
             onChange={handleChange}
-            required
             className="w-full p-2 border rounded border-primary"
           />
-        </div>
-        <div>
-          <label className="block mb-1">Company Name*</label>
+        </div>        <div>
+          <label className="block mb-1">Company Name</label>
           <input
             type="text"
             name="company_name"
             value={formData.company_name}
             onChange={handleChange}
-            required
             className="w-full p-2 border rounded border-primary"
           />
         </div>
       </div>
       
       <div>
-        <label className="block mb-1">Company Description*</label>
+        <label className="block mb-1">Company Description</label>
         <textarea
           name="company_description"
           value={formData.company_description}
           onChange={handleChange}
-          required
           className="w-full p-2 border rounded border-primary"
           rows={3}
         />
@@ -897,67 +1039,63 @@ const GeneralDataForm: React.FC<{
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block mb-1">Business Field*</label>
+          <label className="block mb-1">Business Field</label>
           <input
             type="text"
             name="business_field"
             value={formData.business_field}
             onChange={handleChange}
-            required
             className="w-full p-2 border rounded border-primary"
           />
         </div>
         <div>
-          <label className="block mb-1">Sub Business Field*</label>
+          <label className="block mb-1">Sub Business Field</label>
           <input
             type="text"
             name="sub_business_field"
             value={formData.sub_business_field}
             onChange={handleChange}
-            required
             className="w-full p-2 border rounded border-primary"
           />
         </div>
       </div>
       
       <div>
-        <label className="block mb-1">Product*</label>
+        <label className="block mb-1">Product</label>
         <input
           type="text"
           name="product"
           value={formData.product}
           onChange={handleChange}
-          required
           className="w-full p-2 border rounded border-primary"
         />
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block mb-1">Tax ID (NPWP)*</label>
+          <label className="block mb-1">Tax ID (NPWP)</label>
           <input
             type="text"
             name="tax_id"
             value={formData.tax_id}
             onChange={handleChange}
-            required
             className="w-full p-2 border rounded border-primary"
           />
-        </div>
-      </div><div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        </div>      </div><div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block mb-1">NPWP File*</label>
+          <label className="block mb-1">NPWP File</label>
           <div className="flex gap-2">
             <input
               type="file"
-              name="npwp_file"
+              name="tax_id_file"
               onChange={handleChange}
               className="flex-1 p-2 border rounded border-primary"
               accept=".pdf,.jpg,.jpeg,.png"
-            />            {formData.npwp_file && formData.npwp_file !== "" && formData.npwp_file !== null && (
+            />
+            {formData.tax_id_file && (
               <button
                 type="button"
-                onClick={() => onViewFile(formData.npwp_file, `NPWP_${formData.company_name || 'document'}.pdf`)}
+                onClick={() => handleViewFile(formData.tax_id_file, `NPWP_${formData.company_name || 'document'}.pdf`)}
                 className="px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 flex items-center"
                 title="View NPWP File"
               >
@@ -965,14 +1103,14 @@ const GeneralDataForm: React.FC<{
               </button>
             )}
           </div>
-          {formData.npwp_file && formData.npwp_file !== "" && formData.npwp_file !== null && (
+          {formData.tax_id_file && (
             <div className="mt-1 text-sm text-gray-600">
-              Current file: {formData.npwp_file.split('/').pop() || formData.npwp_file}
+              Current file: {formData.tax_id_file instanceof File ? formData.tax_id_file.name : (formData.tax_id_file.split('/').pop() || formData.tax_id_file)}
             </div>
           )}
         </div>
         <div>
-          <label className="block mb-1">SKPP File*</label>
+          <label className="block mb-1">SKPP File</label>
           <div className="flex gap-2">
             <input
               type="file"
@@ -980,33 +1118,31 @@ const GeneralDataForm: React.FC<{
               onChange={handleChange}
               className="flex-1 p-2 border rounded border-primary"
               accept=".pdf,.jpg,.jpeg,.png"
-            />            {formData.skpp_file && formData.skpp_file !== "" && formData.skpp_file !== null && (
+            />
+            {formData.skpp_file && (
               <button
                 type="button"
-                onClick={() => onViewFile(formData.skpp_file, `SKPP_${formData.company_name || 'document'}.pdf`)}
+                onClick={() => handleViewFile(formData.skpp_file, `SKPP_${formData.company_name || 'document'}.pdf`)}
                 className="px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 flex items-center"
                 title="View SKPP File"
               >
                 <FaEye />
               </button>
             )}
-          </div>
-          {formData.skpp_file && formData.skpp_file !== "" && formData.skpp_file !== null && (
+          </div>          {formData.skpp_file && (
             <div className="mt-1 text-sm text-gray-600">
-              Current file: {formData.skpp_file.split('/').pop() || formData.skpp_file}
+              Current file: {formData.skpp_file instanceof File ? formData.skpp_file.name : (formData.skpp_file.split('/').pop() || formData.skpp_file)}
             </div>
           )}
         </div>
-      </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      </div>        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block mb-1">Address Line 1*</label>
+          <label className="block mb-1">Address Line 1</label>
           <input
             type="text"
             name="adr_line_1"
             value={formData.adr_line_1}
             onChange={handleChange}
-            required
             className="w-full p-2 border rounded border-primary"
           />
         </div>
@@ -1043,50 +1179,44 @@ const GeneralDataForm: React.FC<{
           />
         </div>
       </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label className="block mb-1">Province*</label>
+          <label className="block mb-1">Province</label>
           <input
             type="text"
             name="province"
             value={formData.province}
             onChange={handleChange}
-            required
             className="w-full p-2 border rounded border-primary"
           />
         </div>
         <div>
-          <label className="block mb-1">City*</label>
+          <label className="block mb-1">City</label>
           <input
             type="text"
             name="city"
             value={formData.city}
             onChange={handleChange}
-            required
             className="w-full p-2 border rounded border-primary"
           />
         </div>
         <div>
-          <label className="block mb-1">Postal Code*</label>
+          <label className="block mb-1">Postal Code</label>
           <input
             type="text"
             name="postal_code"
             value={formData.postal_code}
             onChange={handleChange}
-            required
             className="w-full p-2 border rounded border-primary"
           />
         </div>
       </div>
-      
-      <div>
-        <label className="block mb-1">Company Status*</label>
+        <div>
+        <label className="block mb-1">Company Status</label>
         <select
           name="company_status"
           value={formData.company_status}
           onChange={handleChange}
-          required
           className="w-full p-2 border rounded border-primary"
         >
           <option value="">Select Status</option>
@@ -1096,16 +1226,14 @@ const GeneralDataForm: React.FC<{
           <option value="BUMD">BUMD (Badan Usaha Milik Daerah)</option>
           <option value="Swasta">Swasta</option>
         </select>
-      </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      </div>        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block mb-1">Phone 1*</label>
+          <label className="block mb-1">Phone 1</label>
           <input
             type="tel"
             name="company_phone_1"
             value={formData.company_phone_1}
             onChange={handleChange}
-            required
             className="w-full p-2 border rounded border-primary"
           />
         </div>
@@ -1119,16 +1247,14 @@ const GeneralDataForm: React.FC<{
             className="w-full p-2 border rounded border-primary"
           />
         </div>
-      </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      </div>        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block mb-1">Fax 1*</label>
+          <label className="block mb-1">Fax 1</label>
           <input
             type="text"
             name="company_fax_1"
             value={formData.company_fax_1}
             onChange={handleChange}
-            required
             className="w-full p-2 border rounded border-primary"
           />
         </div>
@@ -1143,9 +1269,8 @@ const GeneralDataForm: React.FC<{
           />
         </div>
       </div>
-      
-      <div>
-        <label className="block mb-1">Company URL*</label>
+        <div>
+        <label className="block mb-1">Company URL</label>
         <input
           type="url"
           name="company_url"
@@ -1497,18 +1622,56 @@ const NIBForm: React.FC<{
   markUnsaved: () => void;
   onViewFile: (filePath: string, fileName: string) => void;
 }> = ({ data, onSubmit, onUpdate, onDelete, markUnsaved, onViewFile }) => {
-  const [formData, setFormData] = useState(data);
-  
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    if (e.target.type === 'file') {
-      const files = (e.target as HTMLInputElement).files;
-      if (files && files.length > 0) {
-        setFormData({ ...formData, [e.target.name]: files[0] });
+  // Function to convert null values to empty strings for all form fields
+  const sanitizeFormData = (data: any) => {
+    const sanitized: any = {};
+    Object.keys(data).forEach(key => {
+      if (data[key] === null || data[key] === undefined) {
+        sanitized[key] = '';
+      } else {
+        sanitized[key] = data[key];
       }
-    } else {
-      setFormData({ ...formData, [e.target.name]: e.target.value });
+    });
+    return sanitized;
+  };
+
+  const [formData, setFormData] = useState(() => sanitizeFormData(data));
+
+  // Re-sanitize data when parent data changes
+  useEffect(() => {
+    setFormData(sanitizeFormData(data));
+  }, [data]);
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    try {
+      if (e.target.type === 'file') {
+        const files = (e.target as HTMLInputElement).files;
+        if (files && files.length > 0) {
+          const file = files[0];
+          
+          // Validate file size (max 10MB)
+          if (file.size > 10 * 1024 * 1024) {
+            toast.error('File size must be less than 10MB');
+            return;
+          }
+          
+          // Validate file type
+          const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+          if (!allowedTypes.includes(file.type)) {
+            toast.error('Please upload a PDF, JPG, JPEG, or PNG file');
+            return;
+          }
+          
+          console.log('Setting NIB file:', file.name, 'for field:', e.target.name);
+          setFormData((prevData: any) => ({ ...prevData, [e.target.name]: file }));
+        }
+      } else {
+        setFormData((prevData: any) => ({ ...prevData, [e.target.name]: e.target.value }));
+      }
+      markUnsaved();
+    } catch (error) {
+      console.error('Error in NIB handleChange:', error);
+      toast.error('An error occurred while processing the file');
     }
-    markUnsaved();
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -1615,10 +1778,9 @@ const NIBForm: React.FC<{
               <FaEye />
             </button>
           )}
-        </div>
-        {hasExistingFile && (
+        </div>        {hasExistingFile && (
           <div className="mt-1 text-sm text-gray-600">
-            Current file: {formData.nib_file.split('/').pop() || formData.nib_file}
+            Current file: {formData.nib_file instanceof File ? formData.nib_file.name : (formData.nib_file.split('/').pop() || formData.nib_file)}
           </div>
         )}
       </div>
@@ -1645,9 +1807,22 @@ const BusinessLicenseForm: React.FC<{
   markUnsaved: () => void;
   onViewFile: (filePath: string, fileName: string) => void;
 }> = ({ data, onSubmit, onUpdate, onDelete, markUnsaved, onViewFile }) => {
+  // Function to convert null values to empty strings for all form fields
+  const sanitizeBusinessLicense = (license: any) => {
+    const sanitized: any = {};
+    Object.keys(license).forEach(key => {
+      if (license[key] === null || license[key] === undefined) {
+        sanitized[key] = '';
+      } else {
+        sanitized[key] = license[key];
+      }
+    });
+    return sanitized;
+  };
+
   const [licenses, setLicenses] = useState(
     data.map(license => ({
-      ...license,
+      ...sanitizeBusinessLicense(license),
       isNew: false,
       isModified: false,
       originalData: { ...license }
@@ -1658,7 +1833,7 @@ const BusinessLicenseForm: React.FC<{
   useEffect(() => {
     setLicenses(
       data.map(license => ({
-        ...license,
+        ...sanitizeBusinessLicense(license),
         isNew: false,
         isModified: false,
         originalData: { ...license }
@@ -1814,6 +1989,7 @@ const BusinessLicenseForm: React.FC<{
               {license.isNew && (
                 <Button 
                   title="Save"
+
                   onClick={() => handleSaveLicense(index)}
                   type="button"
                   className="text-sm px-3 py-1"
@@ -1933,10 +2109,9 @@ const BusinessLicenseForm: React.FC<{
                   <FaEye />
                 </button>
               )}
-            </div>
-            {license.business_license_file && license.business_license_file !== "" && license.business_license_file !== null && (
+            </div>            {license.business_license_file && license.business_license_file !== "" && license.business_license_file !== null && (
               <div className="mt-1 text-sm text-gray-600">
-                Current file: {(typeof license.business_license_file === 'string' ? license.business_license_file.split('/').pop() : license.business_license_file.name) || license.business_license_file}
+                Current file: {license.business_license_file instanceof File ? license.business_license_file.name : (typeof license.business_license_file === 'string' ? license.business_license_file.split('/').pop() : license.business_license_file) || license.business_license_file}
               </div>
             )}
           </div>
@@ -1982,17 +2157,56 @@ const IntegrityPactForm: React.FC<{
   markUnsaved: () => void;
   onViewFile: (filePath: string, fileName: string) => void;
 }> = ({ data, onSubmit, onUpdate, onDelete, markUnsaved, onViewFile }) => {
-  const [formData, setFormData] = useState(data)
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    if (e.target.type === 'file') {
-      const files = (e.target as HTMLInputElement).files;
-      if (files && files.length > 0) {
-        setFormData({ ...formData, [e.target.name]: files[0] });
+  // Function to convert null values to empty strings for all form fields
+  const sanitizeFormData = (data: any) => {
+    const sanitized: any = {};
+    Object.keys(data).forEach(key => {
+      if (data[key] === null || data[key] === undefined) {
+        sanitized[key] = '';
+      } else {
+        sanitized[key] = data[key];
       }
-    } else {
-      setFormData({ ...formData, [e.target.name]: e.target.value });
+    });
+    return sanitized;
+  };
+
+  const [formData, setFormData] = useState(() => sanitizeFormData(data));
+
+  // Re-sanitize data when parent data changes
+  useEffect(() => {
+    setFormData(sanitizeFormData(data));
+  }, [data]);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    try {
+      if (e.target.type === 'file') {
+        const files = (e.target as HTMLInputElement).files;
+        if (files && files.length > 0) {
+          const file = files[0];
+          
+          // Validate file size (max 10MB)
+          if (file.size > 10 * 1024 * 1024) {
+            toast.error('File size must be less than 10MB');
+            return;
+          }
+          
+          // Validate file type
+          const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+          if (!allowedTypes.includes(file.type)) {
+            toast.error('Please upload a PDF, JPG, JPEG, or PNG file');
+            return;
+          }
+          
+          console.log('Setting Integrity Pact file:', file.name, 'for field:', e.target.name);
+          setFormData((prevData: any) => ({ ...prevData, [e.target.name]: file }));
+        }
+      } else {
+        setFormData((prevData: any) => ({ ...prevData, [e.target.name]: e.target.value }));
+      }
+      markUnsaved();
+    } catch (error) {
+      console.error('Error in Integrity Pact handleChange:', error);
+      toast.error('An error occurred while processing the file');
     }
-    markUnsaved();
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -2048,10 +2262,9 @@ const IntegrityPactForm: React.FC<{
               <FaEye />
             </button>
           )}
-        </div>
-        {hasExistingFile && (
+        </div>        {hasExistingFile && (
           <div className="mt-1 text-sm text-gray-600">
-            Current file: {formData.integrity_pact_file.split('/').pop() || formData.integrity_pact_file}
+            Current file: {formData.integrity_pact_file instanceof File ? formData.integrity_pact_file.name : (formData.integrity_pact_file.split('/').pop() || formData.integrity_pact_file)}
           </div>
         )}
       </div>

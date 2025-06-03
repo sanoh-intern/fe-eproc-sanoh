@@ -218,7 +218,7 @@ const SupplierDashboard: React.FC = () => {
                                 <p className="text-primary">{miniProfile.sub_business_field || "-"}</p>
                             </div>
                         </div>                        {(verificationStatus === "not_verified" || !verificationStatus) && (
-                            <Button2 as={Link} to="/company-details" className="mt-4">
+                            <Button2 as={Link} to="/company-data" className="mt-4">
                                 <FaUserEdit className="mr-2" />
                                 Complete Company Profile
                             </Button2>
