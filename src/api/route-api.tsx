@@ -82,4 +82,4 @@ export const API_Delete_Business_License_Supplier = () => API + getRolePath() + 
 
 export const API_Status_Verification_Supplier = () => API + getRolePath() + '/verification/status';
 export const API_Request_Verification_Supplier = () => API + getRolePath() + '/verification/create';
-export const API_History_Verification_Supplier = () => API + getRolePath() + '/verification/history/get';
+export const API_History_Verification_Supplier = () => API + getRolePath() + '/verification/get';
