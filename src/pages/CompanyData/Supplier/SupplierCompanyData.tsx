@@ -38,6 +38,42 @@ import {
   API_Delete_Business_License_Supplier
 } from "../../../api/route-api"
 
+// File validation utility function - available globally for all sub-components
+const validateFile = (file: File, fieldName: string): { isValid: boolean; message?: string } => {
+  // Check file size (5MB = 5 * 1024 * 1024 bytes)
+  const maxSize = 5 * 1024 * 1024; // 5MB
+  if (file.size > maxSize) {
+    return {
+      isValid: false,
+      message: 'Maximum file size is 5MB'
+    };
+  }
+  
+  // For document fields, require PDF only
+  const documentFields = ['tax_id_file', 'skpp_file', 'nib_file', 'business_license_file', 'integrity_pact_file'];
+  if (documentFields.includes(fieldName)) {
+    if (file.type !== 'application/pdf') {
+      return {
+        isValid: false,
+        message: 'File must be in PDF format'
+      };
+    }
+  }
+  
+  // For company photo, allow images
+  if (fieldName === 'company_photo') {
+    const allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (!allowedImageTypes.includes(file.type)) {
+      return {
+        isValid: false,
+        message: 'Company photo must be in JPG, JPEG, or PNG format'
+      };
+    }
+  }
+  
+  return { isValid: true };
+};
+
 const SupplierCompanyData: React.FC = () => {
   const [companyData, setCompanyData] = useState<TypeCompanyData>();
   const [activeTab, setActiveTab] = useState(0);
@@ -106,11 +142,11 @@ const SupplierCompanyData: React.FC = () => {
       )
     )
   }
-
   const checkIntegrityPactCompleteness = (data: any) => {
     return data.integrity_pact_file && data.integrity_pact_desc
-  }
-  const markUnsaved = () => setUnsavedChanges(true);
+  };
+    const markUnsaved = () => setUnsavedChanges(true);
+  
   const handleViewFile = (filePath: string, fileName: string) => {
     setSelectedFilePath(filePath);
     setSelectedFileName(fileName);
@@ -887,32 +923,17 @@ const GeneralDataForm: React.FC<{
   ) => {
     try {
       const fieldName = e.target.name;
-      
-      if (e.target.type === 'file') {
+        if (e.target.type === 'file') {
         const files = (e.target as HTMLInputElement).files;
         if (files && files.length > 0) {
           const file = files[0];
           
-          // Validate file size (max 10MB)
-          if (file.size > 10 * 1024 * 1024) {
-            toast.error('File size must be less than 10MB');
-            return;
-          }
-          
-          // Validate file type for photos and documents
-          let allowedTypes: string[] = [];
-          if (fieldName === 'company_photo') {
-            allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-          } else {
-            allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
-          }
-          
-          if (!allowedTypes.includes(file.type)) {
-            if (fieldName === 'company_photo') {
-              toast.error('Please upload a JPG, JPEG, or PNG image for company photo');
-            } else {
-              toast.error('Please upload a PDF, JPG, JPEG, or PNG file');
-            }
+          // Use the validation function
+          const validation = validateFile(file, fieldName);
+          if (!validation.isValid) {
+            toast.error(validation.message);
+            // Clear the input
+            (e.target as HTMLInputElement).value = '';
             return;
           }
           
@@ -1081,16 +1102,18 @@ const GeneralDataForm: React.FC<{
             onChange={handleChange}
             className="w-full p-2 border rounded border-primary"
           />
-        </div>      </div><div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block mb-1">NPWP File</label>
+        </div>      </div><div className="grid grid-cols-1 md:grid-cols-2 gap-4">        <div>          <label className="block mb-1">
+            NPWP File <span className="text-red-500">*</span>
+            <span className="text-sm text-gray-500 block">Format: PDF, Maximum 5MB</span>
+          </label>
           <div className="flex gap-2">
             <input
               type="file"
               name="tax_id_file"
               onChange={handleChange}
               className="flex-1 p-2 border rounded border-primary"
-              accept=".pdf,.jpg,.jpeg,.png"
+              accept=".pdf"
+              required
             />
             {formData.tax_id_file && (
               <button
@@ -1108,16 +1131,18 @@ const GeneralDataForm: React.FC<{
               Current file: {formData.tax_id_file instanceof File ? formData.tax_id_file.name : (formData.tax_id_file.split('/').pop() || formData.tax_id_file)}
             </div>
           )}
-        </div>
-        <div>
-          <label className="block mb-1">SKPP File</label>
+        </div>        <div>          <label className="block mb-1">
+            SKPP File <span className="text-red-500">*</span>
+            <span className="text-sm text-gray-500 block">Format: PDF, Maximum 5MB</span>
+          </label>
           <div className="flex gap-2">
             <input
               type="file"
               name="skpp_file"
               onChange={handleChange}
               className="flex-1 p-2 border rounded border-primary"
-              accept=".pdf,.jpg,.jpeg,.png"
+              accept=".pdf"
+              required
             />
             {formData.skpp_file && (
               <button
@@ -1640,24 +1665,19 @@ const NIBForm: React.FC<{
   // Re-sanitize data when parent data changes
   useEffect(() => {
     setFormData(sanitizeFormData(data));
-  }, [data]);
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  }, [data]);    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     try {
       if (e.target.type === 'file') {
         const files = (e.target as HTMLInputElement).files;
         if (files && files.length > 0) {
           const file = files[0];
           
-          // Validate file size (max 10MB)
-          if (file.size > 10 * 1024 * 1024) {
-            toast.error('File size must be less than 10MB');
-            return;
-          }
-          
-          // Validate file type
-          const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
-          if (!allowedTypes.includes(file.type)) {
-            toast.error('Please upload a PDF, JPG, JPEG, or PNG file');
+          // Use the validation function
+          const validation = validateFile(file, e.target.name);
+          if (!validation.isValid) {
+            toast.error(validation.message);
+            // Clear the input
+            (e.target as HTMLInputElement).value = '';
             return;
           }
           
@@ -1758,8 +1778,10 @@ const NIBForm: React.FC<{
           required
           className="w-full p-2 border rounded border-primary"
         />
-      </div>      <div>
-        <label className="block mb-1">NIB File{isExistingRecord && hasExistingFile ? '' : '*'}</label>
+      </div>      <div>        <label className="block mb-1">
+          NIB File{isExistingRecord && hasExistingFile ? '' : ' *'}
+          <span className="text-sm text-gray-500 block">Format: PDF, Maximum 5MB</span>
+        </label>
         <div className="flex gap-2">
           <input 
             type="file" 
@@ -1767,8 +1789,8 @@ const NIBForm: React.FC<{
             onChange={handleChange} 
             required={!isExistingRecord || !hasExistingFile}
             className="flex-1 p-2 border rounded border-primary"
-            accept=".pdf,.jpg,.jpeg,.png"
-          />          {hasExistingFile && (
+            accept=".pdf"
+          />{hasExistingFile && (
             <button
               type="button"
               onClick={() => onViewFile(formData.nib_file, `NIB_${formData.nib_number || 'document'}.pdf`)}
@@ -1858,8 +1880,16 @@ const BusinessLicenseForm: React.FC<{
     setLicenses([...licenses, newLicense])
     markUnsaved();
   }
-
   const handleLicenseChange = (index: number, field: string, value: string | File | null) => {
+    // Validate file if it's a file field
+    if (field === 'business_license_file' && value instanceof File) {
+      const validation = validateFile(value, field);
+      if (!validation.isValid) {
+        toast.error(validation.message);
+        return; // Don't update state if validation fails
+      }
+    }
+    
     const updatedLicenses = licenses.map((license, i) => {
       if (i === index) {
         const updatedLicense = { ...license, [field]: value };
@@ -2089,17 +2119,18 @@ const BusinessLicenseForm: React.FC<{
               required
               className="w-full p-2 border rounded border-primary"
             />
-          </div>
-          <div>
-            <label className="block mb-1">Business License File*</label>
+          </div>          <div>            <label className="block mb-1">
+              Business License File <span className="text-red-500">*</span>
+              <span className="text-sm text-gray-500 block">Format: PDF, Maximum 5MB</span>
+            </label>
             <div className="flex gap-2">
               <input
                 type="file"
                 onChange={(e) => handleLicenseChange(index, "business_license_file", e.target.files ? e.target.files[0] : '')}
                 required
                 className="flex-1 p-2 border rounded border-primary"
-                accept=".pdf,.jpg,.jpeg,.png"
-              />              {license.business_license_file && license.business_license_file !== "" && license.business_license_file !== null && (
+                accept=".pdf"
+              />{license.business_license_file && license.business_license_file !== "" && license.business_license_file !== null && (
                 <button
                   type="button"
                   onClick={() => onViewFile(license.business_license_file, `BusinessLicense_${license.business_license_number || 'document'}.pdf`)}
@@ -2175,24 +2206,19 @@ const IntegrityPactForm: React.FC<{
   // Re-sanitize data when parent data changes
   useEffect(() => {
     setFormData(sanitizeFormData(data));
-  }, [data]);
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  }, [data]);  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     try {
       if (e.target.type === 'file') {
         const files = (e.target as HTMLInputElement).files;
         if (files && files.length > 0) {
           const file = files[0];
           
-          // Validate file size (max 10MB)
-          if (file.size > 10 * 1024 * 1024) {
-            toast.error('File size must be less than 10MB');
-            return;
-          }
-          
-          // Validate file type
-          const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
-          if (!allowedTypes.includes(file.type)) {
-            toast.error('Please upload a PDF, JPG, JPEG, or PNG file');
+          // Use the validation function
+          const validation = validateFile(file, e.target.name);
+          if (!validation.isValid) {
+            toast.error(validation.message);
+            // Clear the input
+            (e.target as HTMLInputElement).value = '';
             return;
           }
           
@@ -2242,8 +2268,10 @@ const IntegrityPactForm: React.FC<{
           }}
           type="button"
         />
-      </div>      <div>
-        <label className="block mb-1">Upload Integrity Pact{isExistingRecord && hasExistingFile ? '' : '*'}</label>
+      </div>      <div>        <label className="block mb-1">
+          Upload Integrity Pact{isExistingRecord && hasExistingFile ? '' : ' *'}
+          <span className="text-sm text-gray-500 block">Format: PDF, Maximum 5MB</span>
+        </label>
         <div className="flex gap-2">
           <input 
             type="file" 
@@ -2251,8 +2279,8 @@ const IntegrityPactForm: React.FC<{
             onChange={handleChange} 
             required={!isExistingRecord || !hasExistingFile}
             className="flex-1 p-2 border rounded border-primary"
-            accept=".pdf,.jpg,.jpeg,.png"
-          />          {hasExistingFile && (
+            accept=".pdf"
+          />{hasExistingFile && (
             <button
               type="button"
               onClick={() => onViewFile(formData.integrity_pact_file, `IntegrityPact_document.pdf`)}
