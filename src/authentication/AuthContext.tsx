@@ -86,7 +86,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         localStorage.setItem('company_name', company_name);
         localStorage.setItem('company_images', company_profile);
         localStorage.setItem('isVerified', profile_verified_at ? 'true' : 'false');
-        localStorage.setItem('bp_email', email);
+        localStorage.setItem('email', email);
         localStorage.setItem('bp_code', bp_code);
         localStorage.setItem("role", role_tags);
         localStorage.setItem("role_id", role_id);

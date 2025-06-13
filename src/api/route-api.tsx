@@ -10,12 +10,13 @@ const getRolePath = () => {
 // AUTH API endpoint
 export const API_Login = () => API + '/login';
 export const API_Logout = () => API + getRolePath() + `/logout`;
+export const API_Change_Password = () => API + getRolePath() + `/change-password`;
 
 export const API_Register = () => API + '/guest/register';
 export const API_Resend_Password = () => API + getRolePath() + `/guest/resend-password`;
-export const API_OTP_Mail_Reset_Password = () => API + '/guest/reset-password';
-export const API_Verify_OTP = () => API + getRolePath() + `/guest/verification-token/`;
-export const API_Reset_Password = () => API + getRolePath() + `/guest/reset-password/`;
+export const API_STEP1_OTP_Mail_Reset_Password = () => API + '/guest/reset-password';
+export const API_STEP2_Verify_OTP_Reset_Password = () => API + getRolePath() + `/guest/verification-token/`;
+export const API_STEP3_Reset_Password = () => API + getRolePath() + `/guest/reset-password/password`;
 
 export const API_Email = () => API + `/email`;
 
@@ -44,6 +45,12 @@ export const API_Declined_Proposal_Admin = () => API + getRolePath() + `/project
 
 export const API_Last_Seen_Admin = () => API + getRolePath() + `/project-header/view/`;
 
+export const API_List_Request_Verification_Admin = () => API + getRolePath() + `/verification/get`;
+export const API_List_Status_Verification_Admin = () => API + getRolePath() + `/verification/status/get`;
+export const API_Detail_Status_Verification_Admin = () => API + getRolePath() + `/verification/status/get/`;
+export const API_Approve_Verification_Admin = () => API + getRolePath() + `/verification/approve/`;
+
+
 // Manage User Admin
 export const API_User_Online_Admin = () => API + getRolePath() + `/user/online`;
 export const API_User_Logout_Admin = () => API + getRolePath() + `/user/logout`;
@@ -53,6 +60,7 @@ export const API_Create_User_Admin = () => API + getRolePath() + '/user/create';
 export const API_Edit_User_Admin = () => API + getRolePath() + '/user/edit/';
 // export const API_Get_Email_Admin = () => API + getRolePath() + '/user/email/';
 export const API_Update_User_Admin = () => API + getRolePath() + '/user/update/';
+export const API_Delete_User_Admin = () => API + getRolePath() + '/user/delete/';
 export const API_List_User_Admin = () => API + getRolePath() + '/user/list';
 export const API_Update_Status_Admin = () => API + getRolePath() + `/user/update/status/`;
 
@@ -63,10 +71,13 @@ export const API_Project_Followed_Supplier = () => API + getRolePath() + '/proje
 export const API_Register_Project_Supplier = () => API + getRolePath() + '/project-header/join/';
 export const API_Negotiation_Supplier = () => API + getRolePath() + '/project-detail/list-offer/get/';
 export const API_Post_Proposal_Supplier = () => API + getRolePath() + '/project-detail/create';
+
 export const API_Mini_Profile_Supplier = () => API + getRolePath() + '/dashboard/mini-profile/get';
+export const API_Reset_Password_Supplier = () => API + getRolePath() + '/user/reset-password';
 
 export const API_Company_Profile_Supplier = () => API + getRolePath() + '/user/profile';
 export const API_Update_General_Data_Supplier = () => API + getRolePath() + '/company-profile/update/';
+export const API_Update_File_General_Data_Supplier = () => API + getRolePath() + '/company-profile/update/file';
 export const API_Create_Person_In_Charge_Supplier = () => API + getRolePath() + '/pic/create';
 export const API_Update_Person_In_Charge_Supplier = () => API + getRolePath() + '/pic/update/';
 export const API_Delete_Person_In_Charge_Supplier = () => API + getRolePath() + '/pic/delete/';
@@ -81,5 +92,5 @@ export const API_Update_Business_License_Supplier = () => API + getRolePath() + 
 export const API_Delete_Business_License_Supplier = () => API + getRolePath() + '/business-license/delete/';
 
 export const API_Status_Verification_Supplier = () => API + getRolePath() + '/verification/status';
-export const API_Request_Verification_Supplier = () => API + getRolePath() + '/verification/create';
+export const API_Request_Verification_Supplier = () => API + getRolePath() + '/verification/request';
 export const API_History_Verification_Supplier = () => API + getRolePath() + '/verification/get';
