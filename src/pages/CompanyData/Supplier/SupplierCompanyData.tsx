@@ -50,7 +50,7 @@ const validateFile = (file: File, fieldName: string): { isValid: boolean; messag
   }
   
   // For document fields, require PDF only
-  const documentFields = ['tax_id_file', 'skpp_file', 'nib_file', 'business_license_file', 'integrity_pact_file'];
+  const documentFields = ['tax_id_file', 'sppkp_file', 'nib_file', 'business_license_file', 'integrity_pact_file'];
   if (documentFields.includes(fieldName)) {
     if (file.type !== 'application/pdf') {
       return {
@@ -91,9 +91,9 @@ const SupplierCompanyData: React.FC = () => {
   const [selectedFileName, setSelectedFileName] = useState('');
 
   const checkGeneralDataCompleteness = (data: any) => {
-    // Required fields: company name, npwp file dan skpp file, tax id, business field, address line 1, postal code, company status
+    // Required fields: company name, npwp file dan sppkp file, tax id, business field, address line 1, postal code, company status
     const requiredFields = ["company_name", "tax_id", "business_field", "adr_line_1", "postal_code", "company_status"];
-    const requiredFiles = ["tax_id_file", "skpp_file"];
+    const requiredFiles = ["tax_id_file", "sppkp_file"];
     
     // Check if all required text fields are filled
     const textFieldsComplete = requiredFields.every((field) => 
@@ -173,7 +173,7 @@ const SupplierCompanyData: React.FC = () => {
       
       // Separate files and regular data
       Object.keys(formData).forEach(key => {
-        if (key === 'tax_id_file' || key === 'skpp_file' || key === 'company_photo') {
+        if (key === 'tax_id_file' || key === 'sppkp_file' || key === 'company_photo') {
           if (formData[key] instanceof File) {
             fileData[key] = formData[key];
           }
@@ -1172,32 +1172,32 @@ const GeneralDataForm: React.FC<{
         </div>        
         <div>          
           <label className="block mb-1">
-            SKPP File <span className="text-red-500">*</span>
+            SPPKP File <span className="text-red-500">*</span>
             <span className="text-sm text-gray-500 block">Format: PDF, Maximum 5MB</span>
           </label>
           <div className="flex gap-2">
             <input
               type="file"
-              name="skpp_file"
+              name="sppkp_file"
               onChange={handleChange}
               className="flex-1 p-2 border rounded border-primary"
               accept=".pdf"
               // required
             />
-            {formData.skpp_file && (
+            {formData.sppkp_file && (
               <button
                 type="button"
-                onClick={() => handleViewFile(formData.skpp_file, `SKPP_${formData.company_name || 'document'}.pdf`)}
+                onClick={() => handleViewFile(formData.sppkp_file, `SPPKP${formData.company_name || 'document'}.pdf`)}
                 className="px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 flex items-center"
-                title="View SKPP File"
+                title="View SPPKP File"
               >
                 <FaEye />
               </button>
             )}
-          </div>         
-          {formData.skpp_file && (
+          </div>
+          {formData.sppkp_file && (
             <div className="mt-1 text-sm text-gray-600">
-              Current file: {formData.skpp_file instanceof File ? formData.skpp_file.name : (formData.skpp_file.split('/').pop() || formData.skpp_file)}
+              Current file: {formData.sppkp_file instanceof File ? formData.sppkp_file.name : (formData.sppkp_file.split('/').pop() || formData.sppkp_file)}
             </div>
           )}
         </div>

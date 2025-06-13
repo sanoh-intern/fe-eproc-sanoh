@@ -10,7 +10,7 @@ const getRolePath = () => {
 // AUTH API endpoint
 export const API_Login = () => API + '/login';
 export const API_Logout = () => API + getRolePath() + `/logout`;
-export const API_Change_Password = () => API + getRolePath() + `/change-password`;
+export const API_Change_Password = () => API + getRolePath() + `/user/reset-password`;
 
 export const API_Register = () => API + '/guest/register';
 export const API_Resend_Password = () => API + `/guest/resend-password`;

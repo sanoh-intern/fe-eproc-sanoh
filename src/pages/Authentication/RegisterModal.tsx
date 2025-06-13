@@ -105,7 +105,7 @@ export function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
     if (!isOpen) return null
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" onClick={handleClose}>
+        <div className="fixed inset-0 z-99999 flex items-center justify-center bg-black bg-opacity-50" onClick={handleClose}>
             <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                 <div className="relative bg-white rounded-lg shadow-2xl dark:bg-gray-800 p-8">
                     <button

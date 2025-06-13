@@ -23,7 +23,7 @@ export type TypeCompanyData = {
         company_fax_2: string | null
         company_url: string | null
         npwp_file?: string | null
-        skpp_file?: string | null
+        sppkp_file?: string | null
     }
     person_in_charge: {
         pic_id?: number | null
@@ -84,7 +84,7 @@ const fetchCompanyData = async (): Promise<TypeCompanyData> => {
                 general_data: {
                     ...result.data.general_data,
                     npwp_file: result.data.general_data.npwp_file || null,
-                    skpp_file: result.data.general_data.skpp_file || null,
+                    sppkp_file: result.data.general_data.sppkp_file || null,
                 },
                 person_in_charge: result.data.person_in_charge || [],
                 nib: result.data.nib || {

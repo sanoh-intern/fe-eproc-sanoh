@@ -27,7 +27,7 @@ export function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
     if (!isOpen) return null
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" onClick={onClose}>
+        <div className="fixed inset-0 z-99999 flex items-center justify-center bg-black bg-opacity-50" onClick={onClose}>
             <div className="relative w-full max-w-md" onClick={(e) => e.stopPropagation()}>
                 <div className="relative bg-white rounded-lg shadow-2xl dark:bg-gray-800 p-8">
                     <button
@@ -61,7 +61,8 @@ export function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                             </div>
                             <div className="flex flex-col mt-3">
                                 <PasswordInput password={password} setPassword={setPassword} isRequired />
-                            </div>                            <div className="flex justify-between items-center">
+                            </div>                            
+                            <div className="flex justify-between items-center">
                                 <button 
                                     type="button"
                                     onClick={() => setIsForgotPasswordOpen(true)}
@@ -81,7 +82,8 @@ export function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                         Not registered?{" "}
                             <Link to="/auth/register" className="text-primary hover:underline">
                                 Register here
-                            </Link>                        </div>
+                            </Link>                        
+                        </div>
                     </div>
                 </div>
             </div>
