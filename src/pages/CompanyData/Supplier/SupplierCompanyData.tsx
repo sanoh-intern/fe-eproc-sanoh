@@ -13,7 +13,6 @@ import {
   FaShieldAlt,
   FaCheck,
   FaExclamationCircle,
-  FaDownload,
   FaEye,
 } from "react-icons/fa"
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb"
@@ -86,11 +85,28 @@ const SupplierCompanyData: React.FC = () => {
     businessLicenses: false,
     integrityPact: false,
   });
-  
-  // File stream modal state
+    // File stream modal state
   const [isFileModalOpen, setIsFileModalOpen] = useState(false);
   const [selectedFilePath, setSelectedFilePath] = useState('');
   const [selectedFileName, setSelectedFileName] = useState('');
+
+  const checkGeneralDataCompleteness = (data: any) => {
+    // Required fields: company name, npwp file dan skpp file, tax id, business field, address line 1, postal code, company status
+    const requiredFields = ["company_name", "tax_id", "business_field", "adr_line_1", "postal_code", "company_status"];
+    const requiredFiles = ["tax_id_file", "skpp_file"];
+    
+    // Check if all required text fields are filled
+    const textFieldsComplete = requiredFields.every((field) => 
+      data[field] !== null && data[field] !== undefined && data[field] !== ""
+    );
+    
+    // Check if all required files are present
+    const filesComplete = requiredFiles.every((field) => 
+      data[field] !== null && data[field] !== undefined && data[field] !== ""
+    );
+    
+    return textFieldsComplete && filesComplete;
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -106,15 +122,12 @@ const SupplierCompanyData: React.FC = () => {
         setCompanyData(data)
       } catch (error) {
         console.error("Error fetching company data:", error)
-        toast.error("Failed to load company data")      }
+        toast.error("Failed to load company data")
+      }
     }
 
     fetchData()
-  }, [])
-  const checkGeneralDataCompleteness = (data: any) => {
-    const requiredFields = ["company_name", "company_description", "business_field", "sub_business_field", "product", "tax_id", "adr_line_1", "province", "city", "postal_code", "company_status", "company_phone_1", "company_fax_1", "company_url"]
-    return requiredFields.every((field) => data[field] !== null && data[field] !== undefined && data[field] !== "")
-  }
+  }, []);
   const checkContactsCompleteness = (contacts: any[]) => {
     return (
       contacts.length > 0 &&
@@ -1047,11 +1060,15 @@ const GeneralDataForm: React.FC<{
             name="bp_code"
             value={formData.bp_code}
             readOnly
+            disabled
             className="w-full p-2 border rounded border-gray-300 bg-gray-100 cursor-not-allowed"
             title="BP Code is read-only"
           />
-        </div><div>
-          <label className="block mb-1">Company Name</label>
+        </div>        
+        <div>
+          <label className="block mb-1">Company Name 
+            <span className="text-red-500">*</span>
+          </label>
           <input
             type="text"
             name="company_name"
@@ -1073,9 +1090,11 @@ const GeneralDataForm: React.FC<{
         />
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">        
         <div>
-          <label className="block mb-1">Business Field</label>
+          <label className="block mb-1">Business Field 
+            <span className="text-red-500">*</span>
+          </label>
           <input
             type="text"
             name="business_field"
@@ -1107,9 +1126,9 @@ const GeneralDataForm: React.FC<{
         />
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">        
         <div>
-          <label className="block mb-1">Tax ID (NPWP)</label>
+          <label className="block mb-1">Tax ID (NPWP) <span className="text-red-500">*</span></label>
           <input
             type="text"
             name="tax_id"
@@ -1117,7 +1136,7 @@ const GeneralDataForm: React.FC<{
             onChange={handleChange}
             className="w-full p-2 border rounded border-primary"
           />
-        </div>      
+        </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">        
           <div>          
@@ -1183,9 +1202,9 @@ const GeneralDataForm: React.FC<{
           )}
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">        
         <div>
-          <label className="block mb-1">Address Line 1</label>
+          <label className="block mb-1">Address Line 1 <span className="text-red-500">*</span></label>
           <input
             type="text"
             name="adr_line_1"
@@ -1247,9 +1266,9 @@ const GeneralDataForm: React.FC<{
             onChange={handleChange}
             className="w-full p-2 border rounded border-primary"
           />
-        </div>
+        </div>        
         <div>
-          <label className="block mb-1">Postal Code</label>
+          <label className="block mb-1">Postal Code <span className="text-red-500">*</span></label>
           <input
             type="text"
             name="postal_code"
@@ -1258,9 +1277,9 @@ const GeneralDataForm: React.FC<{
             className="w-full p-2 border rounded border-primary"
           />
         </div>
-      </div>
-        <div>
-        <label className="block mb-1">Company Status</label>
+      </div>       
+      <div>
+        <label className="block mb-1">Company Status <span className="text-red-500">*</span></label>
         <select
           name="company_status"
           value={formData.company_status}
@@ -1274,7 +1293,7 @@ const GeneralDataForm: React.FC<{
           <option value="BUMD">BUMD (Badan Usaha Milik Daerah)</option>
           <option value="Swasta">Swasta</option>
         </select>
-      </div>        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      </div><div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block mb-1">Phone 1</label>
           <input
@@ -1295,7 +1314,8 @@ const GeneralDataForm: React.FC<{
             className="w-full p-2 border rounded border-primary"
           />
         </div>
-      </div>        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      </div>        
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block mb-1">Fax 1</label>
           <input
@@ -2169,7 +2189,8 @@ const BusinessLicenseForm: React.FC<{
                   <FaEye />
                 </button>
               )}
-            </div>            {license.business_license_file && license.business_license_file !== "" && license.business_license_file !== null && (
+            </div>            
+            {license.business_license_file && license.business_license_file !== "" && license.business_license_file !== null && (
               <div className="mt-1 text-sm text-gray-600">
                 Current file: {license.business_license_file instanceof File ? license.business_license_file.name : (typeof license.business_license_file === 'string' ? license.business_license_file.split('/').pop() : license.business_license_file) || license.business_license_file}
               </div>
@@ -2288,16 +2309,16 @@ const IntegrityPactForm: React.FC<{
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 text-black">
-      <div>
+      {/* <div>
         <Button
           title="Download Template"
           icon={FaDownload}
           onClick={() => {
-            /* Add download logic */
+
           }}
           type="button"
         />
-      </div>      
+      </div>       */}
       <div>        
         <label className="block mb-1">
           Upload Integrity Pact{isExistingRecord && hasExistingFile ? '' : ' *'}
@@ -2355,4 +2376,3 @@ const IntegrityPactForm: React.FC<{
 }
 
 export default SupplierCompanyData
-
