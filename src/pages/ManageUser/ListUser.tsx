@@ -3,12 +3,13 @@ import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../../components/Table/Pagination';
 import SearchBar from '../../components/Table/SearchBar';
-import { FaSortDown, FaSortUp, FaToggleOff, FaToggleOn, FaUserEdit, FaUserPlus } from 'react-icons/fa';
+import { FaSortDown, FaSortUp, FaToggleOff, FaToggleOn, FaUserEdit, FaUserPlus, FaTrash } from 'react-icons/fa';
 import MultiSelect from '../../components/Forms/MultiSelect';
 import Button from '../../components/Forms/Button';
-import { API_List_User_Admin, API_Update_Status_Admin } from '../../api/route-api';
+import { API_List_User_Admin, API_Update_Status_Admin, API_Delete_User_Admin } from '../../api/route-api';
 import useFetch from '../../api/useFetch';
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 type TypeUser = {
     id: string;
@@ -19,6 +20,7 @@ type TypeUser = {
     company_name: string;
     role: string;
     account_status: string;
+    deleted: boolean;
 }
 const ManageUser: React.FC = () => {
     const [filteredData, setFilteredData] = useState<TypeUser[]>([]);
@@ -40,9 +42,7 @@ const ManageUser: React.FC = () => {
         if (userData){
             setFilteredData(userData);
         }
-    }, []);
-
-    const handleStatusChange = async (userId: string, status: string, company_name: string) => {
+    }, []);    const handleStatusChange = async (userId: string, status: string, company_name: string) => {
         const url = `${API_Update_Status_Admin()}${userId}`;
         const token = localStorage.getItem('access_token');
         try {
@@ -62,6 +62,48 @@ const ManageUser: React.FC = () => {
         } catch (error) {
             toast.error(`Failed to update status for "${company_name}": ${error}`);
             return false;
+        }
+    };
+
+    const handleDeleteUser = async (userId: string, company_name: string) => {
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: `Do you want to delete user "${company_name}"? This action cannot be undone!`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        });
+
+        if (result.isConfirmed) {
+            const url = `${API_Delete_User_Admin()}${userId}`;
+            const token = localStorage.getItem('access_token');
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                if (!response.ok) {
+                    throw new Error(`Server responded with status ${response.status}`);
+                }
+                toast.success(`User ${company_name} deleted successfully!`);
+                // Update the local state to reflect the change
+                const newData = filteredData.map(item => 
+                    item.id === userId 
+                        ? {...item, deleted: true} 
+                        : item
+                );
+                setFilteredData(newData);
+                return true;
+            } catch (error) {
+                toast.error(`Failed to delete user "${company_name}": ${error}`);
+                return false;
+            }
         }
     };
 
@@ -192,9 +234,9 @@ const ManageUser: React.FC = () => {
                                                 )}
                                                 Status
                                             </span>
-                                        </th>
-                                        <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">Action</th>
+                                        </th>                                        <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">Action</th>
                                         <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">Edit User</th>
+                                        <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">Delete</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200 bg-white">
@@ -218,6 +260,8 @@ const ManageUser: React.FC = () => {
                                                 </td>
                                                 <td className="px-3 py-3 text-center whitespace-nowrap">
                                                     <div className="h-4 bg-gray-200 rounded"></div>
+                                                </td>                                                <td className="px-3 py-3 text-center whitespace-nowrap">
+                                                    <div className="w-8 h-8 mx-auto bg-gray-200 rounded-full"></div>
                                                 </td>
                                                 <td className="px-3 py-3 text-center whitespace-nowrap">
                                                     <div className="w-8 h-8 mx-auto bg-gray-200 rounded-full"></div>
@@ -274,8 +318,7 @@ const ManageUser: React.FC = () => {
                                                             </button>
                                                         )}
                                                     </div>
-                                                </td>
-                                                <td className="px-3 py-3 text-center whitespace-nowrap">
+                                                </td>                                                <td className="px-3 py-3 text-center whitespace-nowrap">
                                                     <button
                                                         onClick={() => handleEditPage(row.id)}
                                                         className="hover:opacity-80 transition-opacity"
@@ -283,11 +326,27 @@ const ManageUser: React.FC = () => {
                                                         <FaUserEdit className="text-2xl text-primary" />
                                                     </button>
                                                 </td>
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">
+                                                    <button
+                                                        onClick={() => handleDeleteUser(row.id, row.company_name)}
+                                                        disabled={row.deleted}
+                                                        className={`hover:opacity-80 transition-opacity ${
+                                                            row.deleted 
+                                                                ? 'cursor-not-allowed opacity-50' 
+                                                                : 'cursor-pointer'
+                                                        }`}
+                                                    >
+                                                        <FaTrash className={`text-2xl ${
+                                                            row.deleted 
+                                                                ? 'text-gray-400' 
+                                                                : 'text-red-500 hover:text-red-700'
+                                                        }`} />
+                                                    </button>
+                                                </td>
                                             </tr>
                                         ))
-                                    ) : (
-                                        <tr>
-                                            <td colSpan={8} className="px-3 py-4 text-center text-gray-500">
+                                    ) : (                                        <tr>
+                                            <td colSpan={9} className="px-3 py-4 text-center text-gray-500">
                                                 No User available for now
                                             </td>
                                         </tr>
