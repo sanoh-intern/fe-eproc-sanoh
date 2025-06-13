@@ -1054,7 +1054,7 @@ const GeneralDataForm: React.FC<{
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">        
         <div>
-          <label className="block mb-1">BP Code</label>
+          <label className="block mb-1">Supplier Code</label>
           <input
             type="text"
             name="bp_code"

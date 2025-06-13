@@ -3,7 +3,10 @@ import { API_Mini_Profile_Supplier } from '../../route-api';
 // Define the type for mini profile data
 export interface MiniProfileData {
     id: string;
+    company_photo: string | null;
     company_name: string;
+    bp_code: string | null;
+    email: string;
     tax_id: string | null;
     company_description: string | null;
     business_field: string | null;

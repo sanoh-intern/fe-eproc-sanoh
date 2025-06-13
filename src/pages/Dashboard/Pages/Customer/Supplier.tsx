@@ -44,14 +44,12 @@ const SupplierDashboard: React.FC = () => {
             
             try {
                 const result = await getMiniProfile()
-                  if (result.success && result.data) {
+                if (result.success && result.data) {
                     setMiniProfile(result.data)
                     // Set verification status based on profile_verified_at
                     // If profile_verified_at is null, it means not verified yet
                     if (result.data.profile_verified_at === null) {
                         setVerificationStatus("not_verified")
-                    } else {
-                        setVerificationStatus("verified")
                     }
                 } else {
                     setError(result.message)
@@ -69,71 +67,86 @@ const SupplierDashboard: React.FC = () => {
 
         // Mock data for other sections (replace with actual API calls later)
         setAnnouncements([
-            {
-                id: 1,
-                title: "New Tender Opening",
-                message: "New tender for IT Equipment has been opened",
-                date: "2024-02-07",
-            },
-            { 
-                id: 2, 
-                title: "System Maintenance", 
-                message: "Scheduled maintenance on February 10th", 
-                date: "2024-02-06" 
-            },
-            { 
-                id: 3, 
-                title: "System Maintenance", 
-                message: "Scheduled maintenance on February 10th", 
-                date: "2024-02-06" 
+            // {
+            //     id: 1,
+            //     title: "New Tender Opening",
+            //     message: "New tender for IT Equipment has been opened",
+            //     date: "2024-02-07",
+            // },
+            // { 
+            //     id: 2, 
+            //     title: "System Maintenance", 
+            //     message: "Scheduled maintenance on February 10th", 
+            //     date: "2024-02-06" 
+            // },
+            // { 
+            //     id: 3, 
+            //     title: "System Maintenance", 
+            //     message: "Scheduled maintenance on February 10th", 
+            //     date: "2024-02-06" 
             
-            },        ])
+            // },        
+        ])
 
         // Set documents data
 
         setDocuments([
-            { 
-                id: 1, 
-                title: "User Manual", 
-                description: "Complete guide for using the supplier portal", 
-                size: "2.5 MB" 
-            },
-            {
-                id: 2,
-                title: "Registration Procedure",
-                description: "Step-by-step guide for supplier registration",
-                size: "1.8 MB",
-            },
-            { 
-                id: 3, 
-                title: "Terms and Conditions", 
-                description: "Legal terms and conditions document", 
-                size: "1.2 MB" 
-            },
+            // { 
+            //     id: 1, 
+            //     title: "User Manual", 
+            //     description: "Complete guide for using the supplier portal", 
+            //     size: "2.5 MB" 
+            // },
+            // {
+            //     id: 2,
+            //     title: "Registration Procedure",
+            //     description: "Step-by-step guide for supplier registration",
+            //     size: "1.8 MB",
+            // },
+            // { 
+            //     id: 3, 
+            //     title: "Terms and Conditions", 
+            //     description: "Legal terms and conditions document", 
+            //     size: "1.2 MB" 
+            // },
         ])
     }, [])
 
     // Update notifications based on verification status
     useEffect(() => {
-        const baseNotifications = [
-            { id: 2, message: "Document submission deadline approaching", type: "info" },
-            { id: 3, message: "New tender opportunities available", type: "success" },
-            { id: 4, message: "System maintenance scheduled for next week", type: "info" },
-        ]
+        if (!verificationStatus) return
 
-        let updatedNotifications = [...baseNotifications]
+        let updatedNotifications = []
 
         if (verificationStatus === "not_verified") {
             updatedNotifications.unshift({
-                id: 1,
-                message: "Company profile is not verified. Please complete your profile.",
-                type: "warning"
+            id: 1,
+            message: "Your profile has not been verified yet. Please request verification.",
+            type: "warning"
             })
-        } else if (verificationStatus === "pending") {
+        } else if (verificationStatus === "verified") {
             updatedNotifications.unshift({
-                id: 1,
-                message: "Company profile verification is under review.",
-                type: "info"
+            id: 1,
+            message: "Your company profile is verified.",
+            type: "success"
+            })
+        } else if (verificationStatus === "profile_updated") {
+            updatedNotifications.unshift({
+            id: 1,
+            message: "Your profile has been updated. Please request re-verification.",
+            type: "warning"
+            })
+        } else if (verificationStatus === "complete_profile") {
+            updatedNotifications.unshift({
+            id: 1,
+            message: "Please complete your company profile before requesting verification.",
+            type: "warning"
+            })
+        } else if (verificationStatus === "under_verification") {
+            updatedNotifications.unshift({
+            id: 1,
+            message: "Under verification, please wait.",
+            type: "info"
             })
         }
 
@@ -149,11 +162,18 @@ const SupplierDashboard: React.FC = () => {
                         <span>Verified</span>
                     </div>
                 )
-            case "pending":
+            case "under_verification":
                 return (
                     <div className="flex items-center text-yellow-700 bg-yellow-100 px-3 py-2 rounded-lg">
                         <FaClock className="mr-2" />
                         <span>Verification Under Review</span>
+                    </div>
+                )
+            case "profile_updated":
+                return (
+                    <div className="flex items-center text-orange-700 bg-orange-100 px-3 py-2 rounded-lg">
+                        <FaExclamationTriangle className="mr-2" />
+                        <span>Profile Updated</span>
                     </div>
                 )
             case "not_verified":
@@ -164,11 +184,36 @@ const SupplierDashboard: React.FC = () => {
                         <span>Not Verified</span>
                     </div>
                 )
+            
         }
     }
+    const [imgError, setImgError] = useState(false)
 
     const CompanyProfileImage = () => {
-        // Since API doesn't provide profile image, we'll use a default building icon
+        // Use company_photo from API if available, otherwise use default building icon
+        if (miniProfile?.company_photo) {
+                
+            if (!miniProfile?.company_photo || imgError) {
+                return (
+                    <div className="w-24 h-24 flex-shrink-0 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <FaBuilding className="w-12 h-12 text-gray-400" />
+                    </div>
+                )
+            }
+
+            return (
+                <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+                    <img
+                        src={miniProfile.company_photo}
+                        alt={`${miniProfile.company_name || 'Company'} logo`}
+                        className="w-full h-full object-cover"
+                        onError={() => setImgError(true)}
+                    />
+                </div>
+            )
+        }
+        
+        // Default building icon when no company photo is available
         return (
             <div className="w-24 h-24 flex-shrink-0 bg-gray-100 rounded-lg flex items-center justify-center">
                 <FaBuilding className="w-12 h-12 text-gray-400" />
@@ -206,8 +251,8 @@ const SupplierDashboard: React.FC = () => {
                             <h2 className="text-2xl font-bold text-primary">{miniProfile.company_name}</h2>
                             {renderVerificationStatus()}
                         </div>
-                        <p className="text-secondary mb-2">{miniProfile.tax_id || "-"}</p>
-                        <p className="text-primary mb-4">{miniProfile.company_description || "-"}</p>
+                        <p className="text-primary mb-2">Tax Id : {miniProfile.tax_id || "-"}</p>
+                        <p className="text-secondary mb-4">{miniProfile.company_description || "-"}</p>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <h3 className="text-sm font-medium text-secondary">Business Field</h3>
@@ -217,7 +262,8 @@ const SupplierDashboard: React.FC = () => {
                                 <h3 className="text-sm font-medium text-secondary">Sub Business Field</h3>
                                 <p className="text-primary">{miniProfile.sub_business_field || "-"}</p>
                             </div>
-                        </div>                        {(verificationStatus === "not_verified" || !verificationStatus) && (
+                        </div>                        
+                        {(verificationStatus === "not_verified" || !verificationStatus) && (
                             <Button2 as={Link} to="/company-data" className="mt-4">
                                 <FaUserEdit className="mr-2" />
                                 Complete Company Profile
