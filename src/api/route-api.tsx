@@ -76,8 +76,8 @@ export const API_Mini_Profile_Supplier = () => API + getRolePath() + '/dashboard
 export const API_Reset_Password_Supplier = () => API + getRolePath() + '/user/reset-password';
 
 export const API_Company_Profile_Supplier = () => API + getRolePath() + '/user/profile';
-export const API_Update_General_Data_Supplier = () => API + getRolePath() + '/company-profile/update/';
-export const API_Update_File_General_Data_Supplier = () => API + getRolePath() + '/company-profile/update/file';
+export const API_Update_General_Data_Supplier = () => API + getRolePath() + '/company-profile/update';
+export const API_Update_File_General_Data_Supplier = () => API + getRolePath() + '/company-profile/update';
 export const API_Create_Person_In_Charge_Supplier = () => API + getRolePath() + '/pic/create';
 export const API_Update_Person_In_Charge_Supplier = () => API + getRolePath() + '/pic/update/';
 export const API_Delete_Person_In_Charge_Supplier = () => API + getRolePath() + '/pic/delete/';

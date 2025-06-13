@@ -24,6 +24,7 @@ import FileStreamModal from "../../../components/FileStreamModal"
 // Import API endpoints
 import {
   API_Update_General_Data_Supplier,
+  API_Update_File_General_Data_Supplier,
   API_Create_Person_In_Charge_Supplier,
   API_Update_Person_In_Charge_Supplier,
   API_Delete_Person_In_Charge_Supplier,
@@ -111,7 +112,7 @@ const SupplierCompanyData: React.FC = () => {
     fetchData()
   }, [])
   const checkGeneralDataCompleteness = (data: any) => {
-    const requiredFields = ["bp_code", "company_name", "company_description", "business_field", "sub_business_field", "product", "tax_id", "adr_line_1", "province", "city", "postal_code", "company_status", "company_phone_1", "company_fax_1", "company_url"]
+    const requiredFields = ["company_name", "company_description", "business_field", "sub_business_field", "product", "tax_id", "adr_line_1", "province", "city", "postal_code", "company_status", "company_phone_1", "company_fax_1", "company_url"]
     return requiredFields.every((field) => data[field] !== null && data[field] !== undefined && data[field] !== "")
   }
   const checkContactsCompleteness = (contacts: any[]) => {
@@ -150,76 +151,88 @@ const SupplierCompanyData: React.FC = () => {
   const handleViewFile = (filePath: string, fileName: string) => {
     setSelectedFilePath(filePath);
     setSelectedFileName(fileName);
-    setIsFileModalOpen(true);  };
-  // General Data CRUD Methods
+    setIsFileModalOpen(true);  };  // General Data CRUD Methods
   const handleGeneralDataSave = async (formData: any) => {
     try {
-      const formDataToSend = new FormData();
+      // Separate file data from regular data
+      const fileData: any = {};
+      const regularData: any = {};
       
-      // Add only the changed fields
+      // Separate files and regular data
       Object.keys(formData).forEach(key => {
-        if (key !== 'tax_id_file' && key !== 'skpp_file' && key !== 'company_photo') {
-          formDataToSend.append(key, formData[key] || '');
+        if (key === 'tax_id_file' || key === 'skpp_file' || key === 'company_photo') {
+          if (formData[key] instanceof File) {
+            fileData[key] = formData[key];
+          }
+        } else {
+          regularData[key] = formData[key] || '';
         }
       });
-      
-      // Add files if they exist and are File objects (newly selected)
-      if (formData.tax_id_file instanceof File) {
-        formDataToSend.append('tax_id_file', formData.tax_id_file);
-      }
-      if (formData.skpp_file instanceof File) {
-        formDataToSend.append('skpp_file', formData.skpp_file);
-      }
-      if (formData.company_photo instanceof File) {
-        formDataToSend.append('company_photo', formData.company_photo);
-      }      // CORS Fix: Try multiple URL variants to avoid redirects
-      const baseUrl = API_Update_General_Data_Supplier();
-      const urlVariants = [
-        baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl, // Without trailing slash
-        baseUrl.endsWith('/') ? baseUrl : baseUrl + '/',        // With trailing slash
-      ];
 
-      let response: Response | null = null;
-      let lastError: Error | null = null;
+      let generalDataSuccess = false;
+      let fileUploadSuccess = false;
 
-      // Try each URL variant until one works
-      for (const apiUrl of urlVariants) {
-        try {
-          console.log('Attempting to POST to:', apiUrl);
-          
-          response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-              'Authorization': 'Bearer ' + localStorage.getItem('access_token') || '',
-              // Don't set Content-Type for FormData - let browser set it with boundary
-            },
-            body: formDataToSend,
-            // Add these options to help with CORS
-            mode: 'cors',
-            credentials: 'omit' // Don't send cookies to avoid additional CORS complications
-          });
+      // Update regular data first if there are any changes
+      if (Object.keys(regularData).length > 0) {
+        const response = await fetch(API_Update_General_Data_Supplier(), {
+          method: 'PATCH',
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('access_token') || '',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(regularData),
+          mode: 'cors',
+          credentials: 'omit'
+        });
 
-          // If we get a response (even if not ok), break out of the loop
-          if (response) {
-            console.log('Successfully got response from:', apiUrl);
-            break;
-          }
-        } catch (error) {
-          console.warn(`Failed to fetch from ${apiUrl}:`, error);
-          lastError = error as Error;
-          
-          // Continue to try the next URL variant
-          continue;
+        const result = await response.json();
+        
+        if (response.ok && result.status) {
+          generalDataSuccess = true;
+          console.log('General data updated successfully');
+        } else {
+          toast.error(result.message || 'Failed to update general data');
+          return;
         }
+      } else {
+        generalDataSuccess = true; // No regular data to update
       }
 
-      // If no successful response after trying all variants
-      if (!response) {
-        throw lastError || new Error('All API request variants failed');
-      }const result = await response.json();
-      
-      if (response.ok && result.status) {
-        toast.success(result.message || 'General data updated successfully');
+      // Update files if there are any file changes
+      if (Object.keys(fileData).length > 0) {
+        const formDataToSend = new FormData();
+        
+        Object.keys(fileData).forEach(key => {
+          formDataToSend.append(key, fileData[key]);
+        });
+
+        const fileResponse = await fetch(API_Update_File_General_Data_Supplier(), {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('access_token') || '',
+            // Don't set Content-Type for FormData - let browser set it with boundary
+          },
+          body: formDataToSend,
+          mode: 'cors',
+          credentials: 'omit'
+        });
+
+        const fileResult = await fileResponse.json();
+        
+        if (fileResponse.ok && fileResult.status) {
+          fileUploadSuccess = true;
+          console.log('Files updated successfully');
+        } else {
+          toast.error(fileResult.message || 'Failed to update files');
+          return;
+        }
+      } else {
+        fileUploadSuccess = true; // No files to update
+      }
+
+      // Show success message if everything completed successfully
+      if (generalDataSuccess && fileUploadSuccess) {
+        toast.success('General data updated successfully');
         setUnsavedChanges(false);
         // Refresh company data
         const updatedData = await fetchCompanyData();
@@ -228,8 +241,6 @@ const SupplierCompanyData: React.FC = () => {
           ...prev,
           generalData: checkGeneralDataCompleteness(updatedData.general_data)
         }));
-      } else {
-        toast.error(result.message || 'Failed to update general data');
       }
     } catch (error) {
       console.error('Error updating general data:', error);
@@ -826,14 +837,16 @@ const SupplierCompanyData: React.FC = () => {
               </Tab>
             </TabList>
 
-            <div>              <TabPanel>
+            <div>              
+              <TabPanel>
                 <GeneralDataForm
                   data={companyData.general_data}
                   onSubmit={handleGeneralDataSave}
                   markUnsaved={markUnsaved}
                   onViewFile={handleViewFile}
                 />
-              </TabPanel>              <TabPanel>
+              </TabPanel>              
+              <TabPanel>
                 <ContactDataForm 
                   data={companyData.person_in_charge} 
                   onSubmit={handlePersonInChargeCreate}
@@ -841,7 +854,8 @@ const SupplierCompanyData: React.FC = () => {
                   onDelete={handlePersonInChargeDelete}
                   markUnsaved={markUnsaved}
                 />
-              </TabPanel>              <TabPanel>
+              </TabPanel>              
+              <TabPanel>
                 <NIBForm 
                   data={companyData.nib} 
                   onSubmit={handleNIBCreate}
@@ -1025,17 +1039,18 @@ const GeneralDataForm: React.FC<{
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">        
         <div>
           <label className="block mb-1">BP Code</label>
           <input
             type="text"
             name="bp_code"
             value={formData.bp_code}
-            onChange={handleChange}
-            className="w-full p-2 border rounded border-primary"
+            readOnly
+            className="w-full p-2 border rounded border-gray-300 bg-gray-100 cursor-not-allowed"
+            title="BP Code is read-only"
           />
-        </div>        <div>
+        </div><div>
           <label className="block mb-1">Company Name</label>
           <input
             type="text"
@@ -1102,7 +1117,11 @@ const GeneralDataForm: React.FC<{
             onChange={handleChange}
             className="w-full p-2 border rounded border-primary"
           />
-        </div>      </div><div className="grid grid-cols-1 md:grid-cols-2 gap-4">        <div>          <label className="block mb-1">
+        </div>      
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">        
+          <div>          
+            <label className="block mb-1">
             NPWP File <span className="text-red-500">*</span>
             <span className="text-sm text-gray-500 block">Format: PDF, Maximum 5MB</span>
           </label>
@@ -1113,7 +1132,7 @@ const GeneralDataForm: React.FC<{
               onChange={handleChange}
               className="flex-1 p-2 border rounded border-primary"
               accept=".pdf"
-              required
+              // required
             />
             {formData.tax_id_file && (
               <button
@@ -1131,7 +1150,9 @@ const GeneralDataForm: React.FC<{
               Current file: {formData.tax_id_file instanceof File ? formData.tax_id_file.name : (formData.tax_id_file.split('/').pop() || formData.tax_id_file)}
             </div>
           )}
-        </div>        <div>          <label className="block mb-1">
+        </div>        
+        <div>          
+          <label className="block mb-1">
             SKPP File <span className="text-red-500">*</span>
             <span className="text-sm text-gray-500 block">Format: PDF, Maximum 5MB</span>
           </label>
@@ -1142,7 +1163,7 @@ const GeneralDataForm: React.FC<{
               onChange={handleChange}
               className="flex-1 p-2 border rounded border-primary"
               accept=".pdf"
-              required
+              // required
             />
             {formData.skpp_file && (
               <button
@@ -1154,13 +1175,15 @@ const GeneralDataForm: React.FC<{
                 <FaEye />
               </button>
             )}
-          </div>          {formData.skpp_file && (
+          </div>         
+          {formData.skpp_file && (
             <div className="mt-1 text-sm text-gray-600">
               Current file: {formData.skpp_file instanceof File ? formData.skpp_file.name : (formData.skpp_file.split('/').pop() || formData.skpp_file)}
             </div>
           )}
         </div>
-      </div>        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block mb-1">Address Line 1</label>
           <input
@@ -1476,7 +1499,8 @@ const ContactDataForm: React.FC<{
   return (
     <form onSubmit={handleSubmit} className="space-y-4 text-black">
       {contacts.map((contact, index) => (
-        <div key={index} className="border p-4 rounded border-black">          <div className="flex justify-between items-center mb-2">
+        <div key={index} className="border p-4 rounded border-black">          
+        <div className="flex justify-between items-center mb-2">
             <h3 className="font-bold">Contact {index + 1}</h3>
             <div className="flex gap-2">
               {/* Show Save button for new contacts */}
@@ -1778,7 +1802,9 @@ const NIBForm: React.FC<{
           required
           className="w-full p-2 border rounded border-primary"
         />
-      </div>      <div>        <label className="block mb-1">
+      </div>      
+      <div>        
+        <label className="block mb-1">
           NIB File{isExistingRecord && hasExistingFile ? '' : ' *'}
           <span className="text-sm text-gray-500 block">Format: PDF, Maximum 5MB</span>
         </label>
@@ -1800,7 +1826,8 @@ const NIBForm: React.FC<{
               <FaEye />
             </button>
           )}
-        </div>        {hasExistingFile && (
+        </div>        
+        {hasExistingFile && (
           <div className="mt-1 text-sm text-gray-600">
             Current file: {formData.nib_file instanceof File ? formData.nib_file.name : (formData.nib_file.split('/').pop() || formData.nib_file)}
           </div>
@@ -2119,7 +2146,9 @@ const BusinessLicenseForm: React.FC<{
               required
               className="w-full p-2 border rounded border-primary"
             />
-          </div>          <div>            <label className="block mb-1">
+          </div>          
+          <div>            
+            <label className="block mb-1">
               Business License File <span className="text-red-500">*</span>
               <span className="text-sm text-gray-500 block">Format: PDF, Maximum 5MB</span>
             </label>
@@ -2268,7 +2297,9 @@ const IntegrityPactForm: React.FC<{
           }}
           type="button"
         />
-      </div>      <div>        <label className="block mb-1">
+      </div>      
+      <div>        
+        <label className="block mb-1">
           Upload Integrity Pact{isExistingRecord && hasExistingFile ? '' : ' *'}
           <span className="text-sm text-gray-500 block">Format: PDF, Maximum 5MB</span>
         </label>
@@ -2290,7 +2321,8 @@ const IntegrityPactForm: React.FC<{
               <FaEye />
             </button>
           )}
-        </div>        {hasExistingFile && (
+        </div>        
+        {hasExistingFile && (
           <div className="mt-1 text-sm text-gray-600">
             Current file: {formData.integrity_pact_file instanceof File ? formData.integrity_pact_file.name : (formData.integrity_pact_file.split('/').pop() || formData.integrity_pact_file)}
           </div>
@@ -2303,7 +2335,8 @@ const IntegrityPactForm: React.FC<{
           value={formData.integrity_pact_desc}
           onChange={handleChange}
           required
-          className="w-full p-2 border rounded border-primary"          rows={4}
+          className="w-full p-2 border rounded border-primary"          
+          rows={4}
         />
       </div>
       <div className="flex gap-2">
