@@ -67,10 +67,9 @@ const ForgotPassword: React.FC = () => {
         }
         setIsLoading(true)
         try {
-            const payload = { 
-                token: token, 
-                email: email, 
-                password: newPassword 
+            const payload = {
+                token: token,
+                new_password: newPassword
             };
             const result = await resetPassword(payload);
             

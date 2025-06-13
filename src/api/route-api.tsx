@@ -15,8 +15,8 @@ export const API_Change_Password = () => API + getRolePath() + `/change-password
 export const API_Register = () => API + '/guest/register';
 export const API_Resend_Password = () => API + `/guest/resend-password`;
 export const API_STEP1_OTP_Mail_Reset_Password = () => API + '/guest/reset-password';
-export const API_STEP2_Verify_OTP_Reset_Password = () => API + `/guest/verification-token/`;
-export const API_STEP3_Reset_Password = () => API + `/guest/reset-password/password`;
+export const API_STEP2_Verify_OTP_Reset_Password = () => API + `/guest/verification-token`;
+export const API_STEP3_Reset_Password = () => API + `/guest/reset-password/update`;
 
 export const API_Email = () => API + `/email`;
 

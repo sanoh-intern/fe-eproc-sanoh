@@ -155,8 +155,7 @@ export const verifyResetOTP = async (payload: {
 // Reset password with verified OTP
 export const resetPassword = async (payload: {
     token: string;
-    email: string;
-    password: string;
+    new_password: string;
 }) => {
     try {
         const response = await fetch(API_STEP3_Reset_Password(), {
