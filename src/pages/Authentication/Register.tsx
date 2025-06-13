@@ -71,7 +71,7 @@ const Register: React.FC = () => {
             
             if (result.success) {
                 toast.success(result.message)
-                setResendCooldown(30)
+                setResendCooldown(61)
             } else {
                 toast.error(result.message)
             }

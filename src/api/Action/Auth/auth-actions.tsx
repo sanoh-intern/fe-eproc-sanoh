@@ -1,9 +1,9 @@
 import { 
     API_Register, 
-    API_Resend_Password, 
-    API_OTP_Mail_Reset_Password, 
-    API_Verify_OTP, 
-    API_Reset_Password 
+    API_Resend_Password,
+    API_STEP1_OTP_Mail_Reset_Password,
+    API_STEP2_Verify_OTP_Reset_Password,
+    API_STEP3_Reset_Password, 
 } from '../../route-api';
 
 // Register new user
@@ -86,7 +86,7 @@ export const sendResetPasswordOTP = async (payload: {
     email: string;
 }) => {
     try {
-        const response = await fetch(API_OTP_Mail_Reset_Password(), {
+        const response = await fetch(API_STEP1_OTP_Mail_Reset_Password(), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -122,7 +122,7 @@ export const verifyResetOTP = async (payload: {
     email: string;
 }) => {
     try {
-        const response = await fetch(API_Verify_OTP(), {
+        const response = await fetch(API_STEP2_Verify_OTP_Reset_Password(), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -159,7 +159,7 @@ export const resetPassword = async (payload: {
     password: string;
 }) => {
     try {
-        const response = await fetch(API_Reset_Password(), {
+        const response = await fetch(API_STEP3_Reset_Password(), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
