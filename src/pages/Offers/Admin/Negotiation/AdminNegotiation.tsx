@@ -9,10 +9,11 @@ import Pagination from "../../../../components/Table/Pagination"
 import Loader from "../../../../common/Loader"
 import OffersDetails from "../../../../components/OffersDetail"
 import fetchOfferDetails, { TypeOfferDetails } from "../../../../api/Data/offers-detail"
-// import { TypeCompanyData } from "../../../../api/Data/company-data"
-// import CompanyDetails from "../../../../components/CompanyDetails"
+import { fetchCompanyDataAdmin, TypeCompanyData } from "../../../../api/Data/company-data"
+import CompanyDetails from "../../../../components/CompanyDetails"
 import fetchNegotiationData, { TypeNegotiationData } from "../../../../api/Data/Admin/Offers/history-supplier-proposal"
 import { useLocation } from "react-router-dom"
+import { FaBuilding } from "react-icons/fa"
 
 
 const AdminNegotiation: React.FC = () => {
@@ -22,7 +23,7 @@ const AdminNegotiation: React.FC = () => {
     const [rowsPerPage, setRowsPerPage] = useState(5)
     const [offerDetails, setOfferDetails] = useState<TypeOfferDetails | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false)
-    // const [companyData, setCompanyData] = useState<TypeCompanyData | null>(null);
+    const [companyData, setCompanyData] = useState<TypeCompanyData | null>(null);
     const [isView, setIsView] = useState(false)
 
     const { search } = useLocation();
@@ -68,55 +69,6 @@ const AdminNegotiation: React.FC = () => {
         loadData()
     }, [offersId, supplierId])
 
-    // const handleProposalAction = async (
-    //     proposalId: string,
-    //     action: "Accepted" | "Declined" | "Revision"
-    // ) => {
-    //     const selectedProposal = proposals.find((p) => p.id === proposalId)
-    //     if (!selectedProposal) return
-
-    //     if (action === "Revision") {
-    //         // Show sweetalert prompt for comment
-    //         const { value: comment } = await Swal.fire({
-    //             title: "Revision Required",
-    //             input: "text",
-    //             inputLabel: "Please provide a revision comment",
-    //             showCancelButton: true,
-    //             confirmButtonText: "Submit",
-    //             cancelButtonText: "Cancel",
-    //         })
-
-    //         if (comment === undefined) {
-    //             // The user canceled
-    //             return
-    //         }
-    //         // In real usage, you'd send the comment via API
-    //         toast.success(`Revision request submitted with comment: ${comment}`)
-    //         return
-    //     }
-
-    //     // For Accept / Decline
-    //     const result = await Swal.fire({
-    //         title: `Confirm ${action}`,
-    //         text: `Are you sure you want to mark this proposal as ${action}?`,
-    //         icon: "warning",
-    //         showCancelButton: true,
-    //         confirmButtonColor: "#3085d6",
-    //         cancelButtonColor: "#d33",
-    //         confirmButtonText: "Yes, proceed!",
-    //     })
-
-    //     if (result.isConfirmed) {
-    //         // In real usage, you'd send an API request
-    //         setProposals((prev) =>
-    //             prev.map((p) =>
-    //             p.id === proposalId ? { ...p, status: action, comment: action === "Declined" ? "Declined by admin" : p.comment } : p
-    //             )
-    //         )
-    //         toast.success(`Proposal has been ${action}`)
-    //     }
-    // }
-
     if (isLoading) {
         return <Loader />
     }
@@ -126,15 +78,16 @@ const AdminNegotiation: React.FC = () => {
         currentPage * rowsPerPage
     )
 
-    // const handeclick = async () => {
-    //     setIsModalOpen(true)
-    //     try {
-    //         const data = await FetchCompanyData(supplierId) as unknown as TypeCompanyData
-    //         setCompanyData(data)
-    //     } catch (error) {
-    //         console.error(error)
-    //     }
-    // }
+    const handeclick = async () => {
+        setIsModalOpen(true)
+        try {
+            const data = await fetchCompanyDataAdmin(supplierId!)
+            setCompanyData(data)
+        } catch (error) {
+            console.error(error)
+            toast.error("Failed to load company details.")
+        }
+    }
 
     return (
         <>
@@ -167,25 +120,26 @@ const AdminNegotiation: React.FC = () => {
                                                 <p className="text-sm text-gray-600">Registration Date</p>
                                                 <p className="font-medium">{registrationDate}</p>
                                             </div>
-                                            {/* <div className="flex items-center">
+                                            <div className="flex items-center">
                                                 <Button
-                                                    title="View Details"
+                                                    title="View Company Details"
                                                     onClick={handeclick}
+                                                    icon={FaBuilding}
                                                 />
-                                            </div> */}
+                                            </div>
                                         </div>
                                     </div>
                                     {isModalOpen && (
                                         <div className="fixed inset-0 flex items-center justify-center z-999 overflow-y-auto">
                                             <div className="absolute inset-0 bg-black opacity-50" onClick={() => setIsModalOpen(false)}></div>
-                                            <div className="bg-white p-4 rounded shadow relative z-10 max-w-7xl w-full mx-4 my-8">
+                                            <div className="w-full bg-gray-100 p-8 rounded-lg relative z-10 max-w-7xl mx-4 my-8">
                                                 <Button
                                                     title="Close"
                                                     onClick={() => setIsModalOpen(false)}
                                                     color="bg-red-500 text-white absolute top-2 right-2"
                                                 />
                                                 <div className="overflow-y-auto max-h-[calc(100vh-100px)]">
-                                                    {/* <CompanyDetails companyData={companyData} /> */}
+                                                    <CompanyDetails companyData={companyData} />
                                                 </div>
                                             </div>
                                         </div>

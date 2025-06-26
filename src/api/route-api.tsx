@@ -46,9 +46,12 @@ export const API_Declined_Proposal_Admin = () => API + getRolePath() + `/project
 export const API_Last_Seen_Admin = () => API + getRolePath() + `/project-header/view/`;
 
 export const API_List_Request_Verification_Admin = () => API + getRolePath() + `/verification/get`;
-export const API_List_Status_Verification_Admin = () => API + getRolePath() + `/verification/status/get`;
-export const API_Detail_Status_Verification_Admin = () => API + getRolePath() + `/verification/status/get/`;
+// export const API_List_Status_Verification_Admin = () => API + getRolePath() + `/verification/status/get`;
+// export const API_Detail_Status_Verification_Admin = () => API + getRolePath() + `/verification/status/get/`;
 export const API_Approve_Verification_Admin = () => API + getRolePath() + `/verification/approve/`;
+
+export const API_List_Company_Admin = () => API + getRolePath() + `/company-data/get`;
+export const API_Get_Detail_Company_Data_Admin = () => API + getRolePath() + `/user/profile/`;
 
 
 // Manage User Admin

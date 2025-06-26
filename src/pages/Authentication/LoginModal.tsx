@@ -6,12 +6,10 @@ import { useAuth } from "../../authentication/AuthContext"
 import { FaTimes } from "react-icons/fa"
 import Button from "../../components/Forms/Button"
 import PasswordInput from "../../components/PasswordInput"
-import { ForgotPasswordModal } from "./ForgotPasswordModal"
 
 export function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
-    const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false)
     const { login, isLoading } = useAuth()
     const navigate = useNavigate()
 
@@ -63,13 +61,12 @@ export function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                                 <PasswordInput password={password} setPassword={setPassword} isRequired />
                             </div>                            
                             <div className="flex justify-between items-center">
-                                <button 
-                                    type="button"
-                                    onClick={() => setIsForgotPasswordOpen(true)}
+                                <Link 
+                                    to="/auth/reset/password"
                                     className="text-sm text-black hover:underline"
                                 >
                                     Forgot password?
-                                </button>
+                                </Link>
                             </div>
                             <Button
                                 title={isLoading ? "Signing in..." : "Sign In"}
@@ -87,10 +84,6 @@ export function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                     </div>
                 </div>
             </div>
-            <ForgotPasswordModal 
-                isOpen={isForgotPasswordOpen} 
-                onClose={() => setIsForgotPasswordOpen(false)} 
-            />
         </div>
     )
 }

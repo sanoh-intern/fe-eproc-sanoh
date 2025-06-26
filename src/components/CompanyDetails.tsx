@@ -5,62 +5,47 @@ import {
     FaFileAlt,
     FaBusinessTime,
     FaShieldAlt,
+    FaDownload,
 } from "react-icons/fa"
+import { TypeCompanyData } from "../api/Data/company-data"
+import { streamFile } from "../api/Action/stream-file"
+import { toast } from "react-toastify"
+import Button from "./Forms/Button"
     
 interface CompanyDataProps {
-    companyData: CompanyData | null;
-}
-
-export interface CompanyData {
-  generalData: {
-    companyName: string
-    description: string
-    field: string
-    subField: string
-    taxId: string
-    address: string
-    state: string
-    city: string
-    postalCode: string
-    companyStatus: string
-    phone: string
-    fax: string
-    website: string
-    profileImage: string
-    products: string[]
-  }
-  contacts: {
-    position: string
-    departement: string
-    name: string
-    phone: string
-    email: string
-  }[]
-  nib: {
-    issuingAgency: string
-    number: string
-    issueDate: string
-    investmentStatus: string
-    kbli: string
-    file: string
-  }
-  businessLicenses: {
-    type: string
-    issuingAgency: string
-    number: string
-    issueDate: string
-    expiryDate: string
-    qualification: string
-    subClassification: string
-    file: string
-  }[]
-  integrityPact: {
-    file: string
-    description: string
-  }
+    companyData: TypeCompanyData | null;
 }
 
 const CompanyDetails: React.FC<CompanyDataProps> = ({ companyData }) => {
+    // Helper function to handle file downloads
+    const handleFileDownload = async (filePath: string) => {
+        try {
+            const url = await streamFile(filePath);
+            // Open in new tab
+            window.open(url, '_blank');
+        } catch (error) {
+            console.error('Error downloading file:', error);
+            toast.error('Failed to download file');
+        }
+    };
+
+    // Helper function to render download button or dash
+    const renderFileField = (filePath: string | null | undefined, label: string) => {
+        return (
+            <div className="bg-gray-50 p-4 rounded-lg">
+                <p className="text-sm text-gray-500 mb-1">{label}</p>
+                {filePath ? (
+                    <Button
+                        title="Download"
+                        onClick={() => handleFileDownload(filePath)}
+                        icon={FaDownload}
+                    />
+                ) : (
+                    <p className="text-gray-800 font-medium">-</p>
+                )}
+            </div>
+        );
+    };
     if (!companyData) {
         return (
             <div className="w-full">
@@ -119,21 +104,27 @@ const CompanyDetails: React.FC<CompanyDataProps> = ({ companyData }) => {
         );
     }
 
+    // Build address string from components
+    const addressParts = [
+        companyData.general_data.adr_line_1,
+        companyData.general_data.adr_line_2,
+        companyData.general_data.adr_line_3,
+        companyData.general_data.adr_line_4,
+    ].filter(Boolean);
+    
+    const fullAddress = [
+        ...addressParts,
+        companyData.general_data.city,
+        companyData.general_data.province,
+        companyData.general_data.postal_code
+    ].filter(Boolean).join(', ');
+
     return (
         <div className="w-full">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* General Data Card */}
                 <div className="bg-white rounded-2xl shadow-lg p-8 transition-all duration-300 hover:shadow-xl border border-gray-100">
                     <div className="flex flex-col sm:flex-row items-start gap-8">
-                        {/* Profile Image */}
-                        <div className="w-48 h-48 rounded-xl overflow-hidden shadow-lg border-4 border-gray-100">
-                            <img 
-                                src={companyData.generalData.profileImage} 
-                                alt={companyData.generalData.companyName}
-                                className="w-full h-full object-cover"
-                            />
-                        </div>
-
                         {/* Company Information */}
                         <div className="flex-1">
                             <h3 className="text-2xl font-bold mb-6 text-gray-800 flex items-center">
@@ -141,30 +132,64 @@ const CompanyDetails: React.FC<CompanyDataProps> = ({ companyData }) => {
                                 General Information
                             </h3>
                             <div className="space-y-4">
+                                {/* Profile Image */}
+                                <div className="w-48 h-48 rounded-xl overflow-hidden border-4 border-gray-100 bg-gray-100 flex items-center justify-center">
+                                    {companyData.general_data.company_photo ? (
+                                        <img 
+                                            src={companyData.general_data.company_photo} 
+                                            alt={companyData.general_data.company_name || 'Company'}
+                                            className="w-full h-full object-cover"
+                                            onError={(e) => {
+                                                // If image fails to load, show company icon
+                                                const target = e.target as HTMLImageElement;
+                                                target.style.display = 'none';
+                                                target.parentElement!.innerHTML = '<div class="flex items-center justify-center w-full h-full"><svg class="w-20 h-20 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0h8v12H6V4z" clip-rule="evenodd"></path></svg></div>';
+                                            }}
+                                        />
+                                    ) : (
+                                        <div className="flex items-center justify-center w-full h-full">
+                                            <FaBuilding className="w-20 h-20 text-gray-400" />
+                                        </div>
+                                    )}
+                                </div>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     {[
-                                        { label: "Company Name", value: companyData.generalData.companyName },
-                                        { label: "Field", value: companyData.generalData.field },
-                                        { label: "Sub Field", value: companyData.generalData.subField },
-                                        { label: "Tax ID", value: companyData.generalData.taxId },
-                                        { label: "Status", value: companyData.generalData.companyStatus },
-                                        { label: "Website", value: companyData.generalData.website },
+                                        { label: "BP Code", value: companyData.general_data.bp_code },
+                                        { label: "Company Name", value: companyData.general_data.company_name },
+                                        { label: "Business Field", value: companyData.general_data.business_field },
+                                        { label: "Sub Business Field", value: companyData.general_data.sub_business_field },
+                                        { label: "Product", value: companyData.general_data.product },
+                                        { label: "Tax ID", value: companyData.general_data.tax_id },
+                                        { label: "Status", value: companyData.general_data.company_status },
+                                        { label: "Website", value: companyData.general_data.company_url },
+                                        { label: "Phone 1", value: companyData.general_data.company_phone_1 },
+                                        { label: "Phone 2", value: companyData.general_data.company_phone_2 },
+                                        { label: "Fax 1", value: companyData.general_data.company_fax_1 },
+                                        { label: "Fax 2", value: companyData.general_data.company_fax_2 },
                                     ].map((item, index) => (
                                         <div key={index} className="bg-gray-50 p-4 rounded-lg">
                                             <p className="text-sm text-gray-500 mb-1">{item.label}</p>
-                                            <p className="text-gray-800 font-medium">{item.value}</p>
+                                            <p className="text-gray-800 font-medium">{item.value || '-'}</p>
                                         </div>
                                     ))}
                                 </div>
+                                
+                                {/* Address */}
                                 <div className="bg-gray-50 p-4 rounded-lg">
                                     <p className="text-sm text-gray-500 mb-1">Address</p>
-                                    <p className="text-gray-800">
-                                        {`${companyData.generalData.address}, ${companyData.generalData.city}, ${companyData.generalData.state} ${companyData.generalData.postalCode}`}
-                                    </p>
+                                    <p className="text-gray-800">{fullAddress || '-'}</p>
                                 </div>
+                                
+                                {/* Description */}
                                 <div className="bg-gray-50 p-4 rounded-lg">
                                     <p className="text-sm text-gray-500 mb-1">Description</p>
-                                    <p className="text-gray-800">{companyData.generalData.description}</p>
+                                    <p className="text-gray-800">{companyData.general_data.company_description || '-'}</p>
+                                </div>
+
+                                {/* File Downloads */}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {renderFileField(companyData.general_data.npwp_file, 'NPWP File')}
+                                    {renderFileField(companyData.general_data.sppkp_file, 'SPPKP File')}
                                 </div>
                             </div>
                         </div>
@@ -174,91 +199,135 @@ const CompanyDetails: React.FC<CompanyDataProps> = ({ companyData }) => {
                 {/* Contact Information Card */}
                 <div className="bg-white rounded-2xl shadow-lg p-8 transition-all duration-300 hover:shadow-xl border border-gray-100">
                     <h3 className="text-2xl font-bold mb-6 text-gray-800 flex items-center">
-                    <FaAddressCard className="text-primary mr-3" />
-                    Contact Information
+                        <FaAddressCard className="text-primary mr-3" />
+                        Contact Information
                     </h3>
                     <div className="space-y-4">
-                    {companyData.contacts.map((contact, index) => (
-                        <div key={index} className="bg-gray-50 p-4 rounded-lg">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                            <p className="text-sm text-gray-500">Position</p>
-                            <p className="font-medium text-gray-800">{contact.position}</p>
-                            </div>                            <div>
-                            <p className="text-sm text-gray-500">Department</p>
-                            <p className="font-medium text-gray-800">{contact.departement}</p>
+                        {companyData.person_in_charge && companyData.person_in_charge.length > 0 ? (
+                            companyData.person_in_charge.map((contact, index) => (
+                                <div key={contact.pic_id || index} className="bg-gray-50 p-4 rounded-lg">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <p className="text-sm text-gray-500">Position</p>
+                                            <p className="font-medium text-gray-800">{contact.job_position}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-gray-500">Department</p>
+                                            <p className="font-medium text-gray-800">{contact.departement || '-'}</p>
+                                        </div>
+                                        <div className="col-span-2">
+                                            <p className="text-sm text-gray-500">Name</p>
+                                            <p className="font-medium text-gray-800">{contact.pic_name}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-gray-500">Phone 1</p>
+                                            <p className="font-medium text-gray-800">{contact.pic_telp_number_1}</p>
+                                        </div>
+                                        {contact.pic_telp_number_2 && (
+                                            <div>
+                                                <p className="text-sm text-gray-500">Phone 2</p>
+                                                <p className="font-medium text-gray-800">{contact.pic_telp_number_2}</p>
+                                            </div>
+                                        )}
+                                        <div>
+                                            <p className="text-sm text-gray-500">Email 1</p>
+                                            <p className="font-medium text-gray-800">{contact.pic_email_1}</p>
+                                        </div>
+                                        {contact.pic_email_2 && (
+                                            <div>
+                                                <p className="text-sm text-gray-500">Email 2</p>
+                                                <p className="font-medium text-gray-800">{contact.pic_email_2}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center py-8">
+                                <p className="text-gray-500">Data not found</p>
                             </div>
-                            <div className="col-span-2">
-                            <p className="text-sm text-gray-500">Name</p>
-                            <p className="font-medium text-gray-800">{contact.name}</p>
-                            </div>
-                            <div>
-                            <p className="text-sm text-gray-500">Phone</p>
-                            <p className="font-medium text-gray-800">{contact.phone}</p>
-                            </div>
-                            <div>
-                            <p className="text-sm text-gray-500">Email</p>
-                            <p className="font-medium text-gray-800">{contact.email}</p>
-                            </div>
-                        </div>
-                        </div>
-                    ))}
+                        )}
                     </div>
                 </div>
 
                 {/* NIB Card */}
                 <div className="bg-white rounded-2xl shadow-lg p-8 transition-all duration-300 hover:shadow-xl border border-gray-100">
                     <h3 className="text-2xl font-bold mb-6 text-gray-800 flex items-center">
-                    <FaFileAlt className="text-primary mr-3" />
-                    NIB Details
+                        <FaFileAlt className="text-primary mr-3" />
+                        NIB Details
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {Object.entries(companyData.nib).map(([key, value]) => (
-                        <div key={key} className="bg-gray-50 p-4 rounded-lg">
-                        <p className="text-sm text-gray-500 mb-1">{key.charAt(0).toUpperCase() + key.slice(1)}</p>
-                        <p className="text-gray-800 font-medium">{value}</p>
-                        </div>
-                    ))}
+                        {[
+                            { label: "Issuing Agency", value: companyData.nib?.issuing_agency },
+                            { label: "NIB Number", value: companyData.nib?.nib_number },
+                            { label: "Issuing Date", value: companyData.nib?.issuing_date },
+                            { label: "Investment Status", value: companyData.nib?.investment_status },
+                            { label: "KBLI", value: companyData.nib?.kbli },
+                        ].map((item, index) => (
+                            <div key={index} className="bg-gray-50 p-4 rounded-lg">
+                                <p className="text-sm text-gray-500 mb-1">{item.label}</p>
+                                <p className="text-gray-800 font-medium">{item.value || '-'}</p>
+                            </div>
+                        ))}
+                        
+                        {/* NIB File Download */}
+                        {renderFileField(companyData.nib?.nib_file, 'NIB File')}
                     </div>
                 </div>
 
                 {/* Business Licenses Card */}
                 <div className="bg-white rounded-2xl shadow-lg p-8 transition-all duration-300 hover:shadow-xl border border-gray-100">
                     <h3 className="text-2xl font-bold mb-6 text-gray-800 flex items-center">
-                    <FaBusinessTime className="text-primary mr-3" />
-                    Business Licenses
+                        <FaBusinessTime className="text-primary mr-3" />
+                        Business Licenses
                     </h3>
                     <div className="space-y-4">
-                    {companyData.businessLicenses.map((license, index) => (
-                        <div key={index} className="bg-gray-50 p-4 rounded-lg">
-                        <div className="grid grid-cols-2 gap-4">
-                            {Object.entries(license).map(([key, value]) => (
-                            <div key={key}>
-                                <p className="text-sm text-gray-500">{key.charAt(0).toUpperCase() + key.slice(1)}</p>
-                                <p className="font-medium text-gray-800">{value}</p>
+                        {companyData.business_licenses && companyData.business_licenses.length > 0 ? (
+                            companyData.business_licenses.map((license, index) => (
+                                <div key={license.business_license_id || index} className="bg-gray-50 p-4 rounded-lg">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        {[
+                                            { label: "Business Type", value: license.business_type },
+                                            { label: "Issuing Agency", value: license.issuing_agency },
+                                            { label: "License Number", value: license.business_license_number },
+                                            { label: "Issuing Date", value: license.issuing_date },
+                                            { label: "Expiry Date", value: license.expiry_date },
+                                            { label: "Qualification", value: license.qualification },
+                                            { label: "Sub Classification", value: license.sub_classification },
+                                        ].map((item, itemIndex) => (
+                                            <div key={itemIndex}>
+                                                <p className="text-sm text-gray-500">{item.label}</p>
+                                                <p className="font-medium text-gray-800">{item.value || '-'}</p>
+                                            </div>
+                                        ))}
+                                        
+                                        {/* Business License File Download */}
+                                        <div className="col-span-2">
+                                            {renderFileField(license.business_license_file, 'License File')}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center py-8">
+                                <p className="text-gray-500">Data not found</p>
                             </div>
-                            ))}
-                        </div>
-                        </div>
-                    ))}
+                        )}
                     </div>
                 </div>
 
                 {/* Integrity Pact Card */}
                 <div className="col-span-1 lg:col-span-2 bg-white rounded-2xl shadow-lg p-8 transition-all duration-300 hover:shadow-xl border border-gray-100">
                     <h3 className="text-2xl font-bold mb-6 text-gray-800 flex items-center">
-                    <FaShieldAlt className="text-primary mr-3" />
-                    Integrity Pact
+                        <FaShieldAlt className="text-primary mr-3" />
+                        Integrity Pact
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                        <p className="text-sm text-gray-500 mb-1">File</p>
-                        <p className="text-gray-800 font-medium">{companyData.integrityPact.file}</p>
-                    </div>
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                        <p className="text-sm text-gray-500 mb-1">Description</p>
-                        <p className="text-gray-800 font-medium">{companyData.integrityPact.description}</p>
-                    </div>
+                        {renderFileField(companyData.integrity_pact?.integrity_pact_file, 'Integrity Pact File')}
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                            <p className="text-sm text-gray-500 mb-1">Description</p>
+                            <p className="text-gray-800 font-medium">{companyData.integrity_pact?.integrity_pact_desc || '-'}</p>
+                        </div>
                     </div>
                 </div>
             </div>

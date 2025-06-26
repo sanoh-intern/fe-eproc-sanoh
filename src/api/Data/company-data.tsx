@@ -1,10 +1,11 @@
-import { API_Company_Profile_Supplier } from "../route-api"
+import { API_Company_Profile_Supplier, API_Get_Detail_Company_Data_Admin } from "../route-api"
 
 export type TypeCompanyData = {    
     general_data: {
         bp_code: string
         company_name: string
         company_description: string | null
+        company_photo: string | null
         business_field: string | null
         sub_business_field: string | null
         product: string | null
@@ -115,5 +116,58 @@ const fetchCompanyData = async (): Promise<TypeCompanyData> => {
     }
 }
 
+// Admin function to fetch company data by user ID
+export const fetchCompanyDataAdmin = async (userId: string): Promise<TypeCompanyData> => {
+    try {
+        const response = await fetch(API_Get_Detail_Company_Data_Admin() + userId, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('access_token') || '',
+                'Content-Type': 'application/json',
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        
+        if (result.status && result.data) {
+            // Transform the API response to match our interface
+            const transformedData: TypeCompanyData = {
+                general_data: {
+                    ...result.data.general_data,
+                    npwp_file: result.data.general_data.npwp_file || null,
+                    sppkp_file: result.data.general_data.sppkp_file || null,
+                },
+                person_in_charge: result.data.person_in_charge || [],
+                nib: result.data.nib || {
+                    nib_id: null,
+                    issuing_agency: '',
+                    nib_number: '',
+                    issuing_date: '',
+                    investment_status: '',
+                    kbli: '',
+                    nib_file: ''
+                },
+                // Handle business_licences vs business_licenses naming difference
+                business_licenses: result.data.business_licences || result.data.business_licenses || [],
+                integrity_pact: result.data.integrity_pact || {
+                    integrity_pact_id: null,
+                    integrity_pact_file: '',
+                    integrity_pact_desc: ''
+                }
+            };
+            
+            return transformedData;
+        } else {
+            throw new Error(result.message || 'Failed to fetch company data');
+        }
+    } catch (error) {
+        console.error('Error fetching company data:', error);
+        throw error;
+    }
+}
 
 export default fetchCompanyData;
