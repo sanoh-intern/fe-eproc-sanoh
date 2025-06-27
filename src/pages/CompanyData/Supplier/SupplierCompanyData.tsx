@@ -19,7 +19,8 @@ import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb"
 import Swal from "sweetalert2"
 import Loader from "../../../common/Loader"
 import fetchCompanyData, { TypeCompanyData } from "../../../api/Data/company-data"
-import FileStreamModal from "../../../components/FileStreamModal"
+import { streamFile } from "../../../api/Action/stream-file"
+import FilePreviewModal from "../../../components/FileStreamModal"
 // Import API endpoints
 import {
   API_Update_General_Data_Supplier,
@@ -161,10 +162,31 @@ const SupplierCompanyData: React.FC = () => {
   };
     const markUnsaved = () => setUnsavedChanges(true);
   
-  const handleViewFile = (filePath: string, fileName: string) => {
-    setSelectedFilePath(filePath);
-    setSelectedFileName(fileName);
-    setIsFileModalOpen(true);  };  // General Data CRUD Methods
+  const handleViewFile = async (filePath: string, fileName: string) => {
+    const toastId = toast.loading('Loading file preview...')
+    
+    try {
+      const url = await streamFile(filePath)
+      setSelectedFilePath(url)
+      setSelectedFileName(fileName)
+      setIsFileModalOpen(true)
+      
+      toast.update(toastId, {
+        render: 'File loaded successfully!',
+        type: 'success',
+        isLoading: false,
+        autoClose: 2000,
+      })
+    } catch (error) {
+      console.error('Error loading file:', error)
+      toast.update(toastId, {
+        render: 'Failed to load file',
+        type: 'error',
+        isLoading: false,
+        autoClose: 3000,
+      })
+    }
+  }  // General Data CRUD Methods
   const handleGeneralDataSave = async (formData: any) => {
     try {
       // Separate file data from regular data
@@ -904,11 +926,17 @@ const SupplierCompanyData: React.FC = () => {
       </div>
 
       {/* File Stream Modal */}
-      <FileStreamModal
+      {/* <FileStreamModal
         isOpen={isFileModalOpen}
         onClose={() => setIsFileModalOpen(false)}
-        filePath={selectedFilePath}
+        url={selectedFilePath}
         fileName={selectedFileName}
+      /> */}
+      <FilePreviewModal
+        isOpen={isFileModalOpen}
+        onClose={() => setIsFileModalOpen(false)}
+        url={selectedFilePath}
+        filename={selectedFileName}
       />
     </>
   )
