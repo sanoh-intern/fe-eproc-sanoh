@@ -15,7 +15,9 @@ import Button from "../../../../components/Forms/Button"
 import fetchOfferDetails, { TypeOfferDetails } from "../../../../api/Data/offers-detail"
 import fetchSupplierProposals, { TypeFinalReview, TypeSupplierProposal } from "../../../../api/Data/Admin/Offers/supplier-proposal"
 import fetchListSupplierRegistered, { TypeListSupplierRegistered } from "../../../../api/Data/Admin/Offers/list-supplier-registered"
-import { FaLock, FaEye, FaEyeSlash } from "react-icons/fa"
+import { fetchCompanyDataAdmin, TypeCompanyData } from "../../../../api/Data/company-data"
+import CompanyDetails from "../../../../components/CompanyDetails"
+import { FaLock, FaEye, FaEyeSlash, FaBuilding } from "react-icons/fa"
 import { postOffersAccepted, postOffersDeclined } from "../../../../api/Action/Admin/Offers/post-final-winner"
 import { updateLastViewed } from "../../../../api/Action/Admin/Offers/put-view-amount"
 
@@ -33,6 +35,8 @@ const AdminRegisteredDetail: React.FC = () => {
   const navigate = useNavigate()
   const { offersId } = useParams<{ offersId: string }>();
   const [lastViewed, setLastViewed] = useState<TypeFinalReview["final_view_at"] | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [companyData, setCompanyData] = useState<TypeCompanyData | null>(null)
 
   useEffect(() => {
     const loadData = async () => {
@@ -142,6 +146,18 @@ const AdminRegisteredDetail: React.FC = () => {
         }
       }
     })
+  }
+
+  // Handle company details modal
+  const handleViewCompanyDetails = async (supplierId: string) => {
+    setIsModalOpen(true)
+    try {
+      const data = await fetchCompanyDataAdmin(supplierId)
+      setCompanyData(data)
+    } catch (error) {
+      console.error(error)
+      toast.error("Failed to load company details.")
+    }
   }
 
   if (loading) {
@@ -354,6 +370,9 @@ const AdminRegisteredDetail: React.FC = () => {
                       <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
                         Registration Date
                       </th>
+                      <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 bg-white">
@@ -366,6 +385,15 @@ const AdminRegisteredDetail: React.FC = () => {
                         <td className="px-3 py-3 text-center whitespace-nowrap">
                           {supplier.registered_at}
                         </td>
+                        <td className="px-3 py-3 text-center whitespace-nowrap">
+                          <div className="flex justify-center">
+                            <Button
+                              title="View Company Details"
+                              onClick={() => handleViewCompanyDetails(supplier.id_user)}
+                              icon={FaBuilding}
+                            />
+                          </div>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -374,7 +402,24 @@ const AdminRegisteredDetail: React.FC = () => {
             </div>
           )}
         </div>
+
       </div>
+        {/* Company Details Modal */}
+        {isModalOpen && (
+          <div className="fixed inset-0 flex items-center justify-center z-99999 overflow-y-auto">
+            <div className="absolute inset-0 bg-black opacity-50" onClick={() => setIsModalOpen(false)}></div>
+            <div className="w-full bg-gray-100 p-8 rounded-lg relative z-10 max-w-7xl mx-4 my-8">
+              <Button
+                title="Close"
+                onClick={() => setIsModalOpen(false)}
+                color="bg-red-500 text-white absolute top-2 right-2"
+              />
+              <div className="overflow-y-auto max-h-[calc(100vh-100px)]">
+                <CompanyDetails companyData={companyData} />
+              </div>
+            </div>
+          </div>
+        )}
     </>
   )
 }

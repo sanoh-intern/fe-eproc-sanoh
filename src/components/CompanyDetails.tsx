@@ -19,13 +19,25 @@ interface CompanyDataProps {
 const CompanyDetails: React.FC<CompanyDataProps> = ({ companyData }) => {
     // Helper function to handle file downloads
     const handleFileDownload = async (filePath: string) => {
+        const toastId = toast.loading('Downloading file...');
         try {
             const url = await streamFile(filePath);
             // Open in new tab
             window.open(url, '_blank');
+            toast.update(toastId, {
+                render: 'File downloaded successfully!',
+                type: 'success',
+                isLoading: false,
+                autoClose: 3000,
+            });
         } catch (error) {
             console.error('Error downloading file:', error);
-            toast.error('Failed to download file');
+            toast.update(toastId, {
+                render: 'Failed to download file',
+                type: 'error',
+                isLoading: false,
+                autoClose: 3000,
+            });
         }
     };
 
