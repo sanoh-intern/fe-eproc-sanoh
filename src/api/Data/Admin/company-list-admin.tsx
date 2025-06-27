@@ -5,7 +5,8 @@ export type TypeCompanyListAdmin = {
     user_id: number
     supplier_name: string
     bp_code: string | null
-    verification_status: "verified" | "not_verified" | "profile_updated" | "complete_profile" | "under_verification"
+    verification_status: "verified" | "not_verified" | "profile_updated" | "complete_profile" | "under_verification" | boolean | null
+    verified_at: string | null
 }
 
 export const fetchCompanyListAdmin = async (): Promise<TypeCompanyListAdmin[]> => {

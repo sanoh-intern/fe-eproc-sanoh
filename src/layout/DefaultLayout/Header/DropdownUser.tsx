@@ -10,6 +10,7 @@ const DropdownUser = () => {
   const [bpCode, setBpCode] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [companyImages, setCompanyImages] = useState('');
+  const [supplierImage, setSupplierImage] = useState('');
 
   // Ambil data dari localStorage pada saat komponen dimuat
   useEffect(() => {
@@ -23,12 +24,12 @@ const DropdownUser = () => {
 
     if (company_name) {
       setCompanyName(company_name);
-      // setSupplierImage(`https://picsum.photos/seed/${company_name}/200`);
+      setSupplierImage(`https://picsum.photos/seed/${company_name}/200`);
     }
 
     if (company_images) {
       setCompanyImages(company_images);
-      console.log(company_images);
+      // console.log(company_images);
     }
   }, []);
 
@@ -53,10 +54,10 @@ const DropdownUser = () => {
 
           <div className="h-12 w-12 rounded-full relative bg-white border-2 border-primary p-0.5">
             <img
-              src={companyImages || UserLogo}
+              src={companyImages}
               alt="User"
               onError={(e) => {
-              e.currentTarget.src = UserLogo;
+              e.currentTarget.src = supplierImage || UserLogo;
               }}
               className="rounded-full"
             />

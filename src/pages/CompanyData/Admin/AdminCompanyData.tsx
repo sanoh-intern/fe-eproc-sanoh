@@ -197,7 +197,7 @@ const AdminCompanyData: React.FC = () => {
                               {supplier.supplier_name}
                           </td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
-                            {supplier.bp_code || 'N/A'}
+                            {supplier.bp_code || '-'}
                           </td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">
                             <span
