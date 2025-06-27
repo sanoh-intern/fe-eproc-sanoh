@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import {
     FaBuilding,
     FaAddressCard,
@@ -6,51 +6,175 @@ import {
     FaBusinessTime,
     FaShieldAlt,
     FaDownload,
+    FaTimes,
+    FaEye,
 } from "react-icons/fa"
 import { TypeCompanyData } from "../api/Data/company-data"
 import { streamFile } from "../api/Action/stream-file"
 import { toast } from "react-toastify"
 import Button from "./Forms/Button"
+
+interface FilePreviewModalProps {
+    isOpen: boolean
+    onClose: () => void
+    filename: string
+    url: string
+}
+
+const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
+    isOpen,
+    onClose,
+    filename,
+    url,
+}) => {
+    if (!isOpen) return null
+
+    const isImage = /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(filename)
+    const isPDF = /\.pdf$/i.test(filename)
+
+    return (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white rounded-lg p-6 max-w-4xl max-h-[90vh] w-full mx-4 flex flex-col">
+                {/* Header */}
+                <div className="flex justify-between items-center mb-4 border-b pb-3">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                        Preview: {filename}
+                    </h3>
+                    <button
+                        onClick={onClose}
+                        className="text-gray-500 hover:text-gray-700 transition-colors"
+                    >
+                        <FaTimes size={20} />
+                    </button>
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 overflow-auto">
+                    {isImage ? (
+                        <img
+                            src={url}
+                            alt={filename}
+                            className="w-full h-auto max-h-full object-contain"
+                        />
+                    ) : isPDF ? (
+                        <iframe
+                            src={url}
+                            title={filename}
+                            className="w-full h-[70vh] border-0"
+                        />
+                    ) : (
+                        <div className="text-center py-8">
+                            <FaFileAlt size={48} className="mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-600 mb-4">
+                                Preview not available for this file type
+                            </p>
+                            <a
+                                href={url}
+                                download={filename}
+                                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                            >
+                                <FaDownload className="mr-2" />
+                                Download File
+                            </a>
+                        </div>
+                    )}
+                </div>
+
+                {/* Footer */}
+                <div className="flex justify-end gap-3 mt-4 pt-3 border-t">
+                    <Button
+                        onClick={onClose}
+                        title="Close"
+                        icon={FaTimes}
+                        className=" text-white bg-red hover:bg-red-600 transition-colors"
+                    />
+                    <Button
+                        onClick={() => {
+                            window.open(url, '_blank')
+                        }}
+                        title="Open in New Tab"
+                        icon={FaEye}
+                    />
+                    <Button
+                        title="Download File"
+                        onClick={() => {
+                            const link = document.createElement('a')
+                            link.href = url
+                            link.download = filename
+                            document.body.appendChild(link)
+                            link.click()
+                            document.body.removeChild(link)
+                        }}
+                        icon={FaDownload}
+                    />
+                </div>
+            </div>
+        </div>
+    )
+}
     
 interface CompanyDataProps {
     companyData: TypeCompanyData | null;
 }
 
 const CompanyDetails: React.FC<CompanyDataProps> = ({ companyData }) => {
-    // Helper function to handle file downloads
-    const handleFileDownload = async (filePath: string) => {
-        const toastId = toast.loading('Downloading file...');
+    const [previewModal, setPreviewModal] = useState<{
+        isOpen: boolean
+        filename: string
+        url: string
+    }>({
+        isOpen: false,
+        filename: '',
+        url: ''
+    })
+
+    // Helper function to handle file preview
+    const handleFilePreview = async (filePath: string) => {
+        const filename = filePath.split('/').pop() || 'file'
+        const toastId = toast.loading('Loading file preview...')
+        
         try {
-            const url = await streamFile(filePath);
-            // Open in new tab
-            window.open(url, '_blank');
+            const url = await streamFile(filePath)
+            setPreviewModal({
+                isOpen: true,
+                filename,
+                url
+            })
             toast.update(toastId, {
-                render: 'File downloaded successfully!',
+                render: 'File loaded successfully!',
                 type: 'success',
                 isLoading: false,
-                autoClose: 3000,
-            });
+                autoClose: 2000,
+            })
         } catch (error) {
-            console.error('Error downloading file:', error);
+            console.error('Error loading file:', error)
             toast.update(toastId, {
-                render: 'Failed to download file',
+                render: 'Failed to load file',
                 type: 'error',
                 isLoading: false,
                 autoClose: 3000,
-            });
+            })
         }
-    };
+    }
 
-    // Helper function to render download button or dash
+    const closePreviewModal = () => {
+        setPreviewModal({
+            isOpen: false,
+            filename: '',
+            url: ''
+        })
+    }
+
+    // Helper function to render file button or dash
     const renderFileField = (filePath: string | null | undefined, label: string) => {
         return (
             <div className="bg-gray-50 p-4 rounded-lg">
                 <p className="text-sm text-gray-500 mb-1">{label}</p>
                 {filePath ? (
                     <Button
-                        title="Download"
-                        onClick={() => handleFileDownload(filePath)}
-                        icon={FaDownload}
+                        title="View File"
+                        onClick={() => handleFilePreview(filePath)}
+                        icon={FaEye}
                     />
                 ) : (
                     <p className="text-gray-800 font-medium">-</p>
@@ -343,6 +467,14 @@ const CompanyDetails: React.FC<CompanyDataProps> = ({ companyData }) => {
                     </div>
                 </div>
             </div>
+
+            {/* File Preview Modal */}
+            <FilePreviewModal
+                isOpen={previewModal.isOpen}
+                onClose={closePreviewModal}
+                filename={previewModal.filename}
+                url={previewModal.url}
+            />
         </div>
     )
 }

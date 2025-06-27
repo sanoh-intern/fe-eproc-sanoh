@@ -2,9 +2,27 @@
     position: fixed;
     top: 20px;
     right: 20px;
-    z-index: 1000;
+    z-index: 99999;
     display: flex;
     flex-direction: column;
     gap: 8px;
   }
+
+/* Ensure toast notifications are always on top */
+.Toastify__toast-container {
+    z-index: 99999 !important;
+}
+
+.Toastify__toast {
+    z-index: 99999 !important;
+}
+
+.Toastify__toast-body {
+    z-index: 99999 !important;
+}
+
+/* Override any potential conflicts */
+.Toastify__toast-container--top-right {
+    z-index: 99999 !important;
+}
   

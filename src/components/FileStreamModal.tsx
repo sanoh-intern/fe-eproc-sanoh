@@ -259,7 +259,8 @@ const FileStreamModal: React.FC<FileStreamModalProps> = ({
                 </button>
               </div>
             </div>
-          )}          {fileUrl && !isLoading && !error && (
+          )}          
+          {fileUrl && !isLoading && !error && (
             <div className="h-full">
               {fileName.toLowerCase().includes('.pdf') ? (
                 <div className="h-full flex flex-col">
@@ -321,12 +322,11 @@ const FileStreamModal: React.FC<FileStreamModalProps> = ({
                               >
                                 Open in New Tab
                               </a>
-                              <button
+                              <Button
                                 onClick={handleDownload}
-                                className="inline-block px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                              >
-                                Download PDF
-                              </button>
+                                title="Download PDF"
+                                icon={FaDownload}
+                              />
                             </div>
                           </div>
                         </div>
@@ -367,7 +367,7 @@ const FileStreamModal: React.FC<FileStreamModalProps> = ({
         <div className="p-4 border-t bg-gray-50 flex justify-end space-x-2">
           <button
             onClick={handleClose}
-            className="px-4 py-2 text-gray-600 hover:bg-gray-200 rounded transition-colors"
+            className="px-4 py-2 text-white bg-red hover:bg-red-600 rounded transition-colors"
           >
             Close
           </button>

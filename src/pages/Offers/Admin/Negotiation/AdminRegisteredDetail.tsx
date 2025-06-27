@@ -406,7 +406,7 @@ const AdminRegisteredDetail: React.FC = () => {
       </div>
         {/* Company Details Modal */}
         {isModalOpen && (
-          <div className="fixed inset-0 flex items-center justify-center z-99999 overflow-y-auto">
+          <div className="fixed inset-0 flex items-center justify-center z-999 overflow-y-auto">
             <div className="absolute inset-0 bg-black opacity-50" onClick={() => setIsModalOpen(false)}></div>
             <div className="w-full bg-gray-100 p-8 rounded-lg relative z-10 max-w-7xl mx-4 my-8">
               <Button
