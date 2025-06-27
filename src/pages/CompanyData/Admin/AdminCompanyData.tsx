@@ -1,37 +1,21 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { FaSortUp, FaSortDown } from "react-icons/fa"
+import { FaSortUp, FaSortDown, FaBuilding } from "react-icons/fa"
 import "react-toastify/dist/ReactToastify.css"
 import Breadcrumb from "../../../components/Breadcrumbs/Breadcrumb"
 import SearchBar from "../../../components/Table/SearchBar"
 import Pagination from "../../../components/Table/Pagination"
-import { useNavigate } from "react-router-dom"
 import Select from "react-select"
 import Button from "../../../components/Forms/Button"
 import { toast } from "react-toastify"
-
-interface AdminSupplier {
-  id: string
-  supplierName: string
-  bpCode: string
-  verificationStatus: "Verified" | "Unverified"
-}
-
-// Simulated API function for admin company data
-const fetchAdminCompanyData = async (): Promise<AdminSupplier[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-  return Array.from({ length: 10 }, (_, i) => ({
-    id: `supplier-${i + 1}`,
-    supplierName: `Supplier ${i + 1}`,
-    bpCode: `BP-${Math.floor(Math.random() * 9000) + 1000}`,
-    verificationStatus: Math.random() > 0.5 ? "Verified" : "Unverified",
-  }))
-}
+import fetchCompanyListAdmin, { TypeCompanyListAdmin } from "../../../api/Data/Admin/company-list-admin"
+import { fetchCompanyDataAdmin, TypeCompanyData } from "../../../api/Data/company-data"
+import CompanyDetails from "../../../components/CompanyDetails"
 
 const AdminCompanyData: React.FC = () => {
-  const [suppliers, setSuppliers] = useState<AdminSupplier[]>([])
-  const [filteredSuppliers, setFilteredSuppliers] = useState<AdminSupplier[]>([])
+  const [suppliers, setSuppliers] = useState<TypeCompanyListAdmin[]>([])
+  const [filteredSuppliers, setFilteredSuppliers] = useState<TypeCompanyListAdmin[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
@@ -41,12 +25,31 @@ const AdminCompanyData: React.FC = () => {
     key: "",
     direction: "asc",
   })
-  const navigate = useNavigate()
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [companyData, setCompanyData] = useState<TypeCompanyData | null>(null)
+
+  // Function to get verification status label and styling
+  const getVerificationStatusDisplay = (status: string) => {
+    switch (status) {
+      case "verified":
+        return { label: "Verified", className: "bg-green-200 text-green-800" }
+      case "not_verified":
+        return { label: "Not Verified", className: "bg-red-200 text-red-800" }
+      case "profile_updated":
+        return { label: "Profile Updated", className: "bg-blue-200 text-blue-800" }
+      case "complete_profile":
+        return { label: "Complete Profile", className: "bg-yellow-200 text-yellow-800" }
+      case "under_verification":
+        return { label: "Under Verification", className: "bg-orange-200 text-orange-800" }
+      default:
+        return { label: status, className: "bg-gray-200 text-gray-800" }
+    }
+  }
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const data = await fetchAdminCompanyData()
+        const data = await fetchCompanyListAdmin()
         setSuppliers(data)
         setFilteredSuppliers(data)
       } catch (error) {
@@ -62,16 +65,16 @@ const AdminCompanyData: React.FC = () => {
     let filtered = [...suppliers]
     if (searchQuery) {
       filtered = filtered.filter((supplier) =>
-        supplier.supplierName.toLowerCase().includes(searchQuery.toLowerCase())
+        supplier.supplier_name.toLowerCase().includes(searchQuery.toLowerCase())
       )
     }
     if (statusFilter && statusFilter !== "all") {
-      filtered = filtered.filter((supplier) => supplier.verificationStatus === statusFilter)
+      filtered = filtered.filter((supplier) => supplier.verification_status === statusFilter)
     }
     if (sortConfig.key) {
       filtered.sort((a, b) => {
-        let aValue: any = a[sortConfig.key as keyof AdminSupplier]
-        let bValue: any = b[sortConfig.key as keyof AdminSupplier]
+        let aValue: any = a[sortConfig.key as keyof TypeCompanyListAdmin]
+        let bValue: any = b[sortConfig.key as keyof TypeCompanyListAdmin]
         if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1
         if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1
         return 0
@@ -81,12 +84,12 @@ const AdminCompanyData: React.FC = () => {
     setCurrentPage(1)
   }, [searchQuery, statusFilter, sortConfig, suppliers])
 
-  const handleSort = (key: keyof AdminSupplier) => {
+  const handleSort = (key: keyof TypeCompanyListAdmin) => {
     let direction: "asc" | "desc" = "asc"
     if (sortConfig.key === key && sortConfig.direction === "asc") {
       direction = "desc"
     }
-    setSortConfig({ key, direction })
+    setSortConfig({ key: key as string, direction })
   }
 
   const paginatedSuppliers = filteredSuppliers.slice(
@@ -98,8 +101,15 @@ const AdminCompanyData: React.FC = () => {
     setCurrentPage(page)
   }
 
-  const handleDetails = (id: string) => {
-    navigate(`/company-data/detail/${id}`)
+  const handleViewCompanyDetails = async (userId: number) => {
+    setIsModalOpen(true)
+    try {
+      const data = await fetchCompanyDataAdmin(userId.toString())
+      setCompanyData(data)
+    } catch (error) {
+      console.error(error)
+      toast.error("Failed to load company details.")
+    }
   }
 
   return (
@@ -115,10 +125,10 @@ const AdminCompanyData: React.FC = () => {
               <Select
                 options={[
                   { value: "all", label: "All Statuses" },
-                  ...[...new Set(suppliers.map((supplier) => supplier.verificationStatus))].map(
+                  ...[...new Set(suppliers.map((supplier) => supplier.verification_status))].map(
                     (status) => ({
                       value: status,
-                      label: status,
+                      label: getVerificationStatusDisplay(status).label,
                     })
                   ),
                 ]}
@@ -126,7 +136,7 @@ const AdminCompanyData: React.FC = () => {
                   statusFilter
                   ? {
                     value: statusFilter,
-                    label: statusFilter === "all" ? "All Statuses" : statusFilter,
+                    label: statusFilter === "all" ? "All Statuses" : getVerificationStatusDisplay(statusFilter).label,
                     }
                   : null
                 }
@@ -146,10 +156,10 @@ const AdminCompanyData: React.FC = () => {
                     </th>
                     <th
                       className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b cursor-pointer"
-                      onClick={() => handleSort("bpCode")}
+                      onClick={() => handleSort("bp_code")}
                     >
                       <span className="flex items-center justify-center">
-                        {sortConfig.key === "bpCode" ? (
+                        {sortConfig.key === "bp_code" ? (
                           sortConfig.direction === "asc" ? (
                             <FaSortUp className="mr-1" />
                           ) : (
@@ -184,27 +194,26 @@ const AdminCompanyData: React.FC = () => {
                     ? paginatedSuppliers.map((supplier) => (
                         <tr key={supplier.id} className="hover:bg-gray-50">
                           <td className="px-3 py-3 text-center whitespace-nowrap font-semibold">
-                              {supplier.supplierName}
+                              {supplier.supplier_name}
                           </td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
-                            {supplier.bpCode}
+                            {supplier.bp_code || 'N/A'}
                           </td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">
                             <span
                               className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                              supplier.verificationStatus === "Verified"
-                                ? "bg-green-300 text-green-800"
-                                : "bg-red-300 text-red-800"
+                              getVerificationStatusDisplay(supplier.verification_status).className
                               }`}
                             >
-                              {supplier.verificationStatus}
+                              {getVerificationStatusDisplay(supplier.verification_status).label}
                             </span>
                             </td>
                             <td className="px-3 py-3 text-center whitespace-nowrap">
                               <div className="flex justify-center items-center">
                                 <Button
-                                onClick={() => handleDetails(supplier.id)}
-                                title="Details"
+                                onClick={() => handleViewCompanyDetails(supplier.user_id)}
+                                title="View Company Details"
+                                icon={FaBuilding}
                                 />
                               </div>
                             </td>
@@ -230,6 +239,23 @@ const AdminCompanyData: React.FC = () => {
             onRowsPerPageChange={setRowsPerPage}
           />
         </div>
+
+        {/* Modal for Company Details */}
+        {isModalOpen && (
+          <div className="fixed inset-0 flex items-center justify-center z-999 overflow-y-auto">
+            <div className="absolute inset-0 bg-black opacity-50" onClick={() => setIsModalOpen(false)}></div>
+            <div className="w-full bg-gray-100 p-8 rounded-lg relative z-10 max-w-7xl mx-4 my-8">
+              <Button
+                title="Close"
+                onClick={() => setIsModalOpen(false)}
+                color="bg-red-500 text-white absolute top-2 right-2"
+              />
+              <div className="overflow-y-auto max-h-[calc(100vh-100px)]">
+                <CompanyDetails companyData={companyData} />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   )
