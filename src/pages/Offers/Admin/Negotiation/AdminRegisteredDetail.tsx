@@ -212,6 +212,7 @@ const AdminRegisteredDetail: React.FC = () => {
                   title={lastViewed}
                   onClick={handleLastViewed}
                   icon={FaEye}
+                  disabled={true}
                 />
               ) : (
                 <Button
