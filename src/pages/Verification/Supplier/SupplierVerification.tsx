@@ -19,8 +19,12 @@ import {
 type VerificationStatus = "not_verified" | "verified" | "profile_updated" | "complete_profile" | "under_verification"
 
 interface VerificationStatusResponse {
-    verification_status: string
-    updated_at: string
+    status: boolean
+    message: string
+    data: {
+        status_verification: string
+        updated_at: string
+    }
 }
 
 interface HistoryItem {
@@ -61,10 +65,10 @@ const SupplierVerification: React.FC = () => {
 
             const result: VerificationStatusResponse = await response.json()
             
-            if (response.ok) {
+            if (response.ok && result.status) {
                 // Map API status to our internal status types
-                setVerificationStatus(result.verification_status as VerificationStatus)
-                setLastUpdated(result.updated_at)
+                setVerificationStatus(result.data.status_verification as VerificationStatus)
+                setLastUpdated(result.data.updated_at)
             } else {
                 toast.error('Failed to fetch verification status')
             }
@@ -210,7 +214,7 @@ const SupplierVerification: React.FC = () => {
             case "verified":
                 return "Already Verified"
             case "complete_profile":
-                return "Complete Profile First"
+                return "Complete Data First!"
             default:
                 return "Request Verification"
         }
