@@ -78,37 +78,16 @@ const AdminEditOffers: React.FC = () => {
         const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             const value = e.target.value
             setInputValue(value)
-            if (
-                value.includes(";") ||
-                (value.includes("@") &&
-                (value.endsWith(".com") ||
-                    value.endsWith(".co.id") ||
-                    value.endsWith(".net") ||
-                    value.endsWith(".org") ||
-                    value.endsWith(".edu") ||
-                    value.endsWith(".gov") ||
-                    value.endsWith(".io") ||
-                    value.endsWith(".tech")))
-            ) {
+            if (value.includes(";")) {
                 addEmail(value.replace(";", ""))
                 setInputValue("")
             }
         }
 
         const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-            if (e.key === "Enter" || e.key === " ") {
+            if (e.key === "Enter" || e.key === " " || e.key === "Tab") {
                 e.preventDefault()
-                if (
-                    inputValue.includes("@") &&
-                    (inputValue.endsWith(".com") ||
-                        inputValue.endsWith(".co.id") ||
-                        inputValue.endsWith(".net") ||
-                        inputValue.endsWith(".org") ||
-                        inputValue.endsWith(".edu") ||
-                        inputValue.endsWith(".gov") ||
-                        inputValue.endsWith(".io") ||
-                        inputValue.endsWith(".tech"))
-                ) {
+                if (inputValue.includes("@") && inputValue.includes(".")) {
                     addEmail(inputValue)
                     setInputValue("")
                 }
@@ -116,17 +95,7 @@ const AdminEditOffers: React.FC = () => {
         }
 
         const handleBlur = () => {
-            if (
-                inputValue.includes("@") &&
-                (inputValue.endsWith(".com") ||
-                inputValue.endsWith(".co.id") ||
-                inputValue.endsWith(".net") ||
-                inputValue.endsWith(".org") ||
-                inputValue.endsWith(".edu") ||
-                inputValue.endsWith(".gov") ||
-                inputValue.endsWith(".io") ||
-                inputValue.endsWith(".tech"))
-            ) {
+            if (inputValue.includes("@") && inputValue.includes(".")) {
                 addEmail(inputValue)
                 setInputValue("")
             }
