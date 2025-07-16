@@ -159,6 +159,12 @@ const AdminCreateOffers: React.FC = () => {
             setAttachment(null)
             setOfferType(null)
             setEmails([])
+            
+            // Clear the file input
+            const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement
+            if (fileInput) {
+                fileInput.value = ''
+            }
         }
     }
 

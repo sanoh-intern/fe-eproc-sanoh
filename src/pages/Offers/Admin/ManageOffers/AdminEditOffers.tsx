@@ -183,6 +183,13 @@ const AdminEditOffers: React.FC = () => {
             return
         }
         toast.success("Project updated successfully!")
+        
+        // Clear the file input after successful update
+        const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement
+        if (fileInput) {
+            fileInput.value = ''
+        }
+        setAttachment(null)
     }
 
     const DownloadFile = async () => {

@@ -157,12 +157,14 @@ const AdminManageOffers: React.FC = () => {
             <Breadcrumb pageName="Manage Projects" />
             <div className="bg-white">
                 <div className="p-2 md:p-4 lg:p-6 space-y-6">
-                    <Button
-                        onClick={() => navigate("/offers/create")}
-                        title="Create New Projects"
-                        icon={FaPlus}
-                        className="px-4 py-2 flex items-center gap-2"
-                    />
+                    {localStorage.getItem('role') === 'purchasing' && (
+                        <Button
+                            onClick={() => navigate("/offers/create")}
+                            title="Create New Projects"
+                            icon={FaPlus}
+                            className="px-4 py-2 flex items-center gap-2"
+                        />
+                    )}
                     {offers.length === 0 && !loading ? (
                         <div className="text-center">
                             <p className="mb-4">No projects available.</p>
@@ -244,19 +246,23 @@ const AdminManageOffers: React.FC = () => {
                                                 <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
                                                     Winning Company
                                                 </th>
-                                                <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
-                                                    Edit
-                                                </th>
-                                                <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
-                                                    Actions
-                                                </th>
+                                                {localStorage.getItem('role') === 'purchasing' && (
+                                                    <>
+                                                        <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
+                                                            Edit
+                                                        </th>
+                                                        <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
+                                                            Actions
+                                                        </th>
+                                                    </>
+                                                )}
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-200 bg-white">
                                         {loading ? (
                                             Array.from({ length: rowsPerPage }).map((_, index) => (
                                                 <tr key={index} className="animate-pulse">
-                                                    {Array.from({ length: 9 }).map((_, cellIndex) => (
+                                                    {Array.from({ length: localStorage.getItem('role') === 'purchasing' ? 9 : 7 }).map((_, cellIndex) => (
                                                     <td key={cellIndex} className="px-3 py-3 text-center">
                                                         <div className="h-4 bg-gray-200 rounded"></div>
                                                     </td>
@@ -292,37 +298,41 @@ const AdminManageOffers: React.FC = () => {
                                                 <td className="px-3 py-3 text-center whitespace-nowrap">
                                                     {offer.project_winner || "-"}
                                                 </td>
-                                                <td className="px-3 py-3 text-center whitespace-nowrap">
-                                                    <Button
-                                                        onClick={() => handleEdit(offer)}
-                                                        title="Edit"
-                                                        icon={FiEdit}
-                                                        className="px-2 py-1"
-                                                    />
-                                                </td>
-                                                <td className="px-3 py-3 text-center whitespace-nowrap">
-                                                    <div className="flex justify-center gap-2">
-                                                        <Button
-                                                            onClick={() => handleClose(String(offer.id))}
-                                                            title="Close"
-                                                            icon={FiXCircle}
-                                                            className="px-2 py-1"
-                                                            disabled={offer.project_registration_status === "Closed"}
-                                                        />
-                                                        <Button
-                                                            onClick={() => handleRemove(String(offer.id))}
-                                                            title="Remove"
-                                                            icon={FiTrash2}
-                                                            color="bg-red-600"
-                                                            className="px-2 py-1"
-                                                        />
-                                                    </div>
-                                                </td>
+                                                {localStorage.getItem('role') === 'purchasing' && (
+                                                    <>
+                                                        <td className="px-3 py-3 text-center whitespace-nowrap">
+                                                            <Button
+                                                                onClick={() => handleEdit(offer)}
+                                                                title="Edit"
+                                                                icon={FiEdit}
+                                                                className="px-2 py-1"
+                                                            />
+                                                        </td>
+                                                        <td className="px-3 py-3 text-center whitespace-nowrap">
+                                                            <div className="flex justify-center gap-2">
+                                                                <Button
+                                                                    onClick={() => handleClose(String(offer.id))}
+                                                                    title="Close"
+                                                                    icon={FiXCircle}
+                                                                    className="px-2 py-1"
+                                                                    disabled={offer.project_registration_status === "Closed"}
+                                                                />
+                                                                <Button
+                                                                    onClick={() => handleRemove(String(offer.id))}
+                                                                    title="Remove"
+                                                                    icon={FiTrash2}
+                                                                    color="bg-red-600"
+                                                                    className="px-2 py-1"
+                                                                />
+                                                            </div>
+                                                        </td>
+                                                    </>
+                                                )}
                                             </tr>
                                             ))
                                         ) : (
                                             <tr>
-                                                <td colSpan={9} className="px-3 py-4 text-center text-gray-500">
+                                                <td colSpan={localStorage.getItem('role') === 'purchasing' ? 9 : 7} className="px-3 py-4 text-center text-gray-500">
                                                     No projects available.
                                                 </td>
                                             </tr>
