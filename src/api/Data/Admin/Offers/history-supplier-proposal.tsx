@@ -8,6 +8,7 @@ export type TypeNegotiationData = {
     proposal_revision_no: number
     proposal_status: string | null
     is_final?: boolean
+    proposal_attach?: string | null  // Path to the attachment file
     message?: string
 }
 

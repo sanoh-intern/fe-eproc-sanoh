@@ -14,6 +14,7 @@ import OffersDetails from "../../../../components/OffersDetail"
 import fetchOfferDetails, { TypeOfferDetails } from "../../../../api/Data/offers-detail"
 import fetchNegotiationSupplier, { TypeNegotiationSupplier } from "../../../../api/Data/Supplier/negotiation"
 import { postNegotiation } from "../../../../api/Action/Supplier/post-negotiation"
+import { streamFile } from "../../../../api/Action/stream-file"
 import { useSearchParams } from "react-router-dom";
 
 const SupplierNegotiation: React.FC = () => {
@@ -141,11 +142,16 @@ const SupplierNegotiation: React.FC = () => {
         }
     }
 
-    const handleDownloadAttachment = (attachmentUrl: string, fileName?: string) => {
+    const handleDownloadAttachment = async (attachmentPath: string, fileName?: string) => {
         try {
+            toast.info("Preparing file for download...")
+            
+            // Use the stream API to get the file
+            const fileUrl = await streamFile(attachmentPath)
+            
             // Create a temporary link element
             const link = document.createElement('a')
-            link.href = attachmentUrl
+            link.href = fileUrl
             link.download = fileName || 'attachment'
             link.target = '_blank'
             
@@ -153,6 +159,11 @@ const SupplierNegotiation: React.FC = () => {
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)
+            
+            // Clean up the blob URL after a short delay
+            setTimeout(() => {
+                URL.revokeObjectURL(fileUrl)
+            }, 100)
             
             toast.success("Download started")
         } catch (error) {

@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
+import { FaBuilding, FaDownload } from "react-icons/fa"
 import Breadcrumb from "../../../../components/Breadcrumbs/Breadcrumb"
 import Button from "../../../../components/Forms/Button"
 import Pagination from "../../../../components/Table/Pagination"
@@ -12,8 +13,8 @@ import fetchOfferDetails, { TypeOfferDetails } from "../../../../api/Data/offers
 import { fetchCompanyDataAdmin, TypeCompanyData } from "../../../../api/Data/company-data"
 import CompanyDetails from "../../../../components/CompanyDetails"
 import fetchNegotiationData, { TypeNegotiationData } from "../../../../api/Data/Admin/Offers/history-supplier-proposal"
+import { streamFile } from "../../../../api/Action/stream-file"
 import { useLocation } from "react-router-dom"
-import { FaBuilding } from "react-icons/fa"
 
 
 const AdminNegotiation: React.FC = () => {
@@ -77,6 +78,36 @@ const AdminNegotiation: React.FC = () => {
         (currentPage - 1) * rowsPerPage,
         currentPage * rowsPerPage
     )
+
+    const handleDownloadAttachment = async (attachmentPath: string, fileName?: string) => {
+        try {
+            toast.info("Preparing file for download...")
+            
+            // Use the stream API to get the file
+            const fileUrl = await streamFile(attachmentPath)
+            
+            // Create a temporary link element
+            const link = document.createElement('a')
+            link.href = fileUrl
+            link.download = fileName || 'attachment'
+            link.target = '_blank'
+            
+            // Append to body, click, and remove
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+            
+            // Clean up the blob URL after a short delay
+            setTimeout(() => {
+                URL.revokeObjectURL(fileUrl)
+            }, 100)
+            
+            toast.success("Download started")
+        } catch (error) {
+            toast.error("Failed to download file")
+            console.error("Download error:", error)
+        }
+    }
 
     const handeclick = async () => {
         setIsModalOpen(true)
@@ -152,6 +183,9 @@ const AdminNegotiation: React.FC = () => {
                                                 Submit Date
                                             </th>
                                             <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase text-center border-b">
+                                                Attachment
+                                            </th>
+                                            <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase text-center border-b">
                                                 Total Amount
                                             </th>
                                             <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase text-center border-b">
@@ -166,6 +200,20 @@ const AdminNegotiation: React.FC = () => {
                                         {paginatedProposals.map((proposal) => (
                                             <tr key={proposal.id} className="hover:bg-gray-50">
                                                 <td className="px-3 py-3 text-center">{proposal.proposal_submit_date}</td>
+                                                <td className="px-3 py-3 text-center whitespace-nowrap">
+                                                    {proposal.proposal_attach ? (
+                                                        <button
+                                                            onClick={() => handleDownloadAttachment(proposal.proposal_attach!, `attachment-${proposal.id}`)}
+                                                            className="inline-flex items-center px-3 py-1 bg-primary text-white text-xs font-medium rounded hover:bg-primary/80 transition-colors"
+                                                            title="Download Attachment"
+                                                        >
+                                                            <FaDownload className="mr-1" />
+                                                            Download
+                                                        </button>
+                                                    ) : (
+                                                        <span className="text-gray-500 text-sm">No file</span>
+                                                    )}
+                                                </td>
                                                 <td className="px-3 py-3 text-center">
                                                     <span className="mr-2 border rounded-sm border-gray-300 px-1">IDR</span>
                                                     <span>

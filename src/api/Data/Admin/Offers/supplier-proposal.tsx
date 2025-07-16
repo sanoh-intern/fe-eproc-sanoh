@@ -9,6 +9,7 @@ export type TypeSupplierProposal = {
     proposal_revision_no?: number | string | null,
     proposal_status?: string | null,
     proposal_last_updated?: string | null,
+    proposal_attach?: string | null,  // Path to the attachment file
     is_final?: boolean,
 }
 

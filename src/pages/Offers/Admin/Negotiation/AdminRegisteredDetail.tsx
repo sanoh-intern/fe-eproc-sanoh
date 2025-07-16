@@ -17,9 +17,10 @@ import fetchSupplierProposals, { TypeFinalReview, TypeSupplierProposal } from ".
 import fetchListSupplierRegistered, { TypeListSupplierRegistered } from "../../../../api/Data/Admin/Offers/list-supplier-registered"
 import { fetchCompanyDataAdmin, TypeCompanyData } from "../../../../api/Data/company-data"
 import CompanyDetails from "../../../../components/CompanyDetails"
-import { FaLock, FaEye, FaEyeSlash, FaBuilding } from "react-icons/fa"
+import { FaLock, FaEye, FaEyeSlash, FaBuilding, FaDownload } from "react-icons/fa"
 import { postOffersAccepted, postOffersDeclined } from "../../../../api/Action/Admin/Offers/post-final-winner"
 import { updateLastViewed } from "../../../../api/Action/Admin/Offers/put-view-amount"
+import { streamFile } from "../../../../api/Action/stream-file"
 
 
 const AdminRegisteredDetail: React.FC = () => {
@@ -160,6 +161,36 @@ const AdminRegisteredDetail: React.FC = () => {
     }
   }
 
+  const handleDownloadAttachment = async (attachmentPath: string, fileName?: string) => {
+    try {
+      toast.info("Preparing file for download...")
+      
+      // Use the stream API to get the file
+      const fileUrl = await streamFile(attachmentPath)
+      
+      // Create a temporary link element
+      const link = document.createElement('a')
+      link.href = fileUrl
+      link.download = fileName || 'attachment'
+      link.target = '_blank'
+      
+      // Append to body, click, and remove
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      
+      // Clean up the blob URL after a short delay
+      setTimeout(() => {
+        URL.revokeObjectURL(fileUrl)
+      }, 100)
+      
+      toast.success("Download started")
+    } catch (error) {
+      toast.error("Failed to download file")
+      console.error("Download error:", error)
+    }
+  }
+
   if (loading) {
     return <Loader />
   }
@@ -237,6 +268,9 @@ const AdminRegisteredDetail: React.FC = () => {
                           Revision No
                         </th>
                         <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
+                          Attachment
+                        </th>
+                        <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
                           Last Status
                         </th>
                         <th className="px-3 py-3.5 text-sm font-bold text-gray-700 uppercase tracking-wider text-center border-b">
@@ -273,6 +307,20 @@ const AdminRegisteredDetail: React.FC = () => {
                                 <span className="ml-2 px-2 py-1 text-blue-800 rounded border border-blue-500">
                                     Final
                                 </span>
+                            )}
+                          </td>
+                          <td className="px-3 py-3 text-center whitespace-nowrap">
+                            {proposal.proposal_attach ? (
+                              <button
+                                onClick={() => handleDownloadAttachment(proposal.proposal_attach!, `attachment-${proposal.id_negotiation}`)}
+                                className="inline-flex items-center px-3 py-1 bg-primary text-white text-xs font-medium rounded hover:bg-primary/80 transition-colors"
+                                title="Download Attachment"
+                              >
+                                <FaDownload className="mr-1" />
+                                Download
+                              </button>
+                            ) : (
+                              <span className="text-gray-500 text-sm">No file</span>
                             )}
                           </td>
                           <td className="px-3 py-3 text-center whitespace-nowrap">
