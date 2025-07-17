@@ -57,7 +57,22 @@ const AdminEditOffers: React.FC = () => {
     // Handle file upload
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
-            setAttachment(e.target.files[0])
+            const file = e.target.files[0]
+            
+            // Check if file is PDF
+            if (file.type !== 'application/pdf') {
+                Swal.fire({
+                    title: "Invalid File Type",
+                    text: "Please upload only PDF files for project attachment.",
+                    icon: "error",
+                    confirmButtonColor: "#2F4F4F"
+                })
+                // Clear the input
+                e.target.value = ''
+                return
+            }
+            
+            setAttachment(file)
         }
     }
 
@@ -291,10 +306,14 @@ const AdminEditOffers: React.FC = () => {
                         </div>
                         {/* Attachment Detail Project */}
                         <div>
-                            <label className="block mb-2 text-black">Attachment Detail Project</label>
+                            <label className="block mb-2 text-black">
+                                Attachment Detail Project
+                                <span className="text-sm text-gray-500 block">Format: PDF only, Maximum 5MB</span>
+                            </label>
                             <input
                                 type="file"
                                 onChange={handleFileChange}
+                                accept=".pdf"
                                 className="w-full rounded border border-secondary py-3 px-5 text-black focus:border-primary"
                             />
                             {existingAttachmentLink && !attachment && (
